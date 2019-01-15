@@ -1,5 +1,10 @@
 package ibm.labs.kc.order.command.rest;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -37,10 +42,11 @@ public class Endpoint {
                     content = @Content(mediaType = "application/json"))
             	})
 	public Response create(CreateOrderRequest co) {
-		Order order = new Order();	
-		order.setOrderID(""+System.currentTimeMillis());
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_DATE_TIME;
+		OffsetDateTime offsetDateTime = OffsetDateTime.parse(co.getExpectedDeliveryDate(), timeFormatter);
+		Date expectedDeliveryDate = Date.from(Instant.from(offsetDateTime));
 		
-		order.setProductID(co.getProductID());
+		Order order = new Order(""+System.currentTimeMillis(), co.getProductID(), co.getQuantity(), expectedDeliveryDate, co.getStatus());
 		
 		return Response.ok().entity(order).build();
 	}

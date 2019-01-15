@@ -1,1 +1,6 @@
-{"productID":"myProductID"}
+{
+  "productID":"myProductID",
+  "quantity":100,
+  "expectedDeliveryDate":"2019-01-10T13:30Z",
+  "status":"Delivered"
+}
