@@ -1,4 +1,4 @@
-package application.rest;
+package ibm.labs.kc.order.command.rest;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

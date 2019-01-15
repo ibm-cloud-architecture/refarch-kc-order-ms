@@ -1,4 +1,4 @@
-package application.rest;
+package ibm.labs.kc.order.command.rest;
 
 import java.io.InputStream;
 
