@@ -46,7 +46,9 @@ public class Endpoint {
 		OffsetDateTime offsetDateTime = OffsetDateTime.parse(co.getExpectedDeliveryDate(), timeFormatter);
 		Date expectedDeliveryDate = Date.from(Instant.from(offsetDateTime));
 		
-		Order order = new Order(""+System.currentTimeMillis(), co.getProductID(), co.getQuantity(), expectedDeliveryDate, co.getStatus());
+		Order order = new Order(""+System.currentTimeMillis(), 
+				co.getProductID(), co.getQuantity(), expectedDeliveryDate, 
+				"created");
 		
 		return Response.ok().entity(order).build();
 	}

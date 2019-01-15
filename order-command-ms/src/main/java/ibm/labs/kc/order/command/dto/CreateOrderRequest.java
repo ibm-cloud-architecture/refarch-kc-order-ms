@@ -7,7 +7,6 @@ public class CreateOrderRequest {
 	private String productID;
 	private int quantity;
 	private String expectedDeliveryDate;
-	private String status;
 	
 	public String getProductID() {
 		return productID;
@@ -19,10 +18,6 @@ public class CreateOrderRequest {
 	
 	public String getExpectedDeliveryDate() {
 		return expectedDeliveryDate;
-	}
-	
-	public String getStatus() {
-		return status;
 	}
 	
 	public void setProductID(String productID) {
@@ -37,7 +32,4 @@ public class CreateOrderRequest {
 		this.expectedDeliveryDate = expectedDeliveryDate;
 	}
 	
-	public void setStatus(String status) {
-		this.status = status;
-	}
 }
