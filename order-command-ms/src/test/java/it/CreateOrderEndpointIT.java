@@ -40,14 +40,12 @@ public class CreateOrderEndpointIT {
 			assertEquals("Incorrect response code: " + responseCode, responseCode,200);
 			assertTrue(response.hasEntity());
 			String responseString = response.readEntity(String.class);
-			System.out.println("+++++++++++++++++");
-			System.out.println(responseString);
-			System.out.println("+++++++++++++++++");
-			
+
 			Order o = new Gson().fromJson(responseString, Order.class);
 			assertNotNull(o.getOrderID());
 			assertEquals(cor.getProductID(), o.getProductID());
 			assertEquals(cor.getQuantity(), o.getQuantity());
+			assertEquals(cor.getExpectedDeliveryDate(), o.getExpectedDeliveryDate());
 			assertEquals("created", o.getStatus());
 		} finally {
 			response.close();
@@ -56,20 +54,33 @@ public class CreateOrderEndpointIT {
 
 
 	@Test
-	public void testCreateInvalidJson() throws Exception {
+	public void testCreateEmptyJson() throws Exception {
 		Response response = makePostRequest(url, "");
 		try {
 			int responseCode = response.getStatus();
 			assertEquals("Incorrect response code: " + responseCode, responseCode, 400);
-			if(response.hasEntity()) {
-				System.out.println(response.getEntity());
-			}
 		} finally {
 			response.close();
 		}
 	}
 
-	
+	@Test
+	public void testCreateBadOrder() throws Exception {
+		CreateOrderRequest cor = new CreateOrderRequest();
+		cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
+		cor.setProductID("myProductID");
+		cor.setQuantity(-100);
+
+		Response response = makePostRequest(url,new Gson().toJson(cor));
+		try {
+			int responseCode = response.getStatus();
+			assertEquals("Incorrect response code: " + responseCode, responseCode, 400);
+		} finally {
+			response.close();
+		}
+	}
+
+
 	
 	protected int makeGetRequest(String url) {
 		Client client = ClientBuilder.newClient();

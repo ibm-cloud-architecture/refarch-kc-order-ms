@@ -1,5 +1,8 @@
 package ibm.labs.kc.order.command.dto;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class CreateOrderRequest {
 //    pickupAddress: Address;
 //    destinationAddress: Address;
@@ -32,4 +35,20 @@ public class CreateOrderRequest {
 		this.expectedDeliveryDate = expectedDeliveryDate;
 	}
 	
+	/**
+	 * @param co
+	 * @throw IllegalArgumentException
+	 */
+	public static void validate(CreateOrderRequest co) {
+		// validation
+		try {
+			OffsetDateTime.parse(co.getExpectedDeliveryDate(), DateTimeFormatter.ISO_DATE_TIME);
+		} catch (RuntimeException rex) {
+			throw new IllegalArgumentException(rex);
+		}
+		
+		if (co.getQuantity() <= 0) {
+			throw new IllegalArgumentException("Quantity must be positive");
+		}
+	}
 }

@@ -7,10 +7,10 @@ public class Order {
 	private String orderID;
 	private String productID;
 	private int quantity;
-	private Date expectedDeliveryDate;
+	private String expectedDeliveryDate;
 	private String status;
 	
-	public Order(String orderID, String productID, int quantity, Date expectedDeliveryDate, String status) {
+	public Order(String orderID, String productID, int quantity, String expectedDeliveryDate, String status) {
 		this.orderID = orderID;
 		this.productID = productID;
 		this.quantity = quantity;
@@ -30,7 +30,7 @@ public class Order {
 		return quantity;
 	}
 	
-	public Date getExpectedDeliveryDate() {
+	public String getExpectedDeliveryDate() {
 		return expectedDeliveryDate;
 	}
 	
