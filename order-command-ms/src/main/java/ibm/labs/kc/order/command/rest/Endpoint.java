@@ -24,7 +24,7 @@ public class Endpoint {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-	@Operation(summary = "Start a simulation on the given ship name", description="Start a ship simulation by moving the ship and send container metrics events according to the scenarion selected")
+	@Operation(summary = "Request to create an order", description="")
     @APIResponses(
             value = {
             	@APIResponse(
