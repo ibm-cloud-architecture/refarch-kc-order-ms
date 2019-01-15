@@ -2,6 +2,14 @@
 
 This project is one reference implementation of the CQRS and event sourcing patterns as part of the [Event Driven Architecture](https://github.com/ibm-cloud-architecture/refarch-eda) reference architecture. From a use case point of view, it implements one of the [K Container shipment process](https://github.com/ibm-cloud-architecture/refarch-kc) microservices. This repository aims to support the order management for the manufactorer to the shipment company order. The business process is defined [here](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/analysis/readme.md).
 
+The goals of the code implemented in this project is to illustrate the event sourcing and CQRS patterns. One of the business requirements for such adoption is to be able to get visibility to the history of order, like being able to respond to questions like:
+
+* how often a cancellation happens before the order is placed?
+* how often a cancellation happens after the order is placed and container loaded?
+* what happen to my shipped good overtime, did the cold chain protected?
+
+For the first question we need events like OrderPlaced(orderId), orderCancelled(orderID) and in the read model the OrdersStatuses(orderId, status, timestamp); OrderStatusTransition(orderId, oldStatus, new Status timestamp) and then OrdersCancelledAfterPlaced(orderId, timestamp)
+
 ## User stories
 The business requirements and Epics are defined in [this note](https://github.com/ibm-cloud-architecture/refarch-kc#orders-microservice-place-shipment-order---user-story)
 
@@ -39,21 +47,49 @@ export class Order {
 
 ## Event Sourcing
 
-The pattern is well described in [this article on microservices.io](https://microservices.io/patterns/data/event-sourcing.html). To summarize evnt sourcing persists the states of business entity as a sequence of state changing events. Applications reconstruct the business entity current state by replaying the events. It is a very important pattern for EDA and microservices to microservices data synchronization needs. A view of entity states is build from the events or facts. It adds the value to provide a reliable audit log.
+Most business applications are state based persistence where an update change the previous state of business entities. When a change needs to be made to the domain the changes are done on the new entities added to the system, the old ones are not impacted. But some requirements need to capture changes from the past history. For example being able to answer how often something happenned in the last year. Also, it could happen that we need to fix data, but which ones were impacted by the updating buggy code.
+One way to keep history is to use an audit log. When using file based audit log, then we have transaction issue. What is the source of truth? The log should be able to rebuild the state.
+
+Even sourcing onle capture the intent, in the form of events stored in the log. To get the final state of an entity, the system needs to replay all the events, which means replaying the changes to the state not the side effects, like for example sending a notification. Sometime it may be too long to replay hundreds of events. In that case we can use snapshot, to capture the current state of an entity, and then replay events from the most recent snapshot. This is an optimization technique not needed for all event sourcing. When state change events are in low volume there is no need for snapshots.
+
+It is important to keep integrity in the log. History should never be rewritten, then event should be immutable, and log being append only.
+
+What to do when we need to add attribute to event. So we need to create a versioninig schema for event structure. You need to use flexible schema like json or protobuf and may be Event adapter to translate between the different event structures.
+
+The event sourcing pattern is well described in [this article on microservices.io](https://microservices.io/patterns/data/event-sourcing.html). It is a very important pattern for EDA and microservices to microservices data synchronization needs. A view of entity states is built from the events or facts. It adds the value to provide a reliable audit log.
 
 See also this nice [event sourcing article](https://martinfowler.com/eaaDev/EventSourcing.html) from Martin Fowler, where he is also using ship movement example. Our implementation differs here and we are using Kafka topic as event store and use the Order business entity.
 
+### Command sourcing
+
+Command sourcing is a pattern as event sourcing, but the commands that modify the states are persisted instead of the events. This allows commands to be processed asynchronously, which can be relevant when the command execution takes a lot of time.
+One derived challenge is that the command may be executed multiple times. In case of failure. Therefore it has to be idempotent. Need also to perform validation of the command to avoid keep wrong commands in queue. AddItem command is becoming AddItemValidated, then once persisted to an ItemAdded. 
+
 ## Command Query Responsibility Segregation (CQRS) pattern
 
-This pattern helps to address how to implement a query to retrieve data from different microservices?
+When doing event sourcing and domain driven design, we event source the aggregates or entities. Aggregate creates events that are persisted. Sometime we want to perform queries that can't be answered by a single aggregate root. By just using event sourcing to be able to respond to a query like what are the orders of a customer, then we have to rebuild the history of all orders and filter per customer. It is a lot of computation. This is linked to the problem of having conflicting domain model between query and persistence.  
+Command Query Responsibility Segregation, CQRS, separates the read from the write model. Combined with Event Sourcing the write model goes to the event store. Then we have a separate process that consumes those events and build a projection for future queries. The write part can persist in SQL while the read could use Cassandra, they do not need to be in the same language. With CQRS amd ES the projecttions are retroactive. New query equals implementing new projection and read the events from the beginning of time or the recent snapshot. Read and write models are strongly decoupled anc can evolve independently.
 
 The CQRS pattern was introduced by [Greg Young](https://www.youtube.com/watch?v=JHGkaShoyNs), https://martinfowler.com/bliki/CQRS.html https://microservices.io/patterns/data/cqrs.html
-
 
 
 ## How to build and run
 
 ## How we implemented it
+
+There are different possible design approaches to use event sourcing. The following diagram illustrates the CQRS and event sourcing as well as the Saga pattern as the order command service is persisting order in its own datasource before creating event. The query part is a consumer of event and build projections to support the different queries:
+
+![](docs/order-ms-cqrs-es.png)
+
+The BFF is using the API of the order services to get create or update orders and perform complex queries. 
+
+Using this model helps to encapsulate the order mananagement in the boundary of a reusable service.
+
+The alternate is to have the BFF pushing events to the event source and then having the order service consuming event to persist them.
+
+![](docs/bff-es-cqrs.png)
+
+As the BFF still need to get order by ID or perform complex query it has to access the order service. The responsability is splitted and if CQRS is not a viable pattern in long term, the BFF code needs to be modified. It is also simpler for the BFF to do HTTP calls than posting to kafka topic.
 
 ## Contribute
 
