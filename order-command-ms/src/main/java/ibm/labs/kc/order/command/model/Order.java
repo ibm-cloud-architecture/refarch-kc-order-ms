@@ -1,7 +1,5 @@
 package ibm.labs.kc.order.command.model;
 
-import java.util.Date;
-
 public class Order {
 
 	private String orderID;
