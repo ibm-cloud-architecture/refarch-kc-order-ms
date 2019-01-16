@@ -98,6 +98,11 @@
             <type>pom</type>
         </dependency>
         <dependency>
+              <groupId>org.eclipse.microprofile.openapi</groupId>
+            <artifactId>microprofile-openapi-api</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.ibm.websphere.appserver.api</groupId>
             <artifactId>com.ibm.websphere.appserver.api.jaxrs20</artifactId>
             <version>1.0.18</version>
@@ -135,6 +140,12 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.25</version>
         </dependency>
+      <dependency>
+          <groupId>javax</groupId>
+          <artifactId>javaee-web-api</artifactId>
+          <version>8.0</version>
+          <scope>provided</scope>
+      </dependency>
     </dependencies>
 
     <build>

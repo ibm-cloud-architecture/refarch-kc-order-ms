@@ -20,11 +20,10 @@ public class OrderDAOMock implements OrderDAO {
         return instance;
     }
 
-
     public OrderDAOMock() {
         orders = new ConcurrentHashMap<>();
     }
-    
+
     @Override
     public Optional<Order> getById(String orderId) {
         Order o = orders.get(orderId);

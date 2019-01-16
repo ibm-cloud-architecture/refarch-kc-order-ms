@@ -10,11 +10,6 @@ import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 /**
- * This class is to read configuration from properties file and keep in a
- * properties object. It also provides a set of method to define kafka config
- * parameters
- * 
- * @author jerome boyer
  *
  */
 public class ApplicationConfig {

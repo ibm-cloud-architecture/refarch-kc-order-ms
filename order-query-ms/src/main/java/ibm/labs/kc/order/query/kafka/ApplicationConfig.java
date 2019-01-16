@@ -1,33 +1,37 @@
 package ibm.labs.kc.order.query.kafka;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
 /**
- * This class is to read configuration from properties file and keep in a
- * properties object. It also provides a set of method to define kafka config
- * parameters
- * 
- * @author jerome boyer
  *
  */
 public class ApplicationConfig {
 
     public static final String ORDER_TOPIC = "orders";
-    public static final long PRODUCER_TIMEOUT_SECS = 10;
+    public static final String CONSUMER_GROUP_ID = "order-query-grp";
+    public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
 
-    public static Properties getProducerProperties() {
+
+    public static Properties getConsumerProperties() {
         Properties properties = buildCommonProperties();
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.CLIENT_ID_CONFIG, "order-producer");
-        properties.put(ProducerConfig.ACKS_CONFIG, "all");
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,"true");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+//        properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,"1000");
+//        properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
+
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-query");
         return properties;
     }
 
@@ -66,5 +70,6 @@ public class ApplicationConfig {
 
         return properties;
     }
+
 
 }

@@ -1,23 +1,24 @@
 package ibm.labs.kc.order.query.kafka;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-
-import com.google.gson.Gson;
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 
 import ibm.labs.kc.order.query.model.Order;
+
 
 public class OrderConsumer {
     
     private static OrderConsumer instance;
-    private KafkaProducer<String, String> kafkaProducer;
+    private final KafkaConsumer<String, String> kafkaConsumer;
     
     public synchronized static OrderConsumer instance() {
         if (instance == null) {
@@ -27,18 +28,31 @@ public class OrderConsumer {
     }
 
     public OrderConsumer() {
-        Properties properties = ApplicationConfig.getProducerProperties();
-        kafkaProducer = new KafkaProducer<String, String>(properties);
+        Properties properties = ApplicationConfig.getConsumerProperties();
+        kafkaConsumer = new KafkaConsumer<String, String>(properties);
+        kafkaConsumer.subscribe(Collections.singletonList(ApplicationConfig.ORDER_TOPIC), new ConsumerRebalanceListener() {
+            
+            @Override
+            public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+                // TODO Auto-generated method stub
+                
+            }
+        });
     }
 
-    public void publish(Order order) throws InterruptedException, ExecutionException, TimeoutException {
-        String value = new Gson().toJson(order);
-        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, order.getOrderID(), value);
-
-        //Q : synchronous ?
-
-        Future<RecordMetadata> send = kafkaProducer.send(record);
-        send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
+    public List<Order> poll() {
+        List<Order> result = new ArrayList<>();
+        ConsumerRecords<String, String> recs = kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
+        for (ConsumerRecord<String, String> rec : recs) {
+            
+        }
+        return result;
     }
 
 
