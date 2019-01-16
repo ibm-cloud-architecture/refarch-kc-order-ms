@@ -2,26 +2,26 @@ package ibm.labs.kc.order.command.model;
 
 public class Order {
 
-    private String orderID;
-    private String productID;
+    private String orderId;
+    private String productId;
     private int quantity;
     private String expectedDeliveryDate;
     private String status;
 
-    public Order(String orderId, String productID, int quantity, String expectedDeliveryDate, String status) {
-        this.orderID = orderId;
-        this.productID = productID;
+    public Order(String orderId, String productId, int quantity, String expectedDeliveryDate, String status) {
+        this.orderId = orderId;
+        this.productId = productId;
         this.quantity = quantity;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
     }
 
-    public String getOrderID() {
-        return orderID;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public String getProductID() {
-        return productID;
+    public String getProductId() {
+        return productId;
     }
 
     public int getQuantity() {

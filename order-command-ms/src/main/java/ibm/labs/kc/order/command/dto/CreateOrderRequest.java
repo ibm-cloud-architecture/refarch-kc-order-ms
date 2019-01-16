@@ -7,12 +7,12 @@ public class CreateOrderRequest {
 //    pickupAddress: Address;
 //    destinationAddress: Address;
 
-    private String productID;
+    private String productId;
     private int quantity;
     private String expectedDeliveryDate;
 
-    public String getProductID() {
-        return productID;
+    public String getProductId() {
+        return productId;
     }
 
     public int getQuantity() {
@@ -23,8 +23,8 @@ public class CreateOrderRequest {
         return expectedDeliveryDate;
     }
 
-    public void setProductID(String productID) {
-        this.productID = productID;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public void setQuantity(int quantity) {
