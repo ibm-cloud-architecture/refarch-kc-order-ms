@@ -8,4 +8,6 @@ public interface OrderDAO {
 
     public Optional<Order> getById(String orderId);
 
+    public void upsert(Order o);
+
 }

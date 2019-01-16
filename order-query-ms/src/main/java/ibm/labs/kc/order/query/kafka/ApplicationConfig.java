@@ -6,9 +6,11 @@ import java.util.Properties;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 /**
  *
@@ -18,6 +20,7 @@ public class ApplicationConfig {
     public static final String ORDER_TOPIC = "orders";
     public static final String CONSUMER_GROUP_ID = "order-query-grp";
     public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
+    public static final Duration CONSUMER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
 
 
     public static Properties getConsumerProperties() {
@@ -68,6 +71,15 @@ public class ApplicationConfig {
             }
         }
 
+        return properties;
+    }
+
+    public static Properties getProducerProperties(String clientId) {
+        Properties properties = buildCommonProperties();
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
+        properties.put(ProducerConfig.ACKS_CONFIG, "all");
         return properties;
     }
 

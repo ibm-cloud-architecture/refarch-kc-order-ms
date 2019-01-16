@@ -30,4 +30,10 @@ public class OrderDAOMock implements OrderDAO {
         return Optional.ofNullable(o);
     }
 
+    @Override
+    public void upsert(Order o) {
+        System.out.println("upsert order " + o);
+        orders.put(o.getOrderID(), o);
+    }
+
 }

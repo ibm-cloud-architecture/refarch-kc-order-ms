@@ -43,5 +43,5 @@ public class QueryService {
         } else {
             return Response.status(Status.NOT_FOUND).build();
         }
-    }    
+    }
 }
