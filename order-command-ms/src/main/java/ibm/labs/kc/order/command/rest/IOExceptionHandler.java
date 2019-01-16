@@ -8,11 +8,9 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class IOExceptionHandler implements ExceptionMapper<IOException>
-{
+public class IOExceptionHandler implements ExceptionMapper<IOException> {
     @Override
-    public Response toResponse(IOException exception)
-    {
-        return Response.status(Status.BAD_REQUEST).entity(exception.getMessage()).build(); 
+    public Response toResponse(IOException exception) {
+        return Response.status(Status.BAD_REQUEST).entity(exception.getMessage()).build();
     }
 }

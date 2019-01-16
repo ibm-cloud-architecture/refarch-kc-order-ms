@@ -13,20 +13,20 @@ import javax.ws.rs.core.UriInfo;
 @Path("/")
 public class RootEndpoint {
 
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response listResources(@Context UriInfo uriInfo) {
-    String healthURL = (uriInfo.getAbsolutePath() + "/health").replaceAll("(?<!http:)\\/\\/", "/");
-    return Response.ok("{\"health\":\"" + healthURL + "\"}").build();
-  }
-
-  @GET
-  @Produces({ MediaType.TEXT_HTML })
-  public InputStream getIndex() {
-    try {
-      return this.getClass().getResourceAsStream("/index.html");
-    } catch (Exception e) {
-      throw new RuntimeException("Exception returning index.html", e);
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listResources(@Context UriInfo uriInfo) {
+        String healthURL = (uriInfo.getAbsolutePath() + "/health").replaceAll("(?<!http:)\\/\\/", "/");
+        return Response.ok("{\"health\":\"" + healthURL + "\"}").build();
     }
-  }
+
+    @GET
+    @Produces({ MediaType.TEXT_HTML })
+    public InputStream getIndex() {
+        try {
+            return this.getClass().getResourceAsStream("/index.html");
+        } catch (Exception e) {
+            throw new RuntimeException("Exception returning index.html", e);
+        }
+    }
 }

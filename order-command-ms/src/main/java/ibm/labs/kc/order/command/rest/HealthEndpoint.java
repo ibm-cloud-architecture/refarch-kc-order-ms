@@ -12,12 +12,11 @@ public class HealthEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response healthcheck() {
-      /*
-      if (!healthy) {
-        return Response.status(503).entity("{\"status\":\"DOWN\"}").build();
-      }
-      */
-      return Response.ok("{\"status\":\"UP\"}").build();
+        /*
+         * if (!healthy) { return
+         * Response.status(503).entity("{\"status\":\"DOWN\"}").build(); }
+         */
+        return Response.ok("{\"status\":\"UP\"}").build();
     }
 
 }
