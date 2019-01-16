@@ -8,8 +8,8 @@ public class Order {
     private String expectedDeliveryDate;
     private String status;
 
-    public Order(String orderID, String productID, int quantity, String expectedDeliveryDate, String status) {
-        this.orderID = orderID;
+    public Order(String orderId, String productID, int quantity, String expectedDeliveryDate, String status) {
+        this.orderID = orderId;
         this.productID = productID;
         this.quantity = quantity;
         this.expectedDeliveryDate = expectedDeliveryDate;

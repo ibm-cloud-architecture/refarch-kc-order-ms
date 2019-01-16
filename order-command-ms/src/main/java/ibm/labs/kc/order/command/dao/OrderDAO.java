@@ -4,6 +4,6 @@ import ibm.labs.kc.order.command.model.Order;
 
 public interface OrderDAO {
 
-    public void addOrder(Order order);
+    public void add(Order order);
 
 }
