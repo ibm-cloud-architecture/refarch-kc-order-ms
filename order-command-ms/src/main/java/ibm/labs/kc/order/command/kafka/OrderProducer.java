@@ -16,8 +16,16 @@ import ibm.labs.kc.order.command.model.Order;
 
 public class OrderProducer {
     
+    private static OrderProducer instance;
     private KafkaProducer<String, String> kafkaProducer;
     
+    public synchronized static OrderProducer instance() {
+        if (instance == null) {
+            instance = new OrderProducer();
+        }
+        return instance;
+    }
+
     public OrderProducer() {
         Properties properties = ApplicationConfig.getProducerProperties();
         kafkaProducer = new KafkaProducer<String, String>(properties);
@@ -32,5 +40,6 @@ public class OrderProducer {
         Future<RecordMetadata> send = kafkaProducer.send(record);
         send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
     }
+
 
 }

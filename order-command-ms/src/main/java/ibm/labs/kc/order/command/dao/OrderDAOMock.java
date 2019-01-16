@@ -6,8 +6,18 @@ import java.util.Map;
 import ibm.labs.kc.order.command.model.Order;
 
 public class OrderDAOMock implements OrderDAO {
-    
+
     private final Map<String, Order> orders;
+
+    private static OrderDAOMock instance;
+    
+    public synchronized static OrderDAO instance() {
+        if (instance == null) {
+            instance = new OrderDAOMock();
+        }
+        return instance;
+    }
+
 
     public OrderDAOMock() {
         orders = new HashMap<>();

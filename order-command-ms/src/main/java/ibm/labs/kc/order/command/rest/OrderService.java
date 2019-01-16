@@ -1,6 +1,8 @@
 package ibm.labs.kc.order.command.rest;
 
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -22,13 +24,14 @@ import ibm.labs.kc.order.command.model.Order;
 
 @Path("orders")
 public class OrderService {
+    private static final Logger logger = Logger.getLogger(OrderService.class.getName());
 
     private OrderDAO orderDAO;
     private OrderProducer orderProducer;
 
     public OrderService() {
-        orderDAO = new OrderDAOMock();
-        orderProducer = new OrderProducer();
+        orderDAO = OrderDAOMock.instance();
+        orderProducer = OrderProducer.instance();
     }
 
     /**
@@ -53,8 +56,9 @@ public class OrderService {
         orderDAO.add(order);
         try {
             orderProducer.publish(order);
-        } catch (Exception ioe) {
-            //TODO
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Fail to publish order created event", e);
+            return Response.serverError().build();
         }
 
         return Response.ok().entity(order).build();
