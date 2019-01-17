@@ -38,7 +38,7 @@ public class QueryServiceIT {
 
             Order o = new Order(orderId,"product123",1,"2019-01-16T17:30T","testStatus");
             String orderString = new Gson().toJson(o);
-            ProducerRecord<String, String> record = new ProducerRecord<String, String>(ApplicationConfig.ORDER_TOPIC, o.getOrderId(), orderString); 
+            ProducerRecord<String, String> record = new ProducerRecord<String, String>(ApplicationConfig.ORDER_TOPIC, o.getOrderID(), orderString); 
 
             Future<RecordMetadata> future = producer.send(record);
             future.get(10000, TimeUnit.MILLISECONDS);
@@ -51,7 +51,7 @@ public class QueryServiceIT {
             if(response.getStatus() == 200) {
                 String responseString = response.readEntity(String.class);
                 Order o2 = new Gson().fromJson(responseString, Order.class);
-                assertEquals(orderId, o2.getOrderId());
+                assertEquals(orderId, o2.getOrderID());
                 ok = true;
                 break;
             } else {

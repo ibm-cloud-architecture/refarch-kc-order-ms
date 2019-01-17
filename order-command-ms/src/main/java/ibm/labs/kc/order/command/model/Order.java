@@ -1,27 +1,29 @@
 package ibm.labs.kc.order.command.model;
 
 public class Order {
+    
+    public static final String CREATED_STATE = "OrderCreated";
 
-    private String orderId;
-    private String productId;
+    private String orderID;
+    private String productID;
     private int quantity;
     private String expectedDeliveryDate;
     private String status;
 
-    public Order(String orderId, String productId, int quantity, String expectedDeliveryDate, String status) {
-        this.orderId = orderId;
-        this.productId = productId;
+    public Order(String orderID, String productID, int quantity, String expectedDeliveryDate, String status) {
+        this.orderID = orderID;
+        this.productID = productID;
         this.quantity = quantity;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getOrderID() {
+        return orderID;
     }
 
-    public String getProductId() {
-        return productId;
+    public String getProductID() {
+        return productID;
     }
 
     public int getQuantity() {

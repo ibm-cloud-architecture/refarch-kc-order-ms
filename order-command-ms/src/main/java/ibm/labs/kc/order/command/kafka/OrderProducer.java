@@ -33,7 +33,7 @@ public class OrderProducer {
 
     public void publish(Order order) throws InterruptedException, ExecutionException, TimeoutException {
         String value = new Gson().toJson(order);
-        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, order.getOrderId(), value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, order.getOrderID(), value);
 
         //Q : synchronous ?
 

@@ -37,7 +37,7 @@ public class OrderDAOMock implements OrderDAO {
     public void upsert(Order o) {
         System.out.println("upsert order " + o);
         try {
-            orders.put(o.getOrderId(), o);
+            orders.put(o.getOrderID(), o);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
