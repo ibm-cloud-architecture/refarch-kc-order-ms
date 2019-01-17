@@ -3,11 +3,14 @@ package ibm.labs.kc.order.query.dao;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ibm.labs.kc.order.query.model.Order;
 
 
 public class OrderDAOMock implements OrderDAO {
+    static final Logger logger = Logger.getLogger(OrderDAOMock.class.getName());
 
     private final Map<String, Order> orders;
 
@@ -33,7 +36,11 @@ public class OrderDAOMock implements OrderDAO {
     @Override
     public void upsert(Order o) {
         System.out.println("upsert order " + o);
-        orders.put(o.getOrderID(), o);
+        try {
+            orders.put(o.getOrderId(), o);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
 }

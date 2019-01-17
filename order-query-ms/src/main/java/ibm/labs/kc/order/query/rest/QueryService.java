@@ -1,6 +1,7 @@
 package ibm.labs.kc.order.query.rest;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,6 +22,7 @@ import ibm.labs.kc.order.query.model.Order;
 
 @Path("orders")
 public class QueryService {
+    static final Logger logger = Logger.getLogger(QueryService.class.getName());
 
     private OrderDAO orderDAO;
 
@@ -36,6 +38,8 @@ public class QueryService {
             @APIResponse(responseCode = "404", description = "Order not found", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order found", content = @Content(mediaType = "application/json")) })
     public Response getById(@PathParam("Id") String orderId) {
+        logger.warning("QueryService.getById" + orderId);
+
         Optional<Order> oo = orderDAO.getById(orderId);
         if (oo.isPresent()) {
             Order order = oo.get();

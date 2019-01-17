@@ -20,5 +20,5 @@
   <applicationMonitor pollingRate="1000ms"/>
 
   <webApplication name="orderqueryms" location="${app.location}" contextRoot="/"/>
-
+  <webContainer deferServletLoad="false"/>
 </server>
