@@ -47,7 +47,7 @@ public class OrderService {
 
         CreateOrderRequest.validate(cor);
 
-        Order order = new Order(UUID.randomUUID().toString(), cor.getProductID(), cor.getQuantity(),
+        Order order = new Order(UUID.randomUUID().toString(), cor.getProductId(), cor.getQuantity(),
                 cor.getExpectedDeliveryDate(), "created");
 
         //Q : store and publish or viceversa ?

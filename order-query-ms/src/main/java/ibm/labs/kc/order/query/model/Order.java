@@ -1,4 +1,4 @@
-package ibm.labs.kc.order.command.model;
+package ibm.labs.kc.order.query.model;
 
 public class Order {
 

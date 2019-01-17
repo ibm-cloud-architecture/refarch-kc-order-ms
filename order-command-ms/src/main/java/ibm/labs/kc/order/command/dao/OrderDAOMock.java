@@ -1,7 +1,7 @@
 package ibm.labs.kc.order.command.dao;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ibm.labs.kc.order.command.model.Order;
 
@@ -20,13 +20,13 @@ public class OrderDAOMock implements OrderDAO {
 
 
     public OrderDAOMock() {
-        orders = new HashMap<>();
+        orders = new ConcurrentHashMap<>();
     }
     
 
     @Override
     public void add(Order order) {
-        Object o = orders.put(order.getOrderID(), order);
+        Object o = orders.put(order.getOrderId(), order);
         if (o != null) {
             throw new IllegalStateException("order already exists");
         }
