@@ -3,8 +3,8 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: ordercommandms
-  tag: v1.0.0
+  repository: ibmcase/kc-ordercommandms
+  tag: latest
   pullPolicy: IfNotPresent
   resources:
     requests:
