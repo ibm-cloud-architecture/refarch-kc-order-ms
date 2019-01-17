@@ -41,8 +41,8 @@ public class CreateOrderEndpointIT {
             String responseString = response.readEntity(String.class);
 
             Order o = new Gson().fromJson(responseString, Order.class);
-            assertNotNull(o.getOrderId());
-            assertEquals(cor.getProductID(), o.getProductId());
+            assertNotNull(o.getOrderID());
+            assertEquals(cor.getProductID(), o.getProductID());
             assertEquals(cor.getQuantity(), o.getQuantity());
             assertEquals(cor.getExpectedDeliveryDate(), o.getExpectedDeliveryDate());
             assertEquals("created", o.getStatus());

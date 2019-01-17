@@ -26,7 +26,7 @@ public class OrderDAOMock implements OrderDAO {
 
     @Override
     public void add(Order order) {
-        Object o = orders.put(order.getOrderId(), order);
+        Object o = orders.put(order.getOrderID(), order);
         if (o != null) {
             throw new IllegalStateException("order already exists");
         }
