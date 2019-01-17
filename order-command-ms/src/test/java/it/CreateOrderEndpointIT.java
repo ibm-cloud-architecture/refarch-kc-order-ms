@@ -29,7 +29,9 @@ public class CreateOrderEndpointIT {
 
         CreateOrderRequest cor = new CreateOrderRequest();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
+        cor.setPickupDate("2019-01-14T17:48Z");
         cor.setProductID("myProductID");
+        cor.setCustomerID("myCustomerID");
         cor.setQuantity(100);
 
         Response response = makePostRequest(url, new Gson().toJson(cor));
@@ -45,7 +47,7 @@ public class CreateOrderEndpointIT {
             assertEquals(cor.getProductID(), o.getProductID());
             assertEquals(cor.getQuantity(), o.getQuantity());
             assertEquals(cor.getExpectedDeliveryDate(), o.getExpectedDeliveryDate());
-            assertEquals("created", o.getStatus());
+            assertEquals(Order.CREATED_STATE, o.getStatus());
         } finally {
             response.close();
         }
