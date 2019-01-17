@@ -1,6 +1,8 @@
 package ibm.labs.kc.order.command.model;
 
 public class Order {
+    
+    public static final String CREATED_STATE = "OrderCreated";
 
     private String orderId;
     private String productId;
