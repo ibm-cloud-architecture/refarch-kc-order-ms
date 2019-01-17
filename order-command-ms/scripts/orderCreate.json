@@ -10,5 +10,12 @@
     "country": "myCountry",
     "state": "myState",
     "zipcode": "myZipCode"
+  },
+  "destinationAddress": {
+    "street": "myStreet2",
+    "city": "myCity2",
+    "country": "myCountry2",
+    "state": "myState2",
+    "zipcode": "myZipCode2"
   }
 }
