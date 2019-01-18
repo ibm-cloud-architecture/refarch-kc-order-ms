@@ -41,14 +41,12 @@ public class OrderServiceAdminIT {
         Order order = new Order(orderID, "productId", "custId", 2,
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z");
+        OrderEvent event = new OrderEvent(System.currentTimeMillis(), OrderEvent.TYPE_CREATED, "1", order);
 
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
-
-            
-            OrderEvent event = new OrderEvent(System.currentTimeMillis(), OrderEvent.TYPE_CREATED, "1", order);
             String value = new Gson().toJson(event);
             String key = order.getOrderID();
-            ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value); 
+            ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value);
 
             Future<RecordMetadata> future = producer.send(record);
             future.get(10000, TimeUnit.MILLISECONDS);

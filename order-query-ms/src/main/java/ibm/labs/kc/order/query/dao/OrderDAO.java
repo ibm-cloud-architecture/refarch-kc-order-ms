@@ -9,8 +9,8 @@ public interface OrderDAO {
 
     public Optional<Order> getById(String orderId);
 
-    public void upsert(Order o);
+    public void add(Order o);
 
-	public Optional<Collection<Order>> getByManuf(String manuf);
+	public Collection<Order> getByManuf(String manuf);
 
 }
