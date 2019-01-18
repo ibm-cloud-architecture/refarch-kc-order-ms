@@ -1,12 +1,15 @@
 package ibm.labs.kc.order.command.kafka;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 /**
@@ -16,13 +19,27 @@ public class ApplicationConfig {
 
     public static final String ORDER_TOPIC = "orders";
     public static final long PRODUCER_TIMEOUT_SECS = 10;
+    public static final String CONSUMER_GROUP_ID = "order-command-grp";
+    public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
+    public static final Duration CONSUMER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
 
-    public static Properties getProducerProperties() {
+    public static Properties getProducerProperties(String clientId) {
         Properties properties = buildCommonProperties();
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.put(ProducerConfig.CLIENT_ID_CONFIG, "order-producer");
+        properties.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
+        return properties;
+    }
+
+    public static Properties getConsumerProperties() {
+        Properties properties = buildCommonProperties();
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,"true");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-command-consumer");
         return properties;
     }
 

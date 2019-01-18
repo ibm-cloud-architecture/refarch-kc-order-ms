@@ -1,4 +1,4 @@
-package ibm.labs.kc.order.command.rest;
+package ibm.labs.kc.order.command.service;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -16,22 +16,20 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
-import ibm.labs.kc.order.command.dao.OrderDAO;
-import ibm.labs.kc.order.command.dao.OrderDAOMock;
 import ibm.labs.kc.order.command.dto.CreateOrderRequest;
 import ibm.labs.kc.order.command.kafka.OrderProducer;
+import ibm.labs.kc.order.command.model.EventEmitter;
 import ibm.labs.kc.order.command.model.Order;
+import ibm.labs.kc.order.command.model.OrderEvent;
 
 @Path("orders")
-public class OrderService {
-    private static final Logger logger = Logger.getLogger(OrderService.class.getName());
+public class OrderCRUDService {
+    private static final Logger logger = Logger.getLogger(OrderCRUDService.class.getName());
 
-    private OrderDAO orderDAO;
-    private OrderProducer orderProducer;
+    private EventEmitter emitter;
 
-    public OrderService() {
-        orderDAO = OrderDAOMock.instance();
-        orderProducer = OrderProducer.instance();
+    public OrderCRUDService() {
+        emitter = OrderProducer.instance();
     }
 
     @POST
@@ -45,17 +43,18 @@ public class OrderService {
 
         CreateOrderRequest.validate(cor);
 
-        Order order = new Order(UUID.randomUUID().toString(), cor.getProductID(), cor.getQuantity(),
-                cor.getExpectedDeliveryDate(), Order.CREATED_STATE,cor.getCustomerID());
-        order.setDestinationAddress(cor.getDestinationAddress());
-        order.setExpectedDeliveryDate(cor.getExpectedDeliveryDate());
+        Order order = new Order(UUID.randomUUID().toString(), 
+                cor.getProductID(),
+                cor.getCustomerID(), 
+                cor.getQuantity(),
+                cor.getPickupAddress(), cor.getPickupDate(),
+                cor.getDestinationAddress(), cor.getExpectedDeliveryDate());
 
-        //Q : store and publish or viceversa ?
-        //Q : what if publish fails ?
-        
-        orderDAO.add(order);
+        OrderEvent orderEvent = new OrderEvent(System.currentTimeMillis(),
+                OrderEvent.TYPE_CREATED, "1", order);
+
         try {
-            orderProducer.publish(order);
+            emitter.emit(orderEvent);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Fail to publish order created event", e);
             return Response.serverError().build();

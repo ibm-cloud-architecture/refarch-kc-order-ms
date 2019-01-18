@@ -140,8 +140,6 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.25</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>

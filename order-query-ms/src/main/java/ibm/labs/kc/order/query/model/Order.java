@@ -1,10 +1,8 @@
 package ibm.labs.kc.order.query.model;
 
 public class Order {
-    
-    public static final String CREATED_STATE = "OrderCreated";
 
-	private String orderID;
+    private String orderID;
     private String productID;
     private String customerID;
     private int quantity;
@@ -13,8 +11,8 @@ public class Order {
     private Address pickupAddress;
     private Address destinationAddress;
 
-
-    public Order(String orderID, String productID, int quantity, String expectedDeliveryDate, String status,String customerID) {
+    public Order(String orderID, String productID, int quantity, String expectedDeliveryDate, String status,
+            String customerID) {
         this.orderID = orderID;
         this.productID = productID;
         this.quantity = quantity;
@@ -22,9 +20,9 @@ public class Order {
         this.status = status;
         this.customerID = customerID;
     }
-    
+
     public String toString() {
-    	return getOrderID()+ " " +  getCustomerID() + " " + getProductID();
+        return getOrderID() + " " + getCustomerID() + " " + getProductID();
     }
 
     public String getOrderID() {
@@ -47,27 +45,27 @@ public class Order {
         return status;
     }
 
-	public String getCustomerID() {
-		return customerID;
-	}
+    public String getCustomerID() {
+        return customerID;
+    }
 
-	public Address getDestinationAddress() {
-		return destinationAddress;
-	}
+    public Address getDestinationAddress() {
+        return destinationAddress;
+    }
 
-	public void setDestinationAddress(Address destinationAddress) {
-		this.destinationAddress = destinationAddress;
-	}
+    public void setDestinationAddress(Address destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
 
-	public void setExpectedDeliveryDate(String expectedDeliveryDate) {
-		this.expectedDeliveryDate = expectedDeliveryDate;
-	}
+    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
+    }
 
-	public Address getPickupAddress() {
-		return pickupAddress;
-	}
+    public Address getPickupAddress() {
+        return pickupAddress;
+    }
 
-	public void setPickupAddress(Address pickupAddress) {
-		this.pickupAddress = pickupAddress;
-	}
+    public void setPickupAddress(Address pickupAddress) {
+        this.pickupAddress = pickupAddress;
+    }
 }
