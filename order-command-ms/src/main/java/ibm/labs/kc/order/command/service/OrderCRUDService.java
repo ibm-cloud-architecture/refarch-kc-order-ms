@@ -1,4 +1,4 @@
-package ibm.labs.kc.order.command.rest;
+package ibm.labs.kc.order.command.service;
 
 import java.util.UUID;
 import java.util.logging.Level;
@@ -18,17 +18,18 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ibm.labs.kc.order.command.dto.CreateOrderRequest;
 import ibm.labs.kc.order.command.kafka.OrderProducer;
+import ibm.labs.kc.order.command.model.EventEmitter;
 import ibm.labs.kc.order.command.model.Order;
 import ibm.labs.kc.order.command.model.OrderEvent;
 
 @Path("orders")
-public class OrderService {
-    private static final Logger logger = Logger.getLogger(OrderService.class.getName());
+public class OrderCRUDService {
+    private static final Logger logger = Logger.getLogger(OrderCRUDService.class.getName());
 
-    private OrderProducer orderProducer;
+    private EventEmitter emitter;
 
-    public OrderService() {
-        orderProducer = OrderProducer.instance();
+    public OrderCRUDService() {
+        emitter = OrderProducer.instance();
     }
 
     @POST
@@ -51,9 +52,9 @@ public class OrderService {
 
         OrderEvent orderEvent = new OrderEvent(System.currentTimeMillis(),
                 OrderEvent.TYPE_CREATED, "1", order);
-        
+
         try {
-            orderProducer.publish(orderEvent);
+            emitter.emit(orderEvent);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Fail to publish order created event", e);
             return Response.serverError().build();

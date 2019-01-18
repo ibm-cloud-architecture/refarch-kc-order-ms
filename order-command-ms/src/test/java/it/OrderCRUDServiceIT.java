@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import ibm.labs.kc.order.command.dto.CreateOrderRequest;
 import ibm.labs.kc.order.command.model.Order;
 
-public class CreateOrderEndpointIT {
+public class OrderCRUDServiceIT {
 
     private String port = System.getProperty("liberty.test.port");
     private String endpoint = "/orders";

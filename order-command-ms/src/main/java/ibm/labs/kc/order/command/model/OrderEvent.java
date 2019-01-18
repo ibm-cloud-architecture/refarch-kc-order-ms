@@ -1,6 +1,6 @@
 package ibm.labs.kc.order.command.model;
 
-public class OrderEvent {
+public class OrderEvent implements Event {
     
     public static final String TYPE_CREATED = "OrderCreated";
 

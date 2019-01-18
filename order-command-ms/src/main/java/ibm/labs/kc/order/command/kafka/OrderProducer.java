@@ -12,14 +12,16 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.order.command.model.Event;
+import ibm.labs.kc.order.command.model.EventEmitter;
 import ibm.labs.kc.order.command.model.OrderEvent;
 
-public class OrderProducer {
-    
+public class OrderProducer implements EventEmitter {
+
     private static OrderProducer instance;
     private KafkaProducer<String, String> kafkaProducer;
-    
-    public synchronized static OrderProducer instance() {
+
+    public synchronized static EventEmitter instance() {
         if (instance == null) {
             instance = new OrderProducer();
         }
@@ -27,11 +29,13 @@ public class OrderProducer {
     }
 
     public OrderProducer() {
-        Properties properties = ApplicationConfig.getProducerProperties();
+        Properties properties = ApplicationConfig.getProducerProperties("order-command-producer");
         kafkaProducer = new KafkaProducer<String, String>(properties);
     }
 
-    public void publish(OrderEvent orderEvent) throws InterruptedException, ExecutionException, TimeoutException {
+    @Override
+    public void emit(Event event) throws InterruptedException, ExecutionException, TimeoutException {
+        OrderEvent orderEvent = (OrderEvent)event;
         String value = new Gson().toJson(orderEvent);
         String key = orderEvent.getPayload().getOrderID();
         ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value);
@@ -39,6 +43,5 @@ public class OrderProducer {
         Future<RecordMetadata> send = kafkaProducer.send(record);
         send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
     }
-
 
 }
