@@ -2,12 +2,12 @@
 
 This project is one reference implementation of the CQRS and event sourcing patterns as part of the [Event Driven Architecture](https://github.com/ibm-cloud-architecture/refarch-eda) reference architecture. From a use case point of view, it implements one of the [K Container shipment process](https://github.com/ibm-cloud-architecture/refarch-kc) microservices. This repository aims to support the order management for the order from the manufacturer to the shipment company. The business process is defined [here](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/analysis/readme.md).
 
-The goals of the code implemented in this project is to illustrate the event sourcing and CQRS patterns. One of the business requirements for such adoption is to be able to get visibility to the history of order, like being able to respond to questions like:
+The goals of the code implemented in this project is to illustrate the event sourcing and CQRS patterns. One of the business requirements for adopting these patterns is to be able to get visibility to the history of order and progress of the shipment. This would include the ability to determine: 
 
-1. how often a cancellation happens after the order is placed but before an empty container is delivered or loaded ?
-1. how often a cancellation happens after the order is placed and container loaded?
-1. what has happened to my shipped good over time?  
-1. Has the cold chain been protected?
+1. How frequetly does an order get cancelled after it is placed but before an empty container is delivered or loaded ?
+1. How often does an order get cancelled after the order is confirmed, a container assigned and goods loaded into it?
+1. Provide a complete event history for a shipment and the goods shipped over time?  
+1. Has the cold chain been protected on this particular order?
 
 For the first question we need events like OrderPlaced(orderId), OrderCancelled(orderID) and in the read model the OrdersStatuses(orderId, status, timestamp); OrderStatusTransition(orderId, oldStatus, new Status timestamp) and then OrdersCancelledAfterPlaced(orderId, timestamp). We will detailed how to implement those functions in later section.
 
