@@ -1,7 +1,10 @@
 package ibm.labs.kc.order.query.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -16,7 +19,7 @@ public class OrderDAOMock implements OrderDAO {
     private final Map<String, Order> orders;
 
     private static OrderDAOMock instance;
-    
+
     public synchronized static OrderDAO instance() {
         if (instance == null) {
             instance = new OrderDAOMock();
@@ -24,6 +27,7 @@ public class OrderDAOMock implements OrderDAO {
         return instance;
     }
 
+    // for testing
     public OrderDAOMock() {
         orders = new ConcurrentHashMap<>();
     }
@@ -35,8 +39,8 @@ public class OrderDAOMock implements OrderDAO {
     }
 
     @Override
-    public void upsert(Order o) {
-        System.out.println("upsert order " + o.toString());
+    public void add(Order o) {
+        logger.info("Adding order id " + o.getOrderID());
         try {
             orders.put(o.getOrderID(), o);
         } catch (Exception e) {
@@ -44,10 +48,20 @@ public class OrderDAOMock implements OrderDAO {
         }
     }
 
-	@Override
-	public Optional<Collection<Order>> getByManuf(String manuf) {
-		// FROM now just return the values, but could be a hashmap of hashmap
-		return Optional.ofNullable(orders.values());
-	}
+    @Override
+    public Collection<Order> getByManuf(String manuf) {
+        // DEMO: check manuf against customerID
+        Collection<Order> result = new ArrayList<>();
+
+        // Q: is the values a collection I can iterate even if modified concurrently ?
+        // for safety, let's take a snapshot ?
+        Collection<Order> all = Collections.unmodifiableCollection(orders.values());
+        for (Order order : all) {
+            if (Objects.equals(manuf, order.getCustomerID())) {
+                result.add(order);
+            }
+        }
+        return Collections.unmodifiableCollection(result);
+    }
 
 }

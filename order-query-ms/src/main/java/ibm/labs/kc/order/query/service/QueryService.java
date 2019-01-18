@@ -1,7 +1,8 @@
-package ibm.labs.kc.order.query.rest;
+package ibm.labs.kc.order.query.service;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
@@ -19,13 +20,25 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ibm.labs.kc.order.query.dao.OrderDAO;
 import ibm.labs.kc.order.query.dao.OrderDAOMock;
+import ibm.labs.kc.order.query.model.Event;
+import ibm.labs.kc.order.query.model.EventListener;
 import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.OrderEvent;
 
 @Path("orders")
-public class QueryService {
+public class QueryService implements EventListener {
     static final Logger logger = Logger.getLogger(QueryService.class.getName());
 
     private OrderDAO orderDAO;
+
+    private static EventListener instance;
+
+    public synchronized static EventListener instance() {
+        if (instance == null) {
+            instance = new QueryService();
+        }
+        return instance;
+    }
 
     public QueryService() {
         orderDAO = OrderDAOMock.instance();
@@ -49,23 +62,35 @@ public class QueryService {
             return Response.status(Status.NOT_FOUND).build();
         }
     }
-    
+
     @GET
     @Path("byManuf/{manuf}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Query orders by manuf", description = "")
     @APIResponses(value = {
-            @APIResponse(responseCode = "404", description = "Orders not found", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Orders found", content = @Content(mediaType = "application/json")) })
     public Response getByManuf(@PathParam("manuf") String manuf) {
         logger.warning("QueryService.getByManuf(" + manuf+")");
 
-        Optional<Collection<Order>> oo = orderDAO.getByManuf(manuf);
-        if (oo.isPresent()) {
-        	Collection<Order> orders = oo.get();
-            return Response.ok().entity(orders).build();
-        } else {
-            return Response.status(Status.NOT_FOUND).build();
+        Collection<Order> orders = orderDAO.getByManuf(manuf);
+        return Response.ok().entity(orders).build();
+    }
+
+    @Override
+    public void handle(Event event) {
+        try {
+            OrderEvent orderEvent = (OrderEvent)event;
+            switch (orderEvent.getType()) {
+            case OrderEvent.TYPE_CREATED:
+                Order order = orderEvent.getPayload();
+                orderDAO.add(order);
+                break;
+            default:
+                logger.warning("Unknown event type: " + orderEvent);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
+
 }
