@@ -1,5 +1,6 @@
 package ibm.labs.kc.order.query.dao;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,12 +36,18 @@ public class OrderDAOMock implements OrderDAO {
 
     @Override
     public void upsert(Order o) {
-        System.out.println("upsert order " + o);
+        System.out.println("upsert order " + o.toString());
         try {
-            orders.put(o.getOrderId(), o);
+            orders.put(o.getOrderID(), o);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
+
+	@Override
+	public Optional<Collection<Order>> getByManuf(String manuf) {
+		// FROM now just return the values, but could be a hashmap of hashmap
+		return Optional.ofNullable(orders.values());
+	}
 
 }

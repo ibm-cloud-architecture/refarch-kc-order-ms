@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Archive-Content-Type: install
+Archive-Root: wlp/
+Bnd-LastModified: 1512580775638
+Bundle-Copyright: The Program materials contained in this file are IBM
+  copyright materials. WLP Copyright International Business Machines C
+ orp. 1999, 2017 All Rights Reserved * Licensed Materials - Property o
+ f IBM US Government Users Restricted Rights - Use, duplication or dis
+ closure restricted by GSA ADP Schedule Contract with IBM Corp.
+Bundle-Vendor: IBM
+Created-By: 1.8.0 (IBM Corporation)
+Extract-Installer: true
+IBM-Java-Options: -Xshareclasses:name=liberty-%u,nonfatal,cacheDirPerm
+ =1000 -XX:ShareClassesEnableBCI -Xscmx60m -Xscmaxaot8m -XX:+EnableHCR
+Import-Package: javax.xml.parsers,org.w3c.dom
+Main-Class: wlp.lib.extract.SelfExtract
+Map-Based-Self-Extractor: wlp.lib.extract.MapBasedSelfExtractor
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.6))"
+Tool: Bnd-3.3.0.201609221906
+XmxValue: 3000M

@@ -1,0 +1,17 @@
+********************************************************************************
+product = WebSphere Application Server 17.0.0.4 (wlp-1.0.19.201712061531)
+wlp.install.dir = /Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/target/liberty/wlp/
+server.output.dir = /Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/target/liberty-alt-output-dir/defaultServer/
+java.home = /Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre
+java.version = 1.8.0_181
+java.runtime = Java(TM) SE Runtime Environment (1.8.0_181-b13)
+os = Mac OS X (10.13.6; x86_64) (en_US)
+process = 26800@Jeromes-MBP.attlocal.net
+********************************************************************************
+[1/17/19 17:35:39:641 PST] 0000000c com.ibm.ws.kernel.launch.internal.FrameworkManager           A CWWKE0001I: The server defaultServer has been launched.
+[1/17/19 17:35:39:656 PST] 0000000c com.ibm.ws.kernel.launch.internal.FrameworkManager           A CWWKE0100I: This product is licensed for development, and limited production use. The full license terms can be viewed here: https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/license/base_ilan/ilan/17.0.0.4/lafiles/en.html
+[1/17/19 17:35:40:639 PST] 0000000c com.ibm.ws.kernel.launch.internal.FrameworkManager           I CWWKE0002I: The kernel started after 0.997 seconds
+[1/17/19 17:35:40:784 PST] 0000001a com.ibm.ws.kernel.feature.internal.FeatureManager            I CWWKF0007I: Feature update started.
+[1/17/19 17:35:40:844 PST] 0000001a com.ibm.ws.kernel.feature.internal.FeatureManager            I CWWKF0008I: Feature update completed in 0.205 seconds.
+[1/17/19 17:35:40:845 PST] 0000001a com.ibm.ws.kernel.feature.internal.FeatureManager            A CWWKF0036I: The server defaultServer has finished gathering a list of required features.
+[1/17/19 17:35:40:906 PST] 0000000c com.ibm.ws.kernel.launch.internal.FrameworkManager           A CWWKE0036I: The server defaultServer stopped after 1.265 seconds.

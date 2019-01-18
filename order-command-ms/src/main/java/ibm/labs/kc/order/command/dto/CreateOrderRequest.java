@@ -3,16 +3,21 @@ package ibm.labs.kc.order.command.dto;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
+import ibm.labs.kc.order.command.model.Address;
+
 public class CreateOrderRequest {
 //    pickupAddress: Address;
 //    destinationAddress: Address;
 
-    private String productId;
+    private String productID;
+    private String customerID;
     private int quantity;
     private String expectedDeliveryDate;
+    private Address pickupAddress;
+    private Address destinationAddress;
 
-    public String getProductId() {
-        return productId;
+    public String getProductID() {
+        return productID;
     }
 
     public int getQuantity() {
@@ -23,8 +28,8 @@ public class CreateOrderRequest {
         return expectedDeliveryDate;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setProductID(String productId) {
+        this.productID = productId;
     }
 
     public void setQuantity(int quantity) {
@@ -51,4 +56,28 @@ public class CreateOrderRequest {
             throw new IllegalArgumentException("Quantity must be positive");
         }
     }
+
+	public String getCustomerID() {
+		return customerID;
+	}
+
+	public void setCustomerID(String customerID) {
+		this.customerID = customerID;
+	}
+
+	public Address getPickupAddress() {
+		return pickupAddress;
+	}
+
+	public void setPickupAddress(Address pickupAddress) {
+		this.pickupAddress = pickupAddress;
+	}
+
+	public Address getDestinationAddress() {
+		return destinationAddress;
+	}
+
+	public void setDestinationAddress(Address destinationAddress) {
+		this.destinationAddress = destinationAddress;
+	}
 }

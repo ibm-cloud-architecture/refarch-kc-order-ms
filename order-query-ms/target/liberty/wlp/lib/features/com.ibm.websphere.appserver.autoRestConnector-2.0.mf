@@ -1,0 +1,22 @@
+Created-By: 1.8.0 (IBM Corporation)
+IBM-AppliesTo: com.ibm.websphere.appserver;productVersion="17.0.0.4"
+IBM-Feature-Version: 2
+IBM-Install-Policy: when-satisfied
+IBM-InstallTo: core
+IBM-License-Agreement: wlp/lafiles/LA
+IBM-ProductID: com.ibm.websphere.appserver
+IBM-Provision-Capability: osgi.identity; filter:="(&(type=osgi.subsystem.feature)(osgi.identity=com.ibm.websphere.appserver.restConnector-2.0))"
+IBM-SPI-Package: com.ibm.wsspi.collective.plugins; type=ibm-spi,
+ com.ibm.wsspi.collective.plugins.helpers; type=ibm-spi
+Subsystem-Content: com.ibm.websphere.appserver.spi.collectivePlugins_2.0-javadoc.zip; type=file; location:="dev/spi/ibm/javadoc/com.ibm.websphere.appserver.spi.collectivePlugins_2.0-javadoc.zip",
+ com.ibm.websphere.appserver.spi.collectivePlugins; location:="dev/spi/ibm/,lib/"; type=jar; version="[2.0.0,2.0.200)",
+ com.ibm.websphere.collective.plugins; version="[1.0.0,1.0.200)"
+Subsystem-Description: %description
+Subsystem-License: http://www.ibm.com/licenses/wlp-featureterms-v1
+Subsystem-Localization: OSGI-INF/l10n/com.ibm.websphere.appserver.autoRestConnector-2.0
+Subsystem-ManifestVersion: 1
+Subsystem-SymbolicName: com.ibm.websphere.appserver.autoRestConnector-2.0; visibility:=private; singleton:=false
+Subsystem-Type: osgi.subsystem.feature
+Subsystem-Vendor: IBM Corp.
+Subsystem-Version: 1.0.0
+Tool: Bnd-3.3.0.201609221906

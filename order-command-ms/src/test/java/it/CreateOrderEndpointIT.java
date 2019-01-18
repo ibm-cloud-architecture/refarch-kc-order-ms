@@ -29,7 +29,8 @@ public class CreateOrderEndpointIT {
 
         CreateOrderRequest cor = new CreateOrderRequest();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
-        cor.setProductId("myProductID");
+        cor.setProductID("myProductID");
+        cor.setCustomerID("GoodManuf");
         cor.setQuantity(100);
 
         Response response = makePostRequest(url, new Gson().toJson(cor));
@@ -41,8 +42,8 @@ public class CreateOrderEndpointIT {
             String responseString = response.readEntity(String.class);
 
             Order o = new Gson().fromJson(responseString, Order.class);
-            assertNotNull(o.getOrderId());
-            assertEquals(cor.getProductId(), o.getProductId());
+            assertNotNull(o.getOrderID());
+            assertEquals(cor.getProductID(), o.getProductID());
             assertEquals(cor.getQuantity(), o.getQuantity());
             assertEquals(cor.getExpectedDeliveryDate(), o.getExpectedDeliveryDate());
             assertEquals("created", o.getStatus());
@@ -66,7 +67,8 @@ public class CreateOrderEndpointIT {
     public void testCreateBadOrder() throws Exception {
         CreateOrderRequest cor = new CreateOrderRequest();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
-        cor.setProductId("myProductID");
+        cor.setProductID("myProductID");
+        cor.setCustomerID("GoodManuf");
         cor.setQuantity(-100);
 
         Response response = makePostRequest(url, new Gson().toJson(cor));

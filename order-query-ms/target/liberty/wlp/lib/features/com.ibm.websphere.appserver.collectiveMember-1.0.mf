@@ -1,0 +1,37 @@
+Created-By: 1.8.0 (IBM Corporation)
+IBM-AppliesTo: com.ibm.websphere.appserver;productVersion="17.0.0.4"
+IBM-Feature-Version: 2
+IBM-InstallTo: core
+IBM-License-Agreement: wlp/lafiles/LA
+IBM-ProductID: com.ibm.websphere.appserver
+IBM-SPI-Package: com.ibm.wsspi.collective.repository.publisher; type=ibm-spi,
+ com.ibm.wsspi.collective.repository; type=ibm-spi
+IBM-ShortName: collectiveMember-1.0
+Subsystem-Content: ws-collectiveutil.jar; type=file; location:="bin/tools/ws-collectiveutil.jar"; version="[1.0.0,1.0.200)",
+ collective; ibm.executable:=true; ibm.file.encoding:=ebcdic; type=file; location:="bin/collective",
+ collective.bat; type=file; location:="bin/collective.bat",
+ com.ibm.websphere.appserver.spi.collectiveMember_1.1-javadoc.zip; type=file; location:="dev/spi/ibm/javadoc/com.ibm.websphere.appserver.spi.collectiveMember_1.1-javadoc.zip",
+ com.ibm.websphere.appserver.jta-1.1; ibm.tolerates:="1.2"; type="osgi.subsystem.feature",
+ com.ibm.websphere.appserver.javax.servlet-3.0; ibm.tolerates:="3.1,4.0"; type="osgi.subsystem.feature",
+ com.ibm.websphere.appserver.restConnector-1.0; ibm.tolerates:="2.0"; type="osgi.subsystem.feature",
+ com.ibm.websphere.appserver.servlet-3.0; ibm.tolerates:="3.1,4.0"; type="osgi.subsystem.feature",
+ com.ibm.ws.collective.utility; type=jar; version="[1.0.0,1.0.200)",
+ com.ibm.websphere.appserver.spi.collectiveMember; location:="dev/spi/ibm/,lib/"; type=jar; version="[1.1.0,1.1.200)",
+ com.ibm.crypto.ibmkeycert; version="[1.0.0,1.0.200)",
+ com.ibm.ws.org.apache.commons.codec.1.4; version="[1.0.0,1.0.200)",
+ com.ibm.ws.collective.singleton; version="[1.0.0,1.0.200)",
+ com.ibm.websphere.collective.singleton; version="[1.0.0,1.0.200)",
+ com.ibm.ws.collective.member; version="[1.1.0,1.1.200)",
+ com.ibm.websphere.collective; version="[1.5.0,1.5.200)",
+ com.ibm.ws.collective.repository.client; version="[1.1.0,1.1.200)",
+ com.ibm.ws.collective.routing.member; version="[1.0.0,1.0.200)"
+Subsystem-Description: %description
+Subsystem-License: http://www.ibm.com/licenses/wlp-featureterms-v1
+Subsystem-Localization: OSGI-INF/l10n/com.ibm.websphere.appserver.collectiveMember-1.0
+Subsystem-ManifestVersion: 1
+Subsystem-Name: Collective Member
+Subsystem-SymbolicName: com.ibm.websphere.appserver.collectiveMember-1.0; visibility:=public; singleton:=false
+Subsystem-Type: osgi.subsystem.feature
+Subsystem-Vendor: IBM Corp.
+Subsystem-Version: 1.0.0
+Tool: Bnd-3.3.0.201609221906

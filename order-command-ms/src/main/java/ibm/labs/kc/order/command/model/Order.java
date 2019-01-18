@@ -2,26 +2,30 @@ package ibm.labs.kc.order.command.model;
 
 public class Order {
 
-    private String orderId;
-    private String productId;
+    private String orderID;
+    private String productID;
+    private String customerID;
     private int quantity;
     private String expectedDeliveryDate;
     private String status;
+    private Address pickupAddress;
+    private Address destinationAddress;
 
-    public Order(String orderId, String productId, int quantity, String expectedDeliveryDate, String status) {
-        this.orderId = orderId;
-        this.productId = productId;
+    public Order(String orderId, String productId, int quantity, String expectedDeliveryDate, String status, String customerId) {
+        this.orderID = orderId;
+        this.productID = productId;
         this.quantity = quantity;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
+        this.customerID = customerId;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getOrderID() {
+        return orderID;
     }
 
-    public String getProductId() {
-        return productId;
+    public String getProductID() {
+        return productID;
     }
 
     public int getQuantity() {
@@ -35,4 +39,28 @@ public class Order {
     public String getStatus() {
         return status;
     }
+
+	public String getCustomerID() {
+		return customerID;
+	}
+
+	public Address getDestinationAddress() {
+		return destinationAddress;
+	}
+
+	public void setDestinationAddress(Address destinationAddress) {
+		this.destinationAddress = destinationAddress;
+	}
+
+	public void setExpectedDeliveryDate(String expectedDeliveryDate) {
+		this.expectedDeliveryDate = expectedDeliveryDate;
+	}
+
+	public Address getPickupAddress() {
+		return pickupAddress;
+	}
+
+	public void setPickupAddress(Address pickupAddress) {
+		this.pickupAddress = pickupAddress;
+	}
 }

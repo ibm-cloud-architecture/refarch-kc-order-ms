@@ -17,7 +17,7 @@ public class RootEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public Response listResources(@Context UriInfo uriInfo) {
         String healthURL = (uriInfo.getAbsolutePath() + "/health").replaceAll("(?<!http:)\\/\\/", "/");
-        return Response.ok("{\"health\":\"" + healthURL + "\"}").build();
+        return Response.ok("{\"kc order command ms health\":\"" + healthURL + "\"}").build();
     }
 
     @GET

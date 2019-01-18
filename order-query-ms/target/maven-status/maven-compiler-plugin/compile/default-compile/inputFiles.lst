@@ -1,0 +1,11 @@
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/dao/OrderDAOMock.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/rest/JaxrsApplication.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/model/Order.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/rest/QueryService.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/kafka/OrderConsumer.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/rest/ConsumerLoop.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/rest/HealthEndpoint.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/kafka/ApplicationConfig.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/rest/RootEndpoint.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/dao/OrderDAO.java
+/Users/jeromeboyer/Code/GreenCompute/refarch-kc-order-ms/order-query-ms/src/main/java/ibm/labs/kc/order/query/model/Address.java

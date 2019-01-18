@@ -1,0 +1,409 @@
+OLGH1 Fix branding to be Open Liberty rather than WebSphere Liberty
+OLGH1002 Increment micro version for next release.
+OLGH1006 Revert "Group Security drop 1"
+OLGH101 Remove the HTML body output in the case of MP JWT errors
+OLGH1010 Do not call Apache specific cleanup for beanVal-2.0
+OLGH1011 Issue 891: Fix ClassCast in SecurityNameBridge
+OLGH1013 1005-Switch Servlet 4.0 to use public api jar
+OLGH1015 Make concurrencyPolicy config GA and the feature protected
+OLGH1016 Pull in MYFACES-4174
+OLGH1019 managed executor tasks canceled upon deactivate
+OLGH1020 Additional unit tests for properties package
+OLGH1021 support is needed in the kernel and tool scripts to load translated messages, if present
+OLGH1023 Create JSON-B CDI integration so apps can @Inject Jsonb instances
+OLGH1027 Test Failure (1023-20171119-0238): EEConcurrencyConfigTest.testNestedLongRunningPolicy task canceled due to lack of Modified method
+OLGH1032 Test Failure (20171121-1727): EEConcurrencyConfigTest.testTasksCanceledOnDeactivate AssertionFailedError due to canceling running tasks before queued tasks
+OLGH1041 remove misplaced timeout flag from onCancel
+OLGH1043 restore lost CWWKC1120 message
+OLGH1048 serviceability review comments
+OLGH1051 Fix api/spi versioning
+OLGH1056 Rename apache_directory_server to com.ibm.ws.org.apache.directory.server
+OLGH1059 Instances of Facelet Action Listeners are not being removed until app shutdown
+OLGH1062 Server quiesce does not deactivate MDBs
+OLGH1064 Test Failure (20171122-1343): PolicyExecutorTest.testStartTimeout neglects to update recorded queue time value
+OLGH107 Support application provided HTTPAuthenticationMechanisms
+OLGH1070 support logintocontinue annotation in the application.
+OLGH1072 Revert "Fix api/spi versioning"
+OLGH1074 Revert "Revert "Fix api/spi versioning""
+OLGH1075 Utility scripts may fail due to missing Java EE type modules
+OLGH1077 Update EL support for LoginToContinue
+OLGH1078 Show a way to run a single FAT locally, instead of all FATs
+OLGH1085 More eclipse cleanup
+OLGH1086 Bval simplfy3
+OLGH1090 fix incorrect usage of brackets.
+OLGH1095 Disable filter processing for opentracing
+OLGH1096 Adding non-english translations for localization
+OLGH11 Microprofile Fault Tolerance changes (integration branch)
+OLGH1104 Add Jacoco test coverage for all sub-projects
+OLGH1106 1092 sysout d
+OLGH1117 Updated the bval custom classloader to load resources from the module
+OLGH112 DDParser does not handle attribute with namespace=""
+OLGH1120 Test Failure (20171127-0525): EEConcurrencyConfigTest.testPolicyRef tasks canceled due to config update
+OLGH113 103 - Remove jars and remove dependance on IBM JDK from servlet 4
+OLGH1160 GA jsf container22 and opentracing10
+OLGH1166 4Q Shipments 3, 4, and 5 NLS Returns
+OLGH117 90 - Add Introspector for Policy Executor to ThreadingIntrospector
+OLGH1180 Deliver PR #1137 into the OpenLiberty/17.0.0.4_RC stream
+OLGH121 Make jsf-2.2 and jsfContainer-2.2 features singletons
+OLGH1215 switch expedite attribute of concurrencyPolicy back to beta
+OLGH1224 Fix apiSpiJavadoc skipping and kernel.embeddable buildpath
+OLGH125 Use JSON-P and JSON-B RI or use Apache Johnzon
+OLGH13 WIMUserRegistry.getUserSecurityName() does not return uniqueName
+OLGH133 Update JSF 2.3 projects to use artifactory
+OLGH134 Change MicroProfile Metrics feature mpMetrics-1.0 to depend on servlet-3.1 only
+OLGH136 Initial Delivery of JPA 2.2 Support
+OLGH137 Unregister Metrics when Applications are unloaded
+OLGH138 Turned off the beta flag
+OLGH14 Handle invalid attributes and fix multiple withData 
+OLGH142 java.lang.ClassNotFoundException dumped in the FFDC log file when PMI monitor feature is enabled
+OLGH145 Metrics under certain situtation don't get unregistered when application is undeployed
+OLGH151 Issue 57 JavaMail 1.6 Initial code changes
+OLGH168 Updates for session.db
+OLGH17 MicroProfile Health check fails when server has an OSGi app (internal or external) or a WAR without any CDI beans
+OLGH172 Update .classpath, .project, and bnd.bnd files to get eclipse to build
+OLGH174 No bundles and includes liberty-release.props
+OLGH175 Errors trying to run package step of maven sample using open liberty
+OLGH177 Added features
+OLGH18 Fix regression in running FATs locally after build dir change
+OLGH180 Ship only ga features in Open Liberty
+OLGH183 mpConfig: Add further debug and serviceablity to the config impl
+OLGH184 JAXRS timeouts don't work when using a proxy
+OLGH186 FaultTolerance: Allow class-level config overrides for method level annotations
+OLGH188 Add common security test project
+OLGH19 Add Enhancements to microprofile Health FAT bucket project
+OLGH191 Pull in change for MYFACES-4158
+OLGH193 Add tests for validation of Fault Tolerance annotations
+OLGH195 Add com.ibm.ws.security.wim.adapter.ldap FAT tests
+OLGH206 Potential fix for CDI clobbering issue.
+OLGH210 initial impl and test for policy executor timed invokeAny
+OLGH22 FaultTolerance: The DS References should not be AtomicServiceReferences
+OLGH225 Perform batch DB reads within global tran to lower number of JDBC connections needed per batch job
+OLGH228 Remove javadoc references to IBM JDK
+OLGH229 Documenting Address and Host name access lists for TCP Channel
+OLGH233 test interrupt of policy executor timed invokeAny and also test invalid args
+OLGH235 add the NLS message for policy executor invokeAny and invokeAll rejected when unable to submit tasks within interval
+OLGH245 CDI 2.0: FAT tests - apply interceptor on producers.
+OLGH25 assemble fails in task jsonp.1.0:jar: Files do not exist
+OLGH250 CDI 2.0: create all auto features 
+OLGH256 Make FaultTolerance AppValidator use unique app names
+OLGH26 FaultTolerance: Javadoc and comments updates
+OLGH269 Pull in change for MYFACES-4159
+OLGH27 Make jsonp-1.0 and jsonp-1.1 singleton features
+OLGH271 Fix eclipse java settings for version to compile to to match bnd.
+OLGH272 specialized future for policy executor
+OLGH273 Update CXF rt-core version
+OLGH278 Runnable package creation fails due to missing lafiles
+OLGH279 Packaging step doesn't tolerate windows build
+OLGH282 Pull in JSF 2.3 source jar during build
+OLGH286 changed install-to location from core to usr for userfeature
+OLGH288 Make jwt fat tck eclipse setting be 1.8 required java level.
+OLGH289 Improve performance when injecting values from MP config
+OLGH29 Issue 28: Fix the README.md to contain the correct stackoverflow tag 
+OLGH291 Upgrade from ASM 5.2 to ASM 6.0
+OLGH293 policy executor timed invokeAny shutdown tests and other tests
+OLGH294 Wait for correct app to start
+OLGH297 Create one ServletConfig per JSP request
+OLGH298 NullPointerException occurs for OPTIONS request when description is null
+OLGH299 policy executor untimed invokeAny optimization for single task
+OLGH3 Update local JDK wiring
+OLGH30 Clean up top level repo folder
+OLGH300 Be more selective about when to restart an app
+OLGH302 Revert "Fix eclipse java settings for version to compile to to match bnd."
+OLGH307 Revert "Convert default JAX-RS 2.1 JSON provider to use the jsonp-1.1 feature"
+OLGH310 MetricRegistry does not correctly assign type for Lambda functions
+OLGH316 Undo JAX RS revert and add jsonp toleration in MP JWT
+OLGH318 Revert 302 revert 271 fix java version compat in eclipse
+OLGH321 Opentracingfat
+OLGH327 ConnectionPoolStats MBean was not available if enabled the trace with com.ibm.websphere.monitor.*=all
+OLGH334 policy executor untimed invoke any
+OLGH344 And consistent synchronization logic to the Http2 Connection Close
+OLGH346 policy executor untimed invokeAny tests for interrupt and shutdown
+OLGH347 Add method to create jsonWebToken for testing
+OLGH349 Runnable jars fail to run on more recent IBM Javas
+OLGH353 Initial commit documentation for HTTPChannel AutoDecompress
+OLGH355 Add support for ServletContext.addJspFile
+OLGH357 356: Update the metatype for LdapRegistry to clarify the context pool
+OLGH360 Remove unused ASM 5.0.X bundle now that everything uses ASM 6
+OLGH362 Initial draft of policy executor task callbacks
+OLGH368 Port com.ibm.ws.concurrent_fat to OpenLiberty
+OLGH369 prototype managed executor submits use policy executor
+OLGH388 support loginConfig with mp jwt
+OLGH39 Ensure jaxrs-2.1 features are included in the upcoming beta
+OLGH392 Enhance CommonConfigUtils in com.ibm.ws.security.common
+OLGH394 CWPMI0010W was found in the messages.log
+OLGH397 aborted tasks for policy executor
+OLGH399 Can't run app with LocalDate fields in JAX-RS entities
+OLGH4 Fix logic in where builds push to DHE
+OLGH408 Support AutoApplySession Annotation for HTTPAuthenticationMechanisms
+OLGH411 Update test output to match the other projects' .classpath settings.
+OLGH414 Add CA 1.3 feature
+OLGH415 Port com.ibm.ws.concurrent_bvt to OpenLiberty
+OLGH416 Clearup prereq's for CONTRIBUTING.md
+OLGH417 Remove commons.codec dependency from the jsf-2.3 feature
+OLGH419 Correct several problems in the servlet 4.0 pushbuilder path to allow a push_promise frame to be sent
+OLGH422 406 support form auth mechs
+OLGH424 PR for issue 385 - Server script support to specify z/OS STC Jobname
+OLGH426 onEnd callback needed after policy executor task aborted
+OLGH428 use realm name for splitting accessID
+OLGH431 add transport security to openliberty
+OLGH437 Support RememberMe Annotation for HTTPAuthenticationMechanisms
+OLGH440 409-Wait for plugin config generate during server stop
+OLGH441 Add embeddable ApacheDS class to apache_directory_server project
+OLGH442 prototype of managed executor invokeAll via policy executor
+OLGH446 Move feature dependencies to array within common metadata json object
+OLGH450 Publish nightly image with all features
+OLGH451 callbacks for invokeAny on policy executor
+OLGH455 Build ws-junit.jar source in open-liberty
+OLGH460 Add CustomRepository sample.
+OLGH461 Add custom UserRegistry sample.
+OLGH463 Jsf container classloading
+OLGH464 policy executor tasks that abort before enqueue
+OLGH473 Remove dead code in KeyStoreManager.
+OLGH476 PolicyExecutorTest.testInvokeAnyInterruptWaitForEnqueue: AssertionError: Should have been interrupted
+OLGH477 Add null checking to JsonUtils class
+OLGH479 http2 connection initialization synchronization
+OLGH481 Change JPA 2.2 features from noship to beta
+OLGH482 changed code to throw resourceAllocationException instead of cwto
+OLGH493 Also look for binary deps in .ibmartifactory for when FATs are run in
+OLGH496 create com.ibm.ws.concurrent_fat_policy bucket
+OLGH5 Update README.md
+OLGH501 minor corrections for JaxRS 2.1 JsonBProvider
+OLGH502 test taskAborted events when queue is full and submit aborts or is interrupted
+OLGH503 Validate JSF API and Impl versions in jsfContainer
+OLGH505 Issue 504: Fix for typo in metatype.xml in session.db project.
+OLGH508 BundleArchive should ignore FFDC when bundle is uninstalled 
+OLGH510 Split out Concurrent config tests into a separate FAT bucket
+OLGH519 Ensure restarting apps aren't blocked by removed RARs
+OLGH52 Rebase servlet 4 branch on open-liberty for merge
+OLGH525 516 update cdi extension
+OLGH527 239 minor correction
+OLGH528 remove resources/*.mf files and references from feature projects
+OLGH53 Add LDAP membership attribute
+OLGH533 Fix broken 'Getting Started' link in README.
+OLGH536 Fix JAX-RS 2.1 Java 2 Security Error
+OLGH538 policy executor runIfQueueFull true
+OLGH544 cancel or interrupt task running on submitter thread due to runIfQueueFull
+OLGH545 Fix jsonsupport to use exact specified jackson version
+OLGH548 #361 update MicroProfile Config 1.1 feature readable name
+OLGH549 Issue 542: Reverse class level config override of method annotations
+OLGH550 MicroProfile Metrics JSON tag format should be comma separated list
+OLGH557 Enable LDAP FAT's OutboundSSLLDAPTest
+OLGH562 LDAP failure recovery during search paging results in the same entities being returned multiple times.
+OLGH563 Move query creates, purge & partitionplansize method DB access w/in GT
+OLGH567 replace temporary approach of interrupting for invokeAny
+OLGH568 Add the LDAP IdentityStore
+OLGH575 Cache bean manager in ConfigPropertyBean
+OLGH576 CDI 2.0: WebSphereEjbServicesImpl can't use InternalEjbDescriptor any more
+OLGH577 Change java compile settings to match between bnd and eclipse
+OLGH578 FeatureDependencyProcesser is not resolving hard-coded features.
+OLGH58 Convert default JAX-RS 2.1 JSON provider to use the jsonp-1.1 feature
+OLGH585 Ensure providers are sorted via @Priority annotation
+OLGH589 Remove dependency on svc registry for static init code
+OLGH59 Add com.ibm.ws.security.wim.adapter.file FAT tests.
+OLGH591 Issue a warning when getConfiguration results in binding to a bundle
+OLGH592 PolicyTaskFuture timing methods for Microprofile
+OLGH593 initial timing of policy executor tasks for microprofile
+OLGH595 Implement our own FacesContainerInitializer to add StartupServletContextListener
+OLGH596 Add JPA CDI Test case to JPA 22 Test Bucket
+OLGH599 Add NLS messages for error path scenarios.
+OLGH6 Fix total_tests value in JSON
+OLGH600 Re-enable server error/warning scanning
+OLGH601 The client.bat does not properly read in client.jvm.options
+OLGH604 doPriv around getBundleContext() call
+OLGH606 605 use original qs in forward if null
+OLGH608 concurrent_fat_policy bucket does not declare minimum java level
+OLGH61 Provide download link in repo README
+OLGH611 SecurityContext updates for JSR375
+OLGH613 Move opentracing mock tracker to FAT project; attempt #2
+OLGH615 make getElapsedRunTime consistent for onEnd callback and add more tests
+OLGH62 update ProviderFactory to use JSONB instead of Jackson as default JSO
+OLGH621 Revert "Add CA 1.3 feature"
+OLGH623 Server for com.ibm.ws.jaxrs.2.1.sse_fat fails to shutdown normally
+OLGH627 Improve metadata ctor perf
+OLGH628 The attribute FreeConnectionCount of ConnectionPoolStats mbean returned unexpected value
+OLGH629 Tests and refactorings for built-in Basic HttpAuthenticationMechanism
+OLGH63 Only call ThreadLocal when there is something to set.
+OLGH631 Elapsed queue time for tasks that run on submitter and onSubmit failure with a group of tasks
+OLGH641 612-update com.ibm.websphere.appserver.api.jaxrs20/bnd.bnd to import 
+OLGH643 New auto feature and code to support mp jwt token propagation
+OLGH649 newPushBuilder shoudl return null for non H2 request
+OLGH650 Tests for JSF Container @EJB and @Resource injection
+OLGH651 Cache buses based on module
+OLGH654 update main concurrency bucket to run with policy executor
+OLGH656 LDAP group and user filters fail when extensible matching is used.
+OLGH659 Initial drop of javaeeCompatible-8.0
+OLGH662 HTTP2 - Fixing a deadlock when processing a read (slice buffer) frames
+OLGH663 Beta the jsfContainer-2.2 feature
+OLGH664 Make Subsystem-Name for jsonp-1.1 different from jsonp-1.0 for docgen
+OLGH67 Remove linux badge from readme
+OLGH670 Clarify contributor submission process
+OLGH671 Add unit tests to com.ibm.ws.transport.http
+OLGH673 initial changes for startTimeout
+OLGH674 Pull in JIRA issue MYFACES-4058
+OLGH676 Pull in MYFACES-4058 to JSF 2.3
+OLGH679 NLS message for startTimeout
+OLGH68 JAX-RS security without a web.xml
+OLGH682 Initial drop of Bean Validation 2.0
+OLGH685 CDI 2.0: refactor web, ejb and jsf auto-feature bundles to make code common
+OLGH69 Things are not allowed to explode anymore.
+OLGH699 Enable mapToUserRegistry config option in mpJwt-1.0 feature
+OLGH7 add return to readme.md
+OLGH705 Add support for context switching on servlet async ReadListener
+OLGH710 Add DatabaseIdentityStore initial path for validate
+OLGH712 CDI 2.0: Move all bundles, features and packages to beta
+OLGH716 Test JSF Container for WAR in EAR application
+OLGH719 Test Failure com.ibm.ws.threading.policy.PolicyExecutorTest.testConcurrentSubmitAndCancel detects lost task
+OLGH721 Pull in JIRA issue MYFACES-4164
+OLGH722 Port com.ibm.ws.concurrent_fat_db to OpenLiberty
+OLGH726 Pull in MYFACES-4164 to JSF 2.3
+OLGH730 Add unittest for SecurityContext methods
+OLGH733 remove timed out tasks while waiting to enqueue
+OLGH734 Group Security drop 1
+OLGH739 Fix unit test failures when running unit tests on java 9
+OLGH740 f:params ignored when nested in h:commandScript
+OLGH742 Update JSF Container feature description to explicitly mention CDI int
+OLGH743 Handle EL expressions in brackets for the RememberMe annotation
+OLGH746 update mpJwtPropagation feature definition
+OLGH750 start timeout on invokeAll and Future.get
+OLGH751 Improve SAF registry performance in federatedRegistries-1.0.
+OLGH753 copy kernel messages to all kernel nlsprops files
+OLGH755 Revert back FacesConfigurator with IBM specific JSFExtensionFactory.initializeCDI(application)
+OLGH756 LDAP Registry Cache timeout is not being honored
+OLGH759 Transform AuthenticationStatus.NOT_DONE to AuthStatus.SUCCESS
+OLGH764 Handle hard errors more cleanly for conditions such as the network co
+OLGH768 Test Failure (20171031-1147): PolicyExecutorTest.testStartTimeout intermittent error validating run time
+OLGH77 Cleanup feature dependencies for opentracing
+OLGH770 Delete com.ibm.websphere.appserver.laosBundle
+OLGH771 Future.isDone/cancel should reflect start timeout
+OLGH772 Warn when missing default ssl config key store ref
+OLGH773 JAX-WS client feature should tolerate Javamail-1.6 for Java EE 8
+OLGH774 Tolerate BeanVal 1.0 with jaxrs-bval auto feature bundle
+OLGH776 AppSecurityClient-1.0 Feature should tolerate Servlet-4.0 for Java EE8 Compatibility
+OLGH779 0L is not parsed as a long in a <jndiEntry> config element
+OLGH78 Fix copyrights
+OLGH781 Resolve 244: Built-in Annotation Literal Tests
+OLGH782 Bean validation APIs leaking into container
+OLGH787 571 support muliple modules
+OLGH79 Fixup some bnd dependency errors
+OLGH8 MicroProfile Metrics needs to be updated to match final version 1.0
+OLGH802 Javaeesec FAT
+OLGH803 update policy executor attributes per feature design
+OLGH807 Pull in MYFACES-4170
+OLGH808 identitystorehandlerimpl and it's UT are modified.
+OLGH812 Initial noship delivery of com.ibm.websphere.appserver.javaeeClient-8.0 feature
+OLGH82 Capture all the thread context necessary when starting async tasks
+OLGH820 Downgrade example_fat to use servlet-3.1 so it can be run on Java 7
+OLGH821 Add ESA metadata and version feature resources
+OLGH826 Update the EclipseLink Binaries and fix the gradle utility script
+OLGH829 metatype attributes for concurrencyPolicy as internal
+OLGH830 791 pbkdf2 hash support for JSR375
+OLGH831 JSR-352 - JSL for the job should be logged as part of job execution
+OLGH836 Common annotations13 Delivery Second Try
+OLGH837 Beta the beanValidation-2.0 feature and related auto-features
+OLGH839 Beta the jsfProvider-2.2.0.Container private feature
+OLGH84 Create new HTTPDispatchLink per H2 Stream
+OLGH840 Revert "Revert "newPushBuilder shoudl return null for non H2 request"
+OLGH841 Beta appSecurity-3.0
+OLGH842 NLS message inserts wrong in com.ibm.ws.security.common
+OLGH846 Fix checkpii errors
+OLGH848 javaMail 1.6 issue - Test Failure (20171009-0334): build.feature.java.level.MinJavaLevelTest.testFeaturesDontStartBelowMin
+OLGH849 Java EE 8 convenience features
+OLGH855 lookup a cdi bean programmatically to avoid eploymentException
+OLGH856 Fix static values
+OLGH858 Add hasAccessToWebResource to SecurityContext
+OLGH862 Allow usage of server and client side debugging in FATs
+OLGH864 Update faces-config schema for JSF 2.3
+OLGH868 pushBuilder.addHeader() should allow multiple headers with the same name
+OLGH871 Fix for #822 new cxf 3.1.14
+OLGH874 30s delays for remote EJBs
+OLGH878 Revert "Update Persistence Service to tollerate JPA 2.2"
+OLGH879 Increment micro version for next release.
+OLGH88 Update README.md
+OLGH880 change a class detection code.
+OLGH881 Liberty port: APAR PI71240 JSLocalConsumerPoint deadlock
+OLGH887 Pull in MYFACES-4171 and MYFACES-4172
+OLGH888 longRunningPolicy for managed executors
+OLGH890 Add35bndjars
+OLGH895 Story 640 - scheduled tasks should be expedited when they are run
+OLGH896 Pull in MYFACES-4173
+OLGH899 Pull in MYFACES-4169 to fix selectOneRadio
+OLGH904 refactor pbkdf2hash
+OLGH905 Ol FormAuth initial code drop
+OLGH907 switch managed executors to use policy executor - ported from #857 on top of latest from integration
+OLGH908 Issue 906: set JavaMail 1.6 as a beta feature
+OLGH910 Story 640 - Code review updates for expediting scheduled tasks
+OLGH911 identifier for user of concurrencyPolicy
+OLGH914 callback when queue capacity drops below specified value
+OLGH916 Add appSecurity-3.0, batch-1.0, and ejb-3.2 to EE8 convenience features
+OLGH918 add log statement
+OLGH92 test and code update for interrupt of invokeAll that is running a task
+OLGH920 Test Failure (20171102-2210): PolicyExecutorTest.testStartTimeout has invalid timing assumption
+OLGH922 Add version identifiers to feature Subsystem-Name values
+OLGH926 More eclipse cleanup
+OLGH931 CDI 2.0: Create a CDI configuration element that doesn't say `cdi12`
+OLGH934 Put error.badVersion back into kernel.boot's LauncherMessages.nlsprops
+OLGH935 Update policy executor introspector and add testing
+OLGH936 Expand cdi version import range to include cdi 2.0
+OLGH937 When TAI returns Null authResults,  NullPointerException is thrown
+OLGH939 Adding instance check
+OLGH940 late start callback for policy executor tasks
+OLGH941 Split out common Java Mail config into separate bundle
+OLGH943 Update to use version 2.4.5 of the weld osgi bundle
+OLGH945 Clean serviceTable on JMXMbeanServerDelegation unregister
+OLGH946 Issue 709: DatabaseIdentityStore updates
+OLGH951 unit test for expedite behavior
+OLGH954 Initial drop of Bean Validation 2.0 with Hibernate Validator
+OLGH956 Prevent "memory leak" in JAXRSClientImpl
+OLGH958 Change to HTTP2 unaware for upcoming release
+OLGH959 Update local maven publish with license and scm info plus pom files for ivy download
+OLGH96 Fix cache labels in ldapRegistry-3.0 feature.
+OLGH961 EJB call fails with "Could not decode IOR" when SSL is disabled
+OLGH962 fix custom form error handling.
+OLGH965 Update EL expression evaulation for LdapIdentityStore and DatabaseIdentityStore
+OLGH966 concurrencyPolicy simplicity object
+OLGH967 Add and test queueCapacityRemaining and getRunningTaskCount methods
+OLGH968 CTS: JASPIC: 20 failures java.lang.ClassCastException: com.ibm.ws.webcontainer.security.WebRequestImpl incompatible with java.lang.String
+OLGH969 Revert "Increment micro version for next release."
+OLGH97 Make messages which reference a method less verbose
+OLGH974 Enable WSOC 1.0 feature to tolerate Servlet 4.0
+OLGH975 Handle the case where ClassLoadingService is not available in JsonPProvider
+OLGH976 config update test for nested concurrencyPolicy and fix maxQueueSize config
+OLGH978 977 use unique ID for WSPrincipal
+OLGH979 Issue 1007: Add fat tests for DatabaseIdentityStore
+OLGH982 Issue 709: Fix multi results and null password forDBIdentityStore
+OLGH983 Use daemon threads for IIOP listeners
+OLGH985 Update bval 11 fat to run tests with bval 20
+OLGH986 Upgrade to JSON-P 1.1.2 to pull in javaee/jsonp issue#56 fix
+OLGH987 update LDAP ID store
+OLGH991 Remove the copyright package from com.ibm.websphere.security.wim.base project
+OLGH992 "Liberty z/OS Platform Build" fails due to local in-memory LDAP servers not starting
+OLGH994 Jsf container 22 23 refactoring prep
+PI78794 Parsing issue when message size exceeds 2048 byte
+PI79119 WITH NUMBER.OF.PARSE.ERRORS.ALLOWED SET TO -1, WEBSPHERE DROPS
+PI80333 Support CPU constraints in ProductInsights
+PI80863 OpenJPA caches and reuses the query parameters for BETWEEN expressions when OpenJPA's query cache is enabled.
+PI81260 OPENJPA DOESNOT PASSTHROUGH SSL CONNECTION PROPERTIES THAT SET USING OPENJPA.CONNECTIONPROPERTIES WHEN CREATING DB2 CONNECTION
+PI81552 Application state becomes stale at the Liberty collective controller
+PI82233 NON-DAEMON THREADS ARE CREATED WITH REMOTE EJB USING THE IIOP TRANSPORT
+PI83274 Incorrect collective member status shown in Admin Center
+PI84359 OIDC WASREQURLOIDCP COOKIE CONSTANTLY GROW WHEN LTPA TOKEN EXPIRED
+PI86596 REMOVAL OF POSSIBLY MISLEADING FFDC Z/OS LIBERTY ASYNC SERVELT SUPPORT.
+PI86914 CORRECT MAPPER IS NOT CHOSEN DUE TO THE ORDER AND WHEN MAPPER CLASSES ARE REPRESENTED BY PROXY OBJECT DUE TO INJECTION
+PI87599 CONNECTIONPOOLSTATS MBEAN WAS NOT AVAILABLE IF ENABLED THE TRACE WITH COM.IBM.WEBSPHERE.MONITOR.*=ALL
+PI88288 jsf-2.0 MyFaces error handling cannot be enabled in production project stage
+PI88296 Password protected ssh keys can't be used for remote host authentication
+PI88583 IN WEBSPHERE LIBERTY 17.0.0.X ,JAVA BATCH EXECUTOR FAILS WITH CWWKS0800E ERROR
+PI88769 LIBERTY 17.0.0.2 IS THROWING CLASSCASTEXCEPTION WHEN CALLING IBM_SECURITY_LOGOUT WITH EXTREAM SCALE FEATURE ENABLED.
+PI88850 HIGH CPU ISSUES FROM ORG/APACHE/MYFACES/
+PI89103 OpenSAML used by WebSphere Liberty contains XML external entity (XXE) vulnerability (CVE-2013-6440)
+PI89168 PROTECTED-VIEW NOT WORKING IN LIBERTY 16.0.0.4
+PI89363 PROTECTEDVIEWEXCEPTION FOR A PROTECTEDVIEW ACCESS WHILE CHECKING THE ORIGINHEADER FOR APPCONTEXTPATH
+PI89446 Product Insights throws NullPointerException
+PI89575 LTPA cookie is not created in certain single sign-on scenarios
+PI89936 Vulnerability in Apache Commons affects EJB Embeddable Container and JPA Client (CVE-2015-7450)
+PI90060 MESSAGES OCCURRING VERY EARLY AT STARTUP ARE NOT PRINTED TO THE MVS CONSOLE WHEN REQUESTED IN THE ZOSLOGGING CONFIGURATION
+PI90154 BluemixUtility fails to create/delete instances of Watson Discovery service
+PI90429 When starting a Liberty server as a started task on z/OS from the server script, there is no option to specify a job name.
+PI90507 INSTANCES OF ACTION LISTENER IN A FACELET ARE NOT BEING REMOVED UNTIL APP SHUTDOWN
+PI90509 FIX FOR MYFACES-3752
+PI90930 Open Liberty Rollup for 17.0.0.4

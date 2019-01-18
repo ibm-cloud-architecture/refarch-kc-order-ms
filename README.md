@@ -46,7 +46,7 @@ The Order entered in the User interface is defined like:
     destinationAddress: Address;
     productID: string;
     quantity: string;
-    expectedDeliveryDate: Date;
+    expectedDeliveryDate: string;   //  date as ISO format
 }
 ```
 
@@ -68,8 +68,8 @@ The information to persist in the database may be used to do analytics, and get 
     destinationAddress: Address;
     productID: string;
     quantity: string;
-    expectedDeliveryDate: Date;
-    pickupDate: Date;
+    expectedDeliveryDate: string;   //  date as ISO format
+    pickupDate: string;   //  date as ISO format
 }
 
 class OrderContainers {
@@ -81,7 +81,7 @@ On the event side we may generate OrderCreated, OrderCancelled,... But what is i
 ```
 class OrderEvent {
     orderId: string;
-    timestamp: Date;
+    timestamp: string;   //  date as ISO format
     payload: any;
     type: string;
     version: string;
@@ -142,7 +142,8 @@ This implementation brings a problem on the createOrder(order): order operation,
 There are other ways to support this dual operations level:
 
 * There is the open source [Debezium tool](https://debezium.io/) to help respond to insert, update and delete operations on database and generate event accordingly. It may not work on all database schema. 
-* Write to the database and in the same transaction write to a event table. Then use a polling to get the event to send to kafka from this event and delete it in the table once sent. 
+* Write the order to the database and in the same transaction write to a event table. Then use a polling to get the event to send to kafka from this event and delete it in the table once sent. 
+* Use the Capture Data Change from the database transaction log and generate events from this log. The IBM [Infosphere CDC](https://www.ibm.com/support/knowledgecenter/cs/SSTRGZ_10.2.0/com.ibm.cdcdoc.mcadminguide.doc/concepts/overview_of_cdc.html) product helps to achieve that.
 
 What is important to note is that the event need to be flexible on the data payload.
 
@@ -159,6 +160,17 @@ When there is a need for the client, calling the query operation, to know if the
 What to do when we need to add attribute to event?. So we need to create a versioninig schema for event structure. You need to use flexible schema like json or [protocol buffer](https://developers.google.com/protocol-buffers/) and may be and event adapter (as a function?) to translate between the different event structures.
 
 ## How to build and run
+
+Each microservice has a build script to perform the maven package and build the docker image. See `scripts` folder.
+
+* For order-command-ms
+ ```
+ ./scripts/buildDocker.sh
+ ```
+ * For order-query-ms
+ ```
+ ./scripts/buildDocker.sh
+ ```
 
 ## How we implemented it
 

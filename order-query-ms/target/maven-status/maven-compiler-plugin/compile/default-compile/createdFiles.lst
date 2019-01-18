@@ -1,0 +1,12 @@
+ibm/labs/kc/order/query/rest/ConsumerLoop.class
+ibm/labs/kc/order/query/dao/OrderDAOMock.class
+ibm/labs/kc/order/query/rest/HealthEndpoint.class
+ibm/labs/kc/order/query/rest/RootEndpoint.class
+ibm/labs/kc/order/query/kafka/ApplicationConfig.class
+ibm/labs/kc/order/query/rest/QueryService.class
+ibm/labs/kc/order/query/kafka/OrderConsumer$1.class
+ibm/labs/kc/order/query/kafka/OrderConsumer.class
+ibm/labs/kc/order/query/dao/OrderDAO.class
+ibm/labs/kc/order/query/rest/JaxrsApplication.class
+ibm/labs/kc/order/query/model/Order.class
+ibm/labs/kc/order/query/rest/ConsumerLoop$1.class

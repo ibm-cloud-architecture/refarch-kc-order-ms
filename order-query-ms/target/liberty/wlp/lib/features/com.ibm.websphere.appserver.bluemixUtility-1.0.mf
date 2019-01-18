@@ -1,0 +1,24 @@
+Created-By: 1.8.0 (IBM Corporation)
+IBM-AppliesTo: com.ibm.websphere.appserver;productVersion="17.0.0.4"
+IBM-Feature-Version: 2
+IBM-InstallTo: core
+IBM-License-Agreement: wlp/lafiles/LA
+IBM-ProductID: com.ibm.websphere.appserver
+IBM-ShortName: bluemixUtility-1.0
+Subsystem-Content: ws-bluemixUtility.jar; type=file; location:="bin/tools/ws-bluemixUtility.jar"; version="[1.0.0,1.0.200)",
+ bluemixUtility; ibm.executable:=true; ibm.file.encoding:=ebcdic; type=file; location:="bin/bluemixUtility",
+ bluemixUtility.bat; type=file; location:="bin/bluemixUtility.bat",
+ com.ibm.ws.bluemix.utility; type=jar; version="[1.0.0,1.0.200)",
+ com.ibm.websphere.javaee.jsonp.1.0; location:="dev/api/spec/,lib/"; type=jar; version="[1.0.0,1.0.200)",
+ com.ibm.ws.org.glassfish.json.1.0; type=jar; version="[1.0.0,1.0.200)",
+ com.ibm.ws.org.apache.commons.codec.1.4; type=jar; version="[1.0.0,1.0.200)"
+Subsystem-Description: %description
+Subsystem-License: http://www.ibm.com/licenses/wlp-featureterms-v1
+Subsystem-Localization: OSGI-INF/l10n/com.ibm.websphere.appserver.bluemixUtility-1.0
+Subsystem-ManifestVersion: 1
+Subsystem-Name: Bluemix Utilities 1.0
+Subsystem-SymbolicName: com.ibm.websphere.appserver.bluemixUtility-1.0; visibility:=public; singleton:=true
+Subsystem-Type: osgi.subsystem.feature
+Subsystem-Vendor: IBM Corp.
+Subsystem-Version: 1.0.0
+Tool: Bnd-3.3.0.201609221906
