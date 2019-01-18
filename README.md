@@ -4,9 +4,9 @@ This project is one reference implementation of the CQRS and event sourcing patt
 
 The goals of the code implemented in this project is to illustrate the event sourcing and CQRS patterns. One of the business requirements for adopting these patterns is to be able to get visibility to the history of order and progress of the shipment. This would include the ability to determine: 
 
-1. How frequetly does an order get cancelled after it is placed but before an empty container is delivered or loaded ?
+1. How frequently does an order get cancelled after it is placed but before an empty container is delivered or loaded ?
 1. How often does an order get cancelled after the order is confirmed, a container assigned and goods loaded into it?
-1. Provide a complete event history for a shipment and the goods shipped over time?  
+1. What are all events for a particular order and associated container shipment?  
 1. Has the cold chain been protected on this particular order?
 
 For the first question we need events like OrderPlaced(orderId), OrderCancelled(orderID) and in the read model the OrdersStatuses(orderId, status, timestamp); OrderStatusTransition(orderId, oldStatus, new Status timestamp) and then OrdersCancelledAfterPlaced(orderId, timestamp). We will detailed how to implement those functions in later section.
