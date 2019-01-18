@@ -12,7 +12,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.command.model.Order;
+import ibm.labs.kc.order.command.model.OrderEvent;
 
 public class OrderProducer {
     
@@ -31,11 +31,10 @@ public class OrderProducer {
         kafkaProducer = new KafkaProducer<String, String>(properties);
     }
 
-    public void publish(Order order) throws InterruptedException, ExecutionException, TimeoutException {
-        String value = new Gson().toJson(order);
-        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, order.getOrderID(), value);
-
-        //Q : synchronous ?
+    public void publish(OrderEvent orderEvent) throws InterruptedException, ExecutionException, TimeoutException {
+        String value = new Gson().toJson(orderEvent);
+        String key = orderEvent.getPayload().getOrderID();
+        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value);
 
         Future<RecordMetadata> send = kafkaProducer.send(record);
         send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);

@@ -2,26 +2,34 @@ package ibm.labs.kc.order.command.model;
 
 public class Order {
     
-    public static final String CREATED_STATE = "OrderCreated";
-
     private String orderID;
     private String productID;
     private String customerID;
     private int quantity;
-    private String expectedDeliveryDate;
-    private String status;
+
     private Address pickupAddress;
+    private String pickupDate;
+
     private Address destinationAddress;
+    private String expectedDeliveryDate;
 
+    public Order() {
+    }
 
-    public Order(String orderID, String productID, int quantity, String expectedDeliveryDate, String status,String customerId) {
+    public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+            String pickupDate, Address destinationAddress, String expectedDeliveryDate) {
+        super();
         this.orderID = orderID;
         this.productID = productID;
+        this.customerID = customerID;
         this.quantity = quantity;
+        this.pickupAddress = pickupAddress;
+        this.pickupDate = pickupDate;
+        this.destinationAddress = destinationAddress;
         this.expectedDeliveryDate = expectedDeliveryDate;
-        this.status = status;
-        this.customerID = customerId;
     }
+
+
 
     public String getOrderID() {
         return orderID;
@@ -29,6 +37,10 @@ public class Order {
 
     public String getProductID() {
         return productID;
+    }
+
+    public String getCustomerID() {
+        return customerID;
     }
 
     public int getQuantity() {
@@ -39,31 +51,31 @@ public class Order {
         return expectedDeliveryDate;
     }
 
-    public String getStatus() {
-        return status;
+    public Address getDestinationAddress() {
+        return destinationAddress;
     }
 
-	public String getCustomerID() {
-		return customerID;
-	}
+    public void setDestinationAddress(Address destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
 
-	public Address getDestinationAddress() {
-		return destinationAddress;
-	}
+    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
+    }
 
-	public void setDestinationAddress(Address destinationAddress) {
-		this.destinationAddress = destinationAddress;
-	}
+    public Address getPickupAddress() {
+        return pickupAddress;
+    }
 
-	public void setExpectedDeliveryDate(String expectedDeliveryDate) {
-		this.expectedDeliveryDate = expectedDeliveryDate;
-	}
+    public void setPickupAddress(Address pickupAddress) {
+        this.pickupAddress = pickupAddress;
+    }
+    
+    public String getPickupDate() {
+        return pickupDate;
+    }
 
-	public Address getPickupAddress() {
-		return pickupAddress;
-	}
-
-	public void setPickupAddress(Address pickupAddress) {
-		this.pickupAddress = pickupAddress;
-	}
+    public void setPickupDate(String pickupDate) {
+        this.pickupDate = pickupDate;
+    }
 }

@@ -28,11 +28,11 @@ public class CreateOrderEndpointIT {
         System.out.println("Testing endpoint " + url);
 
         CreateOrderRequest cor = new CreateOrderRequest();
-        cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
         cor.setProductID("myProductID");
         cor.setCustomerID("GoodManuf");
-        cor.setPickupDate("2019-01-14T17:48Z");
         cor.setQuantity(100);
+        cor.setPickupDate("2019-01-14T17:48Z");
+        cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
 
         Response response = makePostRequest(url, new Gson().toJson(cor));
         try {
@@ -46,8 +46,8 @@ public class CreateOrderEndpointIT {
             assertNotNull(o.getOrderID());
             assertEquals(cor.getProductID(), o.getProductID());
             assertEquals(cor.getQuantity(), o.getQuantity());
+            assertEquals(cor.getPickupDate(), o.getPickupDate());
             assertEquals(cor.getExpectedDeliveryDate(), o.getExpectedDeliveryDate());
-            assertEquals(Order.CREATED_STATE, o.getStatus());
         } finally {
             response.close();
         }
@@ -65,9 +65,10 @@ public class CreateOrderEndpointIT {
     }
 
     @Test
-    public void testCreateBadOrder() throws Exception {
+    public void testCreateBadOrderNegativeQuantity() throws Exception {
         CreateOrderRequest cor = new CreateOrderRequest();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
+        cor.setPickupDate("2019-01-14T17:48Z");
         cor.setProductID("myProductID");
         cor.setCustomerID("GoodManuf");
 
