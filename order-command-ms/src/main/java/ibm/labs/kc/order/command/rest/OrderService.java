@@ -34,8 +34,6 @@ public class OrderService {
         orderProducer = OrderProducer.instance();
     }
 
-    /**
-     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -48,9 +46,10 @@ public class OrderService {
         CreateOrderRequest.validate(cor);
 
         Order order = new Order(UUID.randomUUID().toString(), cor.getProductID(), cor.getQuantity(),
-                cor.getExpectedDeliveryDate(), "created",cor.getCustomerID());
+                cor.getExpectedDeliveryDate(), Order.CREATED_STATE,cor.getCustomerID());
         order.setDestinationAddress(cor.getDestinationAddress());
         order.setExpectedDeliveryDate(cor.getExpectedDeliveryDate());
+
         //Q : store and publish or viceversa ?
         //Q : what if publish fails ?
         

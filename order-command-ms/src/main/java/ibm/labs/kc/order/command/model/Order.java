@@ -1,6 +1,8 @@
 package ibm.labs.kc.order.command.model;
 
 public class Order {
+    
+    public static final String CREATED_STATE = "OrderCreated";
 
     private String orderID;
     private String productID;
@@ -11,9 +13,10 @@ public class Order {
     private Address pickupAddress;
     private Address destinationAddress;
 
-    public Order(String orderId, String productId, int quantity, String expectedDeliveryDate, String status, String customerId) {
-        this.orderID = orderId;
-        this.productID = productId;
+
+    public Order(String orderID, String productID, int quantity, String expectedDeliveryDate, String status,String customerId) {
+        this.orderID = orderID;
+        this.productID = productID;
         this.quantity = quantity;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
