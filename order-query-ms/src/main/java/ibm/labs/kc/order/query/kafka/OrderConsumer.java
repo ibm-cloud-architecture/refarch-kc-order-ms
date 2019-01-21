@@ -28,15 +28,12 @@ public class OrderConsumer {
         if (instance == null) {
             instance = new OrderConsumer();
         }
-        System.out.println("%%%%%%%%%%%%%%%%%INSTANCEINSTANCEINSTANCE%%");
-        new Exception("INSTANCE").printStackTrace();
         return instance;
     }
 
     public OrderConsumer() {
         Properties properties = ApplicationConfig.getConsumerProperties();
         kafkaConsumer = new KafkaConsumer<>(properties);
-        System.out.println("&&&&&&OrderConsumer&&&&&&&&&&&&&&OrderConsumer&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     }
 
 

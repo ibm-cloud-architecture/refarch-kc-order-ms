@@ -25,7 +25,6 @@ public class ConsumerLoop implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("ConsumerLoop contextInitialized");
-        new Exception(""+sce+" "+System.currentTimeMillis()).printStackTrace();
 
         // Perform action during application's startup
         listener = QueryService.instance();
