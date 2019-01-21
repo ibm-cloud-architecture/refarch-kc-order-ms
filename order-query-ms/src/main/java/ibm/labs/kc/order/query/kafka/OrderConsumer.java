@@ -22,32 +22,41 @@ public class OrderConsumer {
     private static final Logger logger = Logger.getLogger(OrderConsumer.class.getName());
     private static OrderConsumer instance;
     private final KafkaConsumer<String, String> kafkaConsumer;
+    private boolean subscribeCalled = false;
 
     public synchronized static OrderConsumer instance() {
         if (instance == null) {
             instance = new OrderConsumer();
         }
+        System.out.println("%%%%%%%%%%%%%%%%%INSTANCEINSTANCEINSTANCE%%");
+        new Exception("INSTANCE").printStackTrace();
         return instance;
     }
 
     public OrderConsumer() {
         Properties properties = ApplicationConfig.getConsumerProperties();
-        kafkaConsumer = new KafkaConsumer<String, String>(properties);
-        kafkaConsumer.subscribe(Collections.singletonList(ApplicationConfig.ORDER_TOPIC), new ConsumerRebalanceListener() {
-
-            @Override
-            public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-                logger.info("Partitions revoked " + partitions);
-            }
-
-            @Override
-            public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-                logger.info("Partitions assigned " + partitions);
-            }
-        });
+        kafkaConsumer = new KafkaConsumer<>(properties);
+        System.out.println("&&&&&&OrderConsumer&&&&&&&&&&&&&&OrderConsumer&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     }
 
+
     public List<OrderEvent> poll() {
+    	if(!subscribeCalled) {
+    		kafkaConsumer.subscribe(Collections.singletonList(ApplicationConfig.ORDER_TOPIC), new ConsumerRebalanceListener() {
+
+    			@Override
+    			public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+    				logger.info("Partitions revoked " + partitions);
+    			}
+
+    			@Override
+    			public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+    				logger.info("Partitions assigned " + partitions);
+    			}
+    		});
+    		subscribeCalled = true;
+    	}
+
         List<OrderEvent> result = new ArrayList<>();
         Gson gson = new Gson();
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
