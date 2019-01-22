@@ -42,10 +42,13 @@ public class OrderAdminService implements EventListener {
     @Override
     public void handle(Event event) {
         OrderEvent orderEvent = (OrderEvent)event;
+        Order order = orderEvent.getPayload();
         switch (orderEvent.getType()) {
         case OrderEvent.TYPE_CREATED:
-            Order order = orderEvent.getPayload();
             orderDAO.add(order);
+            break;
+        case OrderEvent.TYPE_UPDATED:
+            orderDAO.update(order);
             break;
         default:
             logger.warning("Unknown event type: " + orderEvent);
@@ -58,7 +61,7 @@ public class OrderAdminService implements EventListener {
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json")) })
     public Response getAll() {
-        logger.warning("OrderAdminService.getAll()");
+        logger.info("OrderAdminService.getAll()");
 
         Collection<Order> orders = orderDAO.getAll();
         return Response.ok().entity(orders).build();
