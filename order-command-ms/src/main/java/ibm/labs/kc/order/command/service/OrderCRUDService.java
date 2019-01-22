@@ -21,7 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ibm.labs.kc.order.command.dao.OrderDAO;
 import ibm.labs.kc.order.command.dao.OrderDAOMock;
-import ibm.labs.kc.order.command.dto.CreateOrderRequest;
+import ibm.labs.kc.order.command.dto.OrderRequest;
 import ibm.labs.kc.order.command.kafka.OrderProducer;
 import ibm.labs.kc.order.command.model.EventEmitter;
 import ibm.labs.kc.order.command.model.Order;
@@ -46,9 +46,9 @@ public class OrderCRUDService {
     @APIResponses(value = {
             @APIResponse(responseCode = "400", description = "Bad create order request", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order created", content = @Content(mediaType = "application/json")) })
-    public Response create(CreateOrderRequest cor) {
+    public Response create(OrderRequest cor) {
 
-        CreateOrderRequest.validate(cor);
+        OrderRequest.validate(cor);
 
         Order order = new Order(UUID.randomUUID().toString(), 
                 cor.getProductID(),
@@ -79,10 +79,10 @@ public class OrderCRUDService {
             @APIResponse(responseCode = "404", description = "Unknown order ID", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "400", description = "Bad update order request", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order updated", content = @Content(mediaType = "application/json")) })
-    public Response update(@PathParam("Id") String orderID, CreateOrderRequest cor) {
+    public Response update(@PathParam("Id") String orderID, OrderRequest cor) {
 
         if (orderDAO.getByID(orderID) != null) {
-            CreateOrderRequest.validate(cor);
+            OrderRequest.validate(cor);
 
             Order updatedOrder = new Order(orderID, 
                     cor.getProductID(),

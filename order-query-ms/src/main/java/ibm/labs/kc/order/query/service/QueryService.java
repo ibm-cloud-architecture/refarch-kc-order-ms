@@ -80,11 +80,14 @@ public class QueryService implements EventListener {
     public void handle(Event event) {
         try {
             OrderEvent orderEvent = (OrderEvent)event;
+            Order order = orderEvent.getPayload();
             switch (orderEvent.getType()) {
             case OrderEvent.TYPE_CREATED:
-                Order order = orderEvent.getPayload();
                 order.setStatus(Order.STATUS_PENDING);
                 orderDAO.add(order);
+                break;
+            case OrderEvent.TYPE_UPDATED:
+                orderDAO.update(order);
                 break;
             default:
                 logger.warning("Unknown event type: " + orderEvent);

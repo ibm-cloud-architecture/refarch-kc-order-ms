@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 import ibm.labs.kc.order.command.model.Address;
 
-public class CreateOrderRequest {
+public class OrderRequest {
 
     private String customerID;
     private String productID;
@@ -71,7 +71,7 @@ public class CreateOrderRequest {
         this.destinationAddress = destinationAddress;
     }
 
-    public static void validate(CreateOrderRequest co) {
+    public static void validate(OrderRequest co) {
     	if (co.getProductID() == null) {
     		throw new IllegalArgumentException("Product ID is null");
     	}

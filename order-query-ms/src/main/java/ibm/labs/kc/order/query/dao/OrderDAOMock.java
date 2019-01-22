@@ -49,6 +49,13 @@ public class OrderDAOMock implements OrderDAO {
     }
 
     @Override
+    public void update(Order order) {
+        if (orders.replace(order.getOrderID(), order) == null) {
+            throw new IllegalStateException("order does not already exist");
+        }
+    }
+
+    @Override
     public Collection<Order> getByManuf(String manuf) {
         // DEMO: check manuf against customerID
         Collection<Order> result = new ArrayList<>();
