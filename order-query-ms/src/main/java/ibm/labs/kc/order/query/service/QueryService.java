@@ -83,6 +83,7 @@ public class QueryService implements EventListener {
             switch (orderEvent.getType()) {
             case OrderEvent.TYPE_CREATED:
                 Order order = orderEvent.getPayload();
+                order.setStatus(Order.STATUS_PENDING);
                 orderDAO.add(order);
                 break;
             default:
