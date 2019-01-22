@@ -2,6 +2,8 @@ package ibm.labs.kc.order.query.model;
 
 public class Order {
 
+    public static final String STATUS_PENDING = "Pending";
+
     private String orderID;
     private String productID;
     private String customerID;
@@ -12,6 +14,8 @@ public class Order {
 
     private Address destinationAddress;
     private String expectedDeliveryDate;
+
+    private String status;
 
     public Order() {
     }
@@ -59,6 +63,34 @@ public class Order {
         this.destinationAddress = destinationAddress;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
+    }
+
+    public Address getPickupAddress() {
+        return pickupAddress;
+    }
+
+    public void setPickupAddress(Address pickupAddress) {
+        this.pickupAddress = pickupAddress;
+    }
+
+    public String getPickupDate() {
+        return pickupDate;
+    }
+
+    public void setPickupDate(String pickupDate) {
+        this.pickupDate = pickupDate;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -71,6 +103,7 @@ public class Order {
         result = prime * result + ((pickupDate == null) ? 0 : pickupDate.hashCode());
         result = prime * result + ((productID == null) ? 0 : productID.hashCode());
         result = prime * result + quantity;
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
         return result;
     }
 
@@ -120,26 +153,13 @@ public class Order {
             return false;
         if (quantity != other.quantity)
             return false;
+        if (status == null) {
+            if (other.status != null)
+                return false;
+        } else if (!status.equals(other.status))
+            return false;
         return true;
     }
 
-    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
-        this.expectedDeliveryDate = expectedDeliveryDate;
-    }
 
-    public Address getPickupAddress() {
-        return pickupAddress;
-    }
-
-    public void setPickupAddress(Address pickupAddress) {
-        this.pickupAddress = pickupAddress;
-    }
-
-    public String getPickupDate() {
-        return pickupDate;
-    }
-
-    public void setPickupDate(String pickupDate) {
-        this.pickupDate = pickupDate;
-    }
 }

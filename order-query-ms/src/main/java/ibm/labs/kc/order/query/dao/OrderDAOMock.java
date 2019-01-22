@@ -53,10 +53,8 @@ public class OrderDAOMock implements OrderDAO {
         // DEMO: check manuf against customerID
         Collection<Order> result = new ArrayList<>();
 
-        // Q: is the values a collection I can iterate even if modified concurrently ?
-        // for safety, let's take a snapshot ?
-        Collection<Order> all = Collections.unmodifiableCollection(orders.values());
-        for (Order order : all) {
+        // It's safe to iterate over the values even if modified concurrently
+        for (Order order : orders.values()) {
             if (Objects.equals(manuf, order.getCustomerID())) {
                 result.add(order);
             }
