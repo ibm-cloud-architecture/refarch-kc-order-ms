@@ -117,7 +117,7 @@ Command Query Responsibility Segregation, CQRS, separates the read from the writ
 
 ![](docs/cqrs.png)
 
-The service exposes CUD operations, some basic Read by Id and then queries APIs. The domain model is splitted into write and read models. Combined with Event Sourcing the write model goes to the event store. Then we have a separate process that consumes those events and build a projection for future queries. The write part can persist in SQL while the read could use Cassandra, they do not need to be in the same language. With CQRS amd ES the projecttions are retroactive. New query equals implementing new projection and read the events from the beginning of time or the recent snapshot. Read and write models are strongly decoupled anc can evolve independently. It is important to note that the Command part can still handle simple queries, primary-key based, like get order by id, or queries that do not involve joins.
+The service exposes CUD operations, some basic Read by Id and then queries APIs. The domain model is splitted into write and read models. Combined with Event Sourcing the write model goes to the event store. Then we have a separate process that consumes those events and build a projection for future queries. The write part can persist in SQL while the read could use document oriented database with strong indexing and query capability, they do not need to be in the same language. With CQRS amd ES the projections are retroactives. New query equals implementing new projection and read the events from the beginning of time or the recent snapshot. Read and write models are strongly decoupled anc can evolve independently. It is important to note that the Command part can still handle simple queries, primary-key based, like get order by id, or queries that do not involve joins.
 
 With this structure the Read model microservice will most likely consume events from multiple topics to build the data projection based on joining those data. A query to assess if the cold-chain was respected on the fresh food order shipment will go to the voyage, container metrics, and order to be able to answer this question. This is in this case that CQRS shine.
 
@@ -127,7 +127,7 @@ A second view of the previous diagram presents how we can separate the AI defini
 
 The CQRS pattern was introduced by [Greg Young](https://www.youtube.com/watch?v=JHGkaShoyNs), https://martinfowler.com/bliki/CQRS.html https://microservices.io/patterns/data/cqrs.html
 
-As soon as we see two arrows from the same component we have to ask ourselves how does it work: the write model has to persist Order in its own database and then send OrderCreated event to the topic... Should those operations be atomic?
+As soon as we see two arrows from the same component we have to ask ourselves how does it work: the write model has to persist Order in its own database and then send OrderCreated event to the topic... Should those operations be atomic and controlled with transaction?
 
 ### The consistency challenge
 
