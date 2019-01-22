@@ -23,6 +23,8 @@ public class ApplicationConfig {
     public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
     public static final Duration CONSUMER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
     public static final long PRODUCER_TIMEOUT_SECS = 10;
+    public static final long PRODUCER_CLOSE_TIMEOUT_SEC = 10;
+    public static final long TERMINATION_TIMEOUT_SEC = 10;
 
 
     public static Properties getConsumerProperties() {

@@ -13,4 +13,6 @@ public interface Event {
     public void setVersion(String version);
 
     public String getVersion();
+
+    public Object getPayload();
 }

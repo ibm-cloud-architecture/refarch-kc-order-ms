@@ -56,8 +56,12 @@ public class OrderConsumer {
         return result;
     }
 
-    public void close() {
-        kafkaConsumer.close(ApplicationConfig.CONSUMER_CLOSE_TIMEOUT);
+    public void safeClose() {
+        try {
+            kafkaConsumer.close(ApplicationConfig.CONSUMER_CLOSE_TIMEOUT);
+        } catch (Exception e) {
+            logger.warning("Failed closing Consumer");
+        }
     }
 
 }
