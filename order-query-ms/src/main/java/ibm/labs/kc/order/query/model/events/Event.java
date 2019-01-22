@@ -1,4 +1,4 @@
-package ibm.labs.kc.order.query.model;
+package ibm.labs.kc.order.query.model.events;
 
 public interface Event {
 
@@ -13,4 +13,6 @@ public interface Event {
     public void setVersion(String version);
 
     public String getVersion();
+
+    public Object getPayload();
 }

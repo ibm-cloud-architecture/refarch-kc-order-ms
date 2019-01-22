@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Order;
-import ibm.labs.kc.order.query.model.OrderEvent;
+import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 public class QueryServiceIT {
     private String port = System.getProperty("liberty.test.port");
@@ -48,7 +48,7 @@ public class QueryServiceIT {
             ProducerRecord<String, String> record = new ProducerRecord<String, String>(ApplicationConfig.ORDER_TOPIC, key, value);
 
             Future<RecordMetadata> future = producer.send(record);
-            future.get(10000, TimeUnit.MILLISECONDS);
+            future.get(10000L, TimeUnit.MILLISECONDS);
         }
 
         int maxattempts = 10;
@@ -62,7 +62,7 @@ public class QueryServiceIT {
                 ok = true;
                 break;
             } else {
-                Thread.sleep(1000);
+                Thread.sleep(1000L);
             }
         }
         assertTrue(ok);

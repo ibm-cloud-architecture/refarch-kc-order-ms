@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 import ibm.labs.kc.order.command.kafka.ApplicationConfig;
 import ibm.labs.kc.order.command.model.Address;
 import ibm.labs.kc.order.command.model.Order;
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 public class OrderServiceAdminIT {
 
@@ -49,7 +49,7 @@ public class OrderServiceAdminIT {
             ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value);
 
             Future<RecordMetadata> future = producer.send(record);
-            future.get(10000, TimeUnit.MILLISECONDS);
+            future.get(10000L, TimeUnit.MILLISECONDS);
         }
 
         int maxattempts = 10;
@@ -64,11 +64,12 @@ public class OrderServiceAdminIT {
                     if (orderID.equals(o.getOrderID())) {
                         assertEquals(order, o);
                         ok = true;
+                        break outer;
                     }
-                    break outer;
                 }
+                Thread.sleep(1000L);
             } else {
-                Thread.sleep(1000);
+                Thread.sleep(1000L);
             }
         }
         assertTrue(ok);

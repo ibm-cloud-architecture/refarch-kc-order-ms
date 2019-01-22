@@ -16,24 +16,16 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ibm.labs.kc.order.command.dao.OrderDAO;
 import ibm.labs.kc.order.command.dao.OrderDAOMock;
-import ibm.labs.kc.order.command.model.Event;
-import ibm.labs.kc.order.command.model.EventListener;
 import ibm.labs.kc.order.command.model.Order;
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.Event;
+import ibm.labs.kc.order.command.model.events.EventListener;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 @Path("orders")
 public class OrderAdminService implements EventListener {
 
     static final Logger logger = Logger.getLogger(OrderAdminService.class.getName());
-    private static OrderAdminService instance;
     private OrderDAO orderDAO;
-
-    public static synchronized OrderAdminService instance() {
-        if (instance == null) {
-            instance = new OrderAdminService();
-        }
-        return instance;
-    }
 
     public OrderAdminService() {
         orderDAO = OrderDAOMock.instance();
@@ -42,10 +34,13 @@ public class OrderAdminService implements EventListener {
     @Override
     public void handle(Event event) {
         OrderEvent orderEvent = (OrderEvent)event;
+        Order order = orderEvent.getPayload();
         switch (orderEvent.getType()) {
         case OrderEvent.TYPE_CREATED:
-            Order order = orderEvent.getPayload();
             orderDAO.add(order);
+            break;
+        case OrderEvent.TYPE_UPDATED:
+            orderDAO.update(order);
             break;
         default:
             logger.warning("Unknown event type: " + orderEvent);
@@ -58,7 +53,7 @@ public class OrderAdminService implements EventListener {
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json")) })
     public Response getAll() {
-        logger.warning("OrderAdminService.getAll()");
+        logger.info("OrderAdminService.getAll()");
 
         Collection<Order> orders = orderDAO.getAll();
         return Response.ok().entity(orders).build();

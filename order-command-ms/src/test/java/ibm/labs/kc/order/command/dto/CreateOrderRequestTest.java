@@ -10,7 +10,7 @@ public class CreateOrderRequestTest {
 
     @Test
     public void testValidateOK() {
-        CreateOrderRequest cor = new CreateOrderRequest();
+        OrderRequest cor = new OrderRequest();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
         cor.setPickupDate("2019-01-14T17:48Z");
         cor.setProductID("myProductID");
@@ -18,12 +18,12 @@ public class CreateOrderRequestTest {
         cor.setCustomerID("customerID");
         cor.setDestinationAddress(mockAddress);
         cor.setPickupAddress(mockAddress);
-        CreateOrderRequest.validate(cor);
+        OrderRequest.validate(cor);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testValidateBadExpectedDeliveryDate() {
-        CreateOrderRequest cor = new CreateOrderRequest();
+        OrderRequest cor = new OrderRequest();
         cor.setExpectedDeliveryDate("2019-01-15T17");
         cor.setPickupDate("2019-01-14T17:48Z");
         cor.setProductID("myProductID");
@@ -31,12 +31,12 @@ public class CreateOrderRequestTest {
         cor.setCustomerID("customerID");
         cor.setDestinationAddress(mockAddress);
         cor.setPickupAddress(mockAddress);
-        CreateOrderRequest.validate(cor);
+        OrderRequest.validate(cor);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testValidateBadPickupDate() {
-        CreateOrderRequest cor = new CreateOrderRequest();
+        OrderRequest cor = new OrderRequest();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
         cor.setPickupDate("2019-01-15T17");
         cor.setProductID("myProductID");
@@ -44,12 +44,12 @@ public class CreateOrderRequestTest {
         cor.setCustomerID("customerID");
         cor.setDestinationAddress(mockAddress);
         cor.setPickupAddress(mockAddress);
-        CreateOrderRequest.validate(cor);
+        OrderRequest.validate(cor);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testValidateQuantity() {
-        CreateOrderRequest cor = new CreateOrderRequest();
+        OrderRequest cor = new OrderRequest();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
         cor.setPickupDate("2019-01-14T17:48Z");
         cor.setProductID("myProductID");
@@ -57,6 +57,6 @@ public class CreateOrderRequestTest {
         cor.setCustomerID("customerID");
         cor.setDestinationAddress(mockAddress);
         cor.setPickupAddress(mockAddress);
-        CreateOrderRequest.validate(cor);
+        OrderRequest.validate(cor);
     }
 }

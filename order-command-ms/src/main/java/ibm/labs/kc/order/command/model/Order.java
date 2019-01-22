@@ -29,8 +29,6 @@ public class Order {
         this.expectedDeliveryDate = expectedDeliveryDate;
     }
 
-
-
     public String getOrderID() {
         return orderID;
     }

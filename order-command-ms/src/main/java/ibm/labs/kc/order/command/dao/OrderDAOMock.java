@@ -26,8 +26,7 @@ public class OrderDAOMock implements OrderDAO {
 
     @Override
     public void add(Order order) {
-        Object o = orders.put(order.getOrderID(), order);
-        if (o != null) {
+        if (orders.putIfAbsent(order.getOrderID(), order) != null) {
             throw new IllegalStateException("order already exists");
         }
     }
@@ -35,6 +34,18 @@ public class OrderDAOMock implements OrderDAO {
     @Override
     public Collection<Order> getAll() {
         return Collections.unmodifiableCollection(orders.values());
+    }
+
+    @Override
+    public Order getByID(String orderID) {
+        return orders.get(orderID);
+    }
+
+    @Override
+    public void update(Order order) {
+        if (orders.replace(order.getOrderID(), order) == null) {
+            throw new IllegalStateException("order does not already exist");
+        }
     }
 
 }

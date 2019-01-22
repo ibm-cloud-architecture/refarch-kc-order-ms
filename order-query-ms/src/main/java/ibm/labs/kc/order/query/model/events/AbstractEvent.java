@@ -1,54 +1,48 @@
-package ibm.labs.kc.order.command.model;
+package ibm.labs.kc.order.query.model.events;
 
-public class OrderEvent implements Event {
+public abstract class AbstractEvent implements Event {
 
-    public static final String TYPE_CREATED = "OrderCreated";
+    protected long timestampMillis;
+    protected String type;
+    protected String version;
 
-    private long timestampMillis;
-    private String type;
-    private String version;
-    private Order payload;
+    public AbstractEvent() {
+    }
 
-    public OrderEvent(long timestampMillis, String type, String version, Order payload) {
-        super();
+    public AbstractEvent(long timestampMillis, String type, String version) {
         this.timestampMillis = timestampMillis;
         this.type = type;
         this.version = version;
-        this.payload = payload;
     }
 
-    public OrderEvent() {
-    }
-
+    @Override
     public long getTimestampMillis() {
         return timestampMillis;
     }
 
+    @Override
     public void setTimestampMillis(long timestampMillis) {
         this.timestampMillis = timestampMillis;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public void setType(String type) {
         this.type = type;
     }
 
+    @Override
     public void setVersion(String version) {
         this.version = version;
     }
 
+    @Override
     public String getVersion() {
         return version;
     }
 
-    public Order getPayload() {
-        return payload;
-    }
-
-    public void setPayload(Order payload) {
-        this.payload = payload;
-    }
 }
