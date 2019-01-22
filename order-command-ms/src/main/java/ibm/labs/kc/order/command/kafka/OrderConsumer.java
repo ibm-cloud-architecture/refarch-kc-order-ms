@@ -15,7 +15,7 @@ import org.apache.kafka.common.TopicPartition;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 
 public class OrderConsumer {

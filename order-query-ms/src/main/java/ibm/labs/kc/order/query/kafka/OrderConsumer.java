@@ -15,44 +15,35 @@ import org.apache.kafka.common.TopicPartition;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.query.model.OrderEvent;
-
+import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 public class OrderConsumer {
     private static final Logger logger = Logger.getLogger(OrderConsumer.class.getName());
-    private static OrderConsumer instance;
     private final KafkaConsumer<String, String> kafkaConsumer;
     private boolean subscribeCalled = false;
-
-    public synchronized static OrderConsumer instance() {
-        if (instance == null) {
-            instance = new OrderConsumer();
-        }
-        return instance;
-    }
 
     public OrderConsumer() {
         Properties properties = ApplicationConfig.getConsumerProperties();
         kafkaConsumer = new KafkaConsumer<>(properties);
     }
 
-
     public List<OrderEvent> poll() {
-    	if(!subscribeCalled) {
-    		kafkaConsumer.subscribe(Collections.singletonList(ApplicationConfig.ORDER_TOPIC), new ConsumerRebalanceListener() {
+        if (!subscribeCalled) {
+            kafkaConsumer.subscribe(Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
+                    new ConsumerRebalanceListener() {
 
-    			@Override
-    			public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-    				logger.info("Partitions revoked " + partitions);
-    			}
+                        @Override
+                        public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                            logger.info("Partitions revoked " + partitions);
+                        }
 
-    			@Override
-    			public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-    				logger.info("Partitions assigned " + partitions);
-    			}
-    		});
-    		subscribeCalled = true;
-    	}
+                        @Override
+                        public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+                            logger.info("Partitions assigned " + partitions);
+                        }
+                    });
+            subscribeCalled = true;
+        }
 
         List<OrderEvent> result = new ArrayList<>();
         Gson gson = new Gson();
@@ -68,6 +59,5 @@ public class OrderConsumer {
     public void close() {
         kafkaConsumer.close(ApplicationConfig.CONSUMER_CLOSE_TIMEOUT);
     }
-
 
 }

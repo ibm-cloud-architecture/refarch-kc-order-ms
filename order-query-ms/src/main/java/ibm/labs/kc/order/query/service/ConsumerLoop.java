@@ -1,15 +1,21 @@
 package ibm.labs.kc.order.query.service;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.apache.kafka.common.KafkaException;
+
+import ibm.labs.kc.order.query.kafka.ErrorProducer;
 import ibm.labs.kc.order.query.kafka.OrderConsumer;
-import ibm.labs.kc.order.query.model.EventListener;
-import ibm.labs.kc.order.query.model.OrderEvent;
+import ibm.labs.kc.order.query.model.events.ErrorEvent;
+import ibm.labs.kc.order.query.model.events.EventEmitter;
+import ibm.labs.kc.order.query.model.events.EventListener;
+import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 @WebListener
 public class ConsumerLoop implements ServletContextListener {
@@ -17,6 +23,7 @@ public class ConsumerLoop implements ServletContextListener {
 
     private OrderConsumer consumer;
     private EventListener listener;
+    private EventEmitter emitter;
     private boolean running = true;
 
     public ConsumerLoop() {
@@ -27,15 +34,29 @@ public class ConsumerLoop implements ServletContextListener {
         logger.info("ConsumerLoop contextInitialized");
 
         // Perform action during application's startup
-        listener = QueryService.instance();
-        consumer = OrderConsumer.instance();
+        listener = new QueryService();
+        consumer = new OrderConsumer();
+        emitter = new ErrorProducer();
         new Thread() {
             public void run() {
                 logger.info("ConsumerLoop thread started");
                 while (running) {
-                    List<OrderEvent> events = consumer.poll();
-                    for (OrderEvent event : events) {
-                        listener.handle(event);
+                    try {
+                        List<OrderEvent> events = consumer.poll();
+                        for (OrderEvent event : events) {
+                            try {
+                                listener.handle(event);
+                            } catch (Exception e) {
+                                ErrorEvent errorEvent = new ErrorEvent(System.currentTimeMillis(), ErrorEvent.TYPE_ERROR, "1", event, e.getMessage());
+                                try {
+                                    emitter.emit(errorEvent);
+                                } catch (Exception e1) {
+                                    logger.log(Level.SEVERE, "Failed emitting Error event " + errorEvent, e1);
+                                }
+                            }
+                        }
+                    } catch (KafkaException ke) {
+                        //TODO
                     }
                 }
                 consumer.close();

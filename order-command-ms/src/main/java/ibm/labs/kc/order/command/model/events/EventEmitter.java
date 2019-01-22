@@ -1,4 +1,4 @@
-package ibm.labs.kc.order.query.model;
+package ibm.labs.kc.order.command.model.events;
 
 public interface EventEmitter {
 

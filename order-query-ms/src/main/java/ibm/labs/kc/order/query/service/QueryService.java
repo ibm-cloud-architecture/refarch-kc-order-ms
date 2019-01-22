@@ -20,25 +20,16 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ibm.labs.kc.order.query.dao.OrderDAO;
 import ibm.labs.kc.order.query.dao.OrderDAOMock;
-import ibm.labs.kc.order.query.model.Event;
-import ibm.labs.kc.order.query.model.EventListener;
 import ibm.labs.kc.order.query.model.Order;
-import ibm.labs.kc.order.query.model.OrderEvent;
+import ibm.labs.kc.order.query.model.events.Event;
+import ibm.labs.kc.order.query.model.events.EventListener;
+import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 @Path("orders")
 public class QueryService implements EventListener {
     static final Logger logger = Logger.getLogger(QueryService.class.getName());
 
     private OrderDAO orderDAO;
-
-    private static EventListener instance;
-
-    public synchronized static EventListener instance() {
-        if (instance == null) {
-            instance = new QueryService();
-        }
-        return instance;
-    }
 
     public QueryService() {
         orderDAO = OrderDAOMock.instance();

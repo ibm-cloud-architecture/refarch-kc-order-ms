@@ -27,7 +27,7 @@ import ibm.labs.kc.order.command.dto.OrderRequest;
 import ibm.labs.kc.order.command.kafka.ApplicationConfig;
 import ibm.labs.kc.order.command.model.Address;
 import ibm.labs.kc.order.command.model.Order;
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 public class OrderCRUDServiceIT {
 

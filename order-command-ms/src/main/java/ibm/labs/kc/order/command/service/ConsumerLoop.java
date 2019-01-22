@@ -8,8 +8,8 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import ibm.labs.kc.order.command.kafka.OrderConsumer;
-import ibm.labs.kc.order.command.model.EventListener;
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.EventListener;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 @WebListener
 public class ConsumerLoop implements ServletContextListener{
@@ -20,7 +20,7 @@ public class ConsumerLoop implements ServletContextListener{
     private EventListener listener;
 
     public ConsumerLoop() {
-        listener = OrderAdminService.instance();
+        listener = new OrderAdminService();
     }
 
     @Override

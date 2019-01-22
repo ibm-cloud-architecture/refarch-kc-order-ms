@@ -12,9 +12,9 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.command.model.Event;
-import ibm.labs.kc.order.command.model.EventEmitter;
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.Event;
+import ibm.labs.kc.order.command.model.events.EventEmitter;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 public class OrderProducer implements EventEmitter {
 

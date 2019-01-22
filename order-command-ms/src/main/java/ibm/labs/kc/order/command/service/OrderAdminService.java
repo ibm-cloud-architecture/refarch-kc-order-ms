@@ -16,24 +16,16 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ibm.labs.kc.order.command.dao.OrderDAO;
 import ibm.labs.kc.order.command.dao.OrderDAOMock;
-import ibm.labs.kc.order.command.model.Event;
-import ibm.labs.kc.order.command.model.EventListener;
 import ibm.labs.kc.order.command.model.Order;
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.Event;
+import ibm.labs.kc.order.command.model.events.EventListener;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 @Path("orders")
 public class OrderAdminService implements EventListener {
 
     static final Logger logger = Logger.getLogger(OrderAdminService.class.getName());
-    private static OrderAdminService instance;
     private OrderDAO orderDAO;
-
-    public static synchronized OrderAdminService instance() {
-        if (instance == null) {
-            instance = new OrderAdminService();
-        }
-        return instance;
-    }
 
     public OrderAdminService() {
         orderDAO = OrderDAOMock.instance();

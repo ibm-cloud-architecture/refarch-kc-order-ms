@@ -23,9 +23,9 @@ import ibm.labs.kc.order.command.dao.OrderDAO;
 import ibm.labs.kc.order.command.dao.OrderDAOMock;
 import ibm.labs.kc.order.command.dto.OrderRequest;
 import ibm.labs.kc.order.command.kafka.OrderProducer;
-import ibm.labs.kc.order.command.model.EventEmitter;
 import ibm.labs.kc.order.command.model.Order;
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.EventEmitter;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 @Path("orders")
 public class OrderCRUDService {

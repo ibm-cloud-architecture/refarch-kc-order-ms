@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 import ibm.labs.kc.order.command.kafka.ApplicationConfig;
 import ibm.labs.kc.order.command.model.Address;
 import ibm.labs.kc.order.command.model.Order;
-import ibm.labs.kc.order.command.model.OrderEvent;
+import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 public class OrderServiceAdminIT {
 
