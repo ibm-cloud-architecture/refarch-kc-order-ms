@@ -78,7 +78,15 @@ public class QueryService implements EventListener {
                 orderDAO.add(order);
                 break;
             case OrderEvent.TYPE_UPDATED:
-                orderDAO.update(order);
+                //TODO better logic !! guard against race
+                Optional<Order> oold = orderDAO.getById(order.getOrderID());
+                if(oold.isPresent()) {
+                    Order old = oold.get();
+                    order.setStatus(old.getStatus());
+                    orderDAO.update(order);
+                } else {
+                    throw new IllegalStateException("Cannot update - Unknown order Id " + order.getOrderID());
+                }
                 break;
             default:
                 logger.warning("Unknown event type: " + orderEvent);
