@@ -1,5 +1,6 @@
 package ibm.labs.kc.order.command.service;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +22,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ibm.labs.kc.order.command.dao.OrderDAO;
 import ibm.labs.kc.order.command.dao.OrderDAOMock;
-import ibm.labs.kc.order.command.dto.OrderRequest;
+import ibm.labs.kc.order.command.dto.OrderCreate;
+import ibm.labs.kc.order.command.dto.OrderUpdate;
 import ibm.labs.kc.order.command.kafka.OrderProducer;
 import ibm.labs.kc.order.command.model.Order;
 import ibm.labs.kc.order.command.model.events.EventEmitter;
@@ -46,16 +48,16 @@ public class OrderCRUDService {
     @APIResponses(value = {
             @APIResponse(responseCode = "400", description = "Bad create order request", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order created", content = @Content(mediaType = "application/json")) })
-    public Response create(OrderRequest cor) {
+    public Response create(OrderCreate dto) {
 
-        OrderRequest.validate(cor);
+        OrderCreate.validate(dto);
 
-        Order order = new Order(UUID.randomUUID().toString(), 
-                cor.getProductID(),
-                cor.getCustomerID(), 
-                cor.getQuantity(),
-                cor.getPickupAddress(), cor.getPickupDate(),
-                cor.getDestinationAddress(), cor.getExpectedDeliveryDate());
+        Order order = new Order(UUID.randomUUID().toString(),
+                dto.getProductID(),
+                dto.getCustomerID(),
+                dto.getQuantity(),
+                dto.getPickupAddress(), dto.getPickupDate(),
+                dto.getDestinationAddress(), dto.getExpectedDeliveryDate());
 
         OrderEvent orderEvent = new OrderEvent(System.currentTimeMillis(),
                 OrderEvent.TYPE_CREATED, "1", order);
@@ -79,17 +81,22 @@ public class OrderCRUDService {
             @APIResponse(responseCode = "404", description = "Unknown order ID", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "400", description = "Bad update order request", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order updated", content = @Content(mediaType = "application/json")) })
-    public Response update(@PathParam("Id") String orderID, OrderRequest cor) {
+    public Response update(@PathParam("Id") String orderID, OrderUpdate dto) {
+
+        if(! Objects.equals(orderID, dto.getOrderID())) {
+            throw new IllegalArgumentException("OrderID in body does not match PUT path");
+        }
 
         if (orderDAO.getByID(orderID) != null) {
-            OrderRequest.validate(cor);
+            OrderUpdate.validate(dto);
 
-            Order updatedOrder = new Order(orderID, 
-                    cor.getProductID(),
-                    cor.getCustomerID(), 
-                    cor.getQuantity(),
-                    cor.getPickupAddress(), cor.getPickupDate(),
-                    cor.getDestinationAddress(), cor.getExpectedDeliveryDate());
+            Order updatedOrder = new Order(orderID,
+                    dto.getProductID(),
+                    dto.getCustomerID(),
+                    dto.getQuantity(),
+                    dto.getPickupAddress(), dto.getPickupDate(),
+                    dto.getDestinationAddress(), dto.getExpectedDeliveryDate());
+
             OrderEvent orderEvent = new OrderEvent(System.currentTimeMillis(),
                     OrderEvent.TYPE_UPDATED, "1", updatedOrder);
 

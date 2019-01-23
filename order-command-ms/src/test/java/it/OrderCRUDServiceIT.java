@@ -23,7 +23,8 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.command.dto.OrderRequest;
+import ibm.labs.kc.order.command.dto.OrderCreate;
+import ibm.labs.kc.order.command.dto.OrderUpdate;
 import ibm.labs.kc.order.command.kafka.ApplicationConfig;
 import ibm.labs.kc.order.command.model.Address;
 import ibm.labs.kc.order.command.model.Order;
@@ -40,7 +41,7 @@ public class OrderCRUDServiceIT {
         System.out.println("Testing endpoint " + url);
 
         Address address = new Address("street", "city", "county", "state", "zipcode");
-        OrderRequest cor = new OrderRequest();
+        OrderCreate cor = new OrderCreate();
         cor.setProductID("myProductID");
         cor.setCustomerID("GoodManuf");
         cor.setQuantity(100);
@@ -81,7 +82,7 @@ public class OrderCRUDServiceIT {
 
     @Test
     public void testCreateBadOrderNegativeQuantity() throws Exception {
-        OrderRequest cor = new OrderRequest();
+        OrderCreate cor = new OrderCreate();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
         cor.setPickupDate("2019-01-14T17:48Z");
         cor.setProductID("myProductID");
@@ -121,7 +122,8 @@ public class OrderCRUDServiceIT {
             future.get(10000, TimeUnit.MILLISECONDS);
         }
 
-        OrderRequest cor = new OrderRequest();
+        OrderUpdate cor = new OrderUpdate();
+        cor.setOrderID(orderID);
         cor.setProductID("myProductID");
         cor.setCustomerID("GoodManuf");
         cor.setQuantity(100);
