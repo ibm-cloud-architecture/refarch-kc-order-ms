@@ -1,7 +1,11 @@
 package ibm.labs.kc.order.command.model;
 
 public class Order {
-    
+
+    public static final String PENDING_STATUS = "pending";
+    public static final String CANCELLED_STATUS = "cancelled";
+    public static final String ASSIGNED_STATUS = "assigned";
+
     private String orderID;
     private String productID;
     private String customerID;
@@ -13,11 +17,13 @@ public class Order {
     private Address destinationAddress;
     private String expectedDeliveryDate;
 
+    private String status;
+
     public Order() {
     }
 
     public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
-            String pickupDate, Address destinationAddress, String expectedDeliveryDate) {
+            String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status) {
         super();
         this.orderID = orderID;
         this.productID = productID;
@@ -27,6 +33,7 @@ public class Order {
         this.pickupDate = pickupDate;
         this.destinationAddress = destinationAddress;
         this.expectedDeliveryDate = expectedDeliveryDate;
+        this.status = status;
     }
 
     public String getOrderID() {
@@ -140,4 +147,13 @@ public class Order {
     public void setPickupDate(String pickupDate) {
         this.pickupDate = pickupDate;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

@@ -11,8 +11,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import org.apache.kafka.common.KafkaException;
-
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.kafka.ErrorProducer;
 import ibm.labs.kc.order.query.kafka.OrderConsumer;
@@ -53,6 +51,7 @@ public class EventLoop implements ServletContextListener {
                                 try {
                                     listener.handle(event);
                                 } catch (Exception e) {
+                                    e.printStackTrace();
                                     ErrorEvent errorEvent = new ErrorEvent(System.currentTimeMillis(),
                                             ErrorEvent.TYPE_ERROR, "1", event, e.getMessage());
                                     try {
@@ -62,7 +61,8 @@ public class EventLoop implements ServletContextListener {
                                     }
                                 }
                             }
-                        } catch (KafkaException ke) {
+                        } catch (Exception ke) {
+                            ke.printStackTrace();
                             // Treat a Kafka exception as unrecoverable
                             // stop this task and queue a new one
                             ok = false;

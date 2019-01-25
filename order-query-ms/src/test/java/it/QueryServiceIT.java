@@ -24,6 +24,10 @@ import com.google.gson.Gson;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.QueryOrder;
+import ibm.labs.kc.order.query.model.VoyageAssignment;
+import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
+import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 public class QueryServiceIT {
@@ -34,33 +38,131 @@ public class QueryServiceIT {
     @Test
     public void testGetById() throws Exception {
         String orderID = UUID.randomUUID().toString();
-        Properties properties = ApplicationConfig.getProducerProperties("testGetById");
 
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         Order order = new Order(orderID, "productId", "custId", 2,
                 addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z");
-        OrderEvent event = new OrderEvent(System.currentTimeMillis(), OrderEvent.TYPE_CREATED, "1", order);
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        sendEvent("testGetById", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
 
-        try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
-            String key = orderID;
-            String value = new Gson().toJson(event);
-            ProducerRecord<String, String> record = new ProducerRecord<String, String>(ApplicationConfig.ORDER_TOPIC, key, value);
-
-            Future<RecordMetadata> future = producer.send(record);
-            future.get(10000L, TimeUnit.MILLISECONDS);
-        }
-
+        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
         int maxattempts = 10;
         boolean ok = false;
         for(int i=0; i<maxattempts; i++) {
             Response response = makeGetRequest(url + orderID);
             if(response.getStatus() == 200) {
                 String responseString = response.readEntity(String.class);
-                Order o2 = new Gson().fromJson(responseString, Order.class);
-                assertEquals(orderID, o2.getOrderID());
+                QueryOrder o = new Gson().fromJson(responseString, QueryOrder.class);
+                assertEquals(orderID, o.getOrderID());
+                assertEquals(expectedOrder, o);
                 ok = true;
-                break;
+            } else {
+                Thread.sleep(1000L);
+            }
+        }
+        assertTrue(ok);
+    }
+
+    @Test
+    public void testGetByStatus() throws Exception {
+        String orderID = UUID.randomUUID().toString();
+
+        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+        Order order = new Order(orderID, "productId", "custId", 2,
+                addr, "2019-01-10T13:30Z",
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        sendEvent("testGetByStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+        int maxattempts = 10;
+        boolean ok = false;
+        outer: for(int i=0; i<maxattempts; i++) {
+            Response response = makeGetRequest(url + "byStatus/pending");
+            if(response.getStatus() == 200) {
+                String responseString = response.readEntity(String.class);
+                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+                for (QueryOrder o : orders) {
+                    if (orderID.equals(o.getOrderID())) {
+                        assertEquals(QueryOrder.newFromOrder(order), o);
+                        ok = true;
+                        break outer;
+                    }
+                }
+                Thread.sleep(1000L);
+            } else {
+                Thread.sleep(1000L);
+            }
+        }
+        assertTrue(ok);
+    }
+
+    @Test
+    public void testGetByManuf() throws Exception {
+        String orderID = UUID.randomUUID().toString();
+
+        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+        Order order = new Order(orderID, "productId", "custId", 2,
+                addr, "2019-01-10T13:30Z",
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        sendEvent("testGetByManuf", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+        int maxattempts = 10;
+        boolean ok = false;
+        outer: for(int i=0; i<maxattempts; i++) {
+            Response response = makeGetRequest(url + "byManuf/custId");
+            if(response.getStatus() == 200) {
+                String responseString = response.readEntity(String.class);
+                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+                for (QueryOrder o : orders) {
+                    if (orderID.equals(o.getOrderID())) {
+                        assertEquals(expectedOrder, o);
+                        ok = true;
+                        break outer;
+                    }
+                }
+                Thread.sleep(1000L);
+            } else {
+                Thread.sleep(1000L);
+            }
+        }
+        assertTrue(ok);
+    }
+
+    @Test
+    public void testHandleVoyageAssignment() throws Exception {
+        String orderID = UUID.randomUUID().toString();
+
+        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+        Order order = new Order(orderID, "productId", "custId", 2,
+                addr, "2019-01-10T13:30Z",
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+        VoyageAssignment va = new VoyageAssignment(orderID, "12345");
+        OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
+        sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+        expectedOrder.assign(va);
+        int maxattempts = 10;
+        boolean ok = false;
+        outer: for(int i=0; i<maxattempts; i++) {
+            Response response = makeGetRequest(url + "byStatus/assigned");
+            if(response.getStatus() == 200) {
+                String responseString = response.readEntity(String.class);
+                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+                for (QueryOrder o : orders) {
+                    if (orderID.equals(o.getOrderID())) {
+                        assertEquals(expectedOrder, o);
+                        ok = true;
+                        break outer;
+                    }
+                }
+                Thread.sleep(1000L);
             } else {
                 Thread.sleep(1000L);
             }
@@ -69,12 +171,22 @@ public class QueryServiceIT {
     }
 
     protected Response makeGetRequest(String url) {
-        System.out.println("GET " + url);
         Client client = ClientBuilder.newClient();
         Invocation.Builder invoBuild = client.target(url).request();
         Response response = invoBuild.get();
-        System.out.println("status " + response.getStatus());
         return response;
+    }
+
+    private void sendEvent(String clientID, String topic, String key, String value) throws Exception {
+        Properties properties = ApplicationConfig.getProducerProperties(clientID);
+
+        try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
+
+            ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
+
+            Future<RecordMetadata> future = producer.send(record);
+            future.get(10000L, TimeUnit.MILLISECONDS);
+        }
     }
 
 }

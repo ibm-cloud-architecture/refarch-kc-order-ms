@@ -110,7 +110,8 @@ public class OrderCRUDServiceIT {
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         Order order = new Order(orderID, "productId", "custId", 2,
                 addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z");
+                addr, "2019-01-10T13:30Z",
+                Order.PENDING_STATUS);
         OrderEvent event = new OrderEvent(System.currentTimeMillis(), OrderEvent.TYPE_CREATED, "1", order);
 
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
@@ -157,6 +158,45 @@ public class OrderCRUDServiceIT {
             }
         }
         assertTrue(ok);
+    }
+
+    @Test
+    public void testUpdateDenied() throws Exception {
+        String orderID = UUID.randomUUID().toString();
+        String putURL = url + "/" + orderID;
+        System.out.println("Testing endpoint: " + putURL);
+
+        Properties properties = ApplicationConfig.getProducerProperties("testUpdateSuccess");
+
+        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+        Order order = new Order(orderID, "productId", "custId", 2,
+                addr, "2019-01-10T13:30Z",
+                addr, "2019-01-10T13:30Z",
+                "notPendingStatus");
+        OrderEvent event = new OrderEvent(System.currentTimeMillis(), OrderEvent.TYPE_CREATED, "1", order);
+
+        try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
+            String value = new Gson().toJson(event);
+            String key = order.getOrderID();
+            ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value);
+
+            Future<RecordMetadata> future = producer.send(record);
+            future.get(10000, TimeUnit.MILLISECONDS);
+        }
+
+        OrderUpdate cor = new OrderUpdate();
+        cor.setOrderID(orderID);
+        cor.setProductID("myProductID");
+        cor.setCustomerID("GoodManuf");
+        cor.setQuantity(100);
+        cor.setPickupDate("2019-01-14T17:48Z");
+        cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
+        addr.setCity("NYC");
+        cor.setDestinationAddress(addr);
+        cor.setPickupAddress(addr);
+
+        Response response = makePutRequest(putURL, new Gson().toJson(cor));
+        assertEquals(400, response.getStatus());
     }
 
     protected Response makePutRequest(String url, String json) {

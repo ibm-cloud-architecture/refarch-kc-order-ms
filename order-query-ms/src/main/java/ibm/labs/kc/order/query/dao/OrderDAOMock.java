@@ -10,13 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.QueryOrder;
 
 
 public class OrderDAOMock implements OrderDAO {
     static final Logger logger = Logger.getLogger(OrderDAOMock.class.getName());
 
-    private final Map<String, Order> orders;
+    private final Map<String, QueryOrder> orders;
 
     private static OrderDAOMock instance;
 
@@ -33,13 +33,13 @@ public class OrderDAOMock implements OrderDAO {
     }
 
     @Override
-    public Optional<Order> getById(String orderId) {
-        Order o = orders.get(orderId);
+    public Optional<QueryOrder> getById(String orderId) {
+        QueryOrder o = orders.get(orderId);
         return Optional.ofNullable(o);
     }
 
     @Override
-    public void add(Order o) {
+    public void add(QueryOrder o) {
         logger.info("Adding order id " + o.getOrderID());
         try {
             orders.put(o.getOrderID(), o);
@@ -49,20 +49,32 @@ public class OrderDAOMock implements OrderDAO {
     }
 
     @Override
-    public void update(Order order) {
+    public void update(QueryOrder order) {
         if (orders.replace(order.getOrderID(), order) == null) {
             throw new IllegalStateException("order does not already exist");
         }
     }
 
     @Override
-    public Collection<Order> getByManuf(String manuf) {
+    public Collection<QueryOrder> getByManuf(String manuf) {
         // DEMO: check manuf against customerID
-        Collection<Order> result = new ArrayList<>();
+        Collection<QueryOrder> result = new ArrayList<>();
 
         // It's safe to iterate over the values even if modified concurrently
-        for (Order order : orders.values()) {
+        for (QueryOrder order : orders.values()) {
             if (Objects.equals(manuf, order.getCustomerID())) {
+                result.add(order);
+            }
+        }
+        return Collections.unmodifiableCollection(result);
+    }
+
+    @Override
+    public Collection<QueryOrder> getByStatus(String status) {
+        Collection<QueryOrder> result = new ArrayList<>();
+
+        for (QueryOrder order : orders.values()) {
+            if (Objects.equals(status, order.getStatus())) {
                 result.add(order);
             }
         }

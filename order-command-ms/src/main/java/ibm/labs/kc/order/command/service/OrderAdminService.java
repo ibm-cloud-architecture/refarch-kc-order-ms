@@ -42,6 +42,12 @@ public class OrderAdminService implements EventListener {
         case OrderEvent.TYPE_UPDATED:
             orderDAO.update(order);
             break;
+        case OrderEvent.TYPE_ASSIGNED:
+            //TODO
+            break;
+        case OrderEvent.TYPE_CANCELLED:
+            //TODO
+            break;
         default:
             logger.warning("Unknown event type: " + orderEvent);
         }

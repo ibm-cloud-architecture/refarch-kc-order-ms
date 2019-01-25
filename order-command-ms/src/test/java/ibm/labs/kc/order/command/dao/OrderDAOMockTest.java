@@ -22,7 +22,11 @@ public class OrderDAOMockTest {
     public void testAdd() {
         Gson gson = new Gson();
         Address address = new Address("street", "city", "county", "state", "zipcode");
-        Order order1 = new Order(UUID.randomUUID().toString(), "productID", "customerID", 1, address, "2019-01-10T13:30Z", address, "2019-01-10T13:30Z");
+        Order order1 = new Order(UUID.randomUUID().toString(),
+                "productID", "customerID", 1,
+                address, "2019-01-10T13:30Z",
+                address, "2019-01-10T13:30Z",
+                Order.PENDING_STATUS);
         Order order1Clone = gson.fromJson(gson.toJson(order1), Order.class);
 
         // Empty DAO
@@ -49,7 +53,11 @@ public class OrderDAOMockTest {
         assertNotEquals(order1, dao.getByID(order1.getOrderID()));
 
         // Update non existing key
-        Order order2 = new Order(UUID.randomUUID().toString(), "productID", "customerID", 1, address, "2019-01-10T13:30Z", address, "2019-01-10T13:30Z");
+        Order order2 = new Order(UUID.randomUUID().toString(),
+                "productID", "customerID", 1,
+                address, "2019-01-10T13:30Z",
+                address, "2019-01-10T13:30Z",
+                Order.PENDING_STATUS);
         try {
             dao.update(order2);
             fail();
