@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.QueryOrder;
 
 public class OrderDAOMockTest {
 
@@ -17,26 +18,26 @@ public class OrderDAOMockTest {
     public void testGetByManuf() {
         OrderDAOMock dao = new OrderDAOMock();
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order o1 = new Order(UUID.randomUUID().toString(), "productId", "custId1", 2,
+        QueryOrder o1 = QueryOrder.newFromOrder(new Order(UUID.randomUUID().toString(), "productId", "custId1", 2,
                 addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z");
-        Order o2 = new Order(UUID.randomUUID().toString(), "productId", "custId2", 2,
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS));
+        QueryOrder o2 = QueryOrder.newFromOrder(new Order(UUID.randomUUID().toString(), "productId", "custId2", 2,
                 addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z");
-        Order o3 = new Order(UUID.randomUUID().toString(), "productId", "custId1", 2,
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS));
+        QueryOrder o3 = QueryOrder.newFromOrder(new Order(UUID.randomUUID().toString(), "productId", "custId1", 2,
                 addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z");
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS));
 
         dao.add(o1);
         dao.add(o2);
         dao.add(o3);
 
-        Collection<Order> expected = new HashSet<>();
+        Collection<QueryOrder> expected = new HashSet<>();
         expected.add(o1);
         expected.add(o3);
 
-        Collection<Order> byManuf1 = dao.getByManuf("custId1");
-        assertEquals(expected, new HashSet<Order>(byManuf1));
+        Collection<QueryOrder> byManuf1 = dao.getByManuf("custId1");
+        assertEquals(expected, new HashSet<QueryOrder>(byManuf1));
     }
 
 }

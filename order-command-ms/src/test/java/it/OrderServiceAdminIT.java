@@ -40,7 +40,8 @@ public class OrderServiceAdminIT {
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         Order order = new Order(orderID, "productId", "custId", 2,
                 addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z");
+                addr, "2019-01-10T13:30Z",
+                Order.PENDING_STATUS);
         OrderEvent event = new OrderEvent(System.currentTimeMillis(), OrderEvent.TYPE_CREATED, "1", order);
 
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
@@ -58,7 +59,6 @@ public class OrderServiceAdminIT {
             Response response = makeGetRequest(url);
             if (response.getStatus() == 200) {
                 String responseString = response.readEntity(String.class);
-                System.out.println(responseString);
                 Order[] orders = new Gson().fromJson(responseString, Order[].class);
                 for (Order o : orders) {
                     if (orderID.equals(o.getOrderID())) {

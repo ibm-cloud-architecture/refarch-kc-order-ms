@@ -13,8 +13,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 
-import com.google.gson.Gson;
-
 import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 public class OrderConsumer {
@@ -46,12 +44,10 @@ public class OrderConsumer {
         }
 
         List<OrderEvent> result = new ArrayList<>();
-        Gson gson = new Gson();
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
         for (ConsumerRecord<String, String> rec : recs) {
-            String orderString = rec.value();
-            OrderEvent o = gson.fromJson(orderString, OrderEvent.class);
-            result.add(o);
+            OrderEvent event = OrderEvent.deserialize(rec.value());
+            result.add(event);
         }
         return result;
     }
