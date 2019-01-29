@@ -1,28 +1,19 @@
 package ibm.labs.kc.order.query.model;
 
-public class Order {
-
-    public static final String PENDING_STATUS = "pending";
-    public static final String CANCELLED_STATUS = "cancelled";
-    public static final String ASSIGNED_STATUS = "assigned";
+public class QueryOrder {
 
     private String orderID;
     private String productID;
     private String customerID;
     private int quantity;
-
     private Address pickupAddress;
     private String pickupDate;
-
     private Address destinationAddress;
     private String expectedDeliveryDate;
-
     private String status;
+    private String voyageID;
 
-    public Order() {
-    }
-
-    public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+    public QueryOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status) {
         this.orderID = orderID;
         this.productID = productID;
@@ -33,34 +24,52 @@ public class Order {
         this.destinationAddress = destinationAddress;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
+        this.voyageID = "";
     }
 
-    public String getOrderID() {
-        return orderID;
+    public static QueryOrder newFromOrder(Order order) {
+        return new QueryOrder(order.getOrderID(),
+                order.getProductID(), order.getCustomerID(), order.getQuantity(),
+                order.getPickupAddress(), order.getPickupDate(),
+                order.getDestinationAddress(), order.getExpectedDeliveryDate(),
+                order.getStatus());
     }
 
-    public String getProductID() {
-        return productID;
+    public void update(Order order) {
+        if (!Order.PENDING_STATUS.contentEquals(status)) {
+            throw new IllegalStateException(
+                    "Unable to update a QueryOrder not in " + Order.PENDING_STATUS + " state");
+        }
+        if (order.getCustomerID() != null) {
+            customerID = order.getCustomerID();
+        }
+        if (order.getProductID() != null) {
+            productID = order.getProductID();
+        }
+        if (order.getQuantity() != 0) {
+            quantity = order.getQuantity();
+        }
+        if (order.getPickupAddress() != null) {
+            pickupAddress = order.getPickupAddress();
+        }
+        if (order.getPickupDate() != null) {
+            pickupDate = order.getPickupDate();
+        }
+        if (order.getDestinationAddress() != null) {
+            destinationAddress = order.getDestinationAddress();
+        }
+        if (order.getExpectedDeliveryDate() != null) {
+            expectedDeliveryDate = order.getExpectedDeliveryDate();
+        }
     }
 
-    public String getCustomerID() {
-        return customerID;
+    public void assign(VoyageAssignment voyageAssignment) {
+        this.voyageID = voyageAssignment.getVoyageID();
+        this.status = Order.ASSIGNED_STATUS;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public String getExpectedDeliveryDate() {
-        return expectedDeliveryDate;
-    }
-
-    public Address getDestinationAddress() {
-        return destinationAddress;
-    }
-
-    public void setDestinationAddress(Address destinationAddress) {
-        this.destinationAddress = destinationAddress;
+    public void cancel(Cancellation cancellation) {
+        this.status = Order.CANCELLED_STATUS;
     }
 
     public String getStatus() {
@@ -71,8 +80,40 @@ public class Order {
         this.status = status;
     }
 
-    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
-        this.expectedDeliveryDate = expectedDeliveryDate;
+    public String getVoyageID() {
+        return voyageID;
+    }
+
+    public String getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(String orderID) {
+        this.orderID = orderID;
+    }
+
+    public String getProductID() {
+        return productID;
+    }
+
+    public void setProductID(String productID) {
+        this.productID = productID;
+    }
+
+    public String getCustomerID() {
+        return customerID;
+    }
+
+    public void setCustomerID(String customerID) {
+        this.customerID = customerID;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public Address getPickupAddress() {
@@ -91,6 +132,22 @@ public class Order {
         this.pickupDate = pickupDate;
     }
 
+    public Address getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public void setDestinationAddress(Address destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
+
+    public String getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
+    }
+
+    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -104,6 +161,7 @@ public class Order {
         result = prime * result + ((productID == null) ? 0 : productID.hashCode());
         result = prime * result + quantity;
         result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((voyageID == null) ? 0 : voyageID.hashCode());
         return result;
     }
 
@@ -115,7 +173,7 @@ public class Order {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Order other = (Order) obj;
+        QueryOrder other = (QueryOrder) obj;
         if (customerID == null) {
             if (other.customerID != null)
                 return false;
@@ -157,6 +215,11 @@ public class Order {
             if (other.status != null)
                 return false;
         } else if (!status.equals(other.status))
+            return false;
+        if (voyageID == null) {
+            if (other.voyageID != null)
+                return false;
+        } else if (!voyageID.equals(other.voyageID))
             return false;
         return true;
     }

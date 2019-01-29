@@ -20,10 +20,17 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import ibm.labs.kc.order.query.dao.OrderDAO;
 import ibm.labs.kc.order.query.dao.OrderDAOMock;
+import ibm.labs.kc.order.query.model.Cancellation;
 import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.QueryOrder;
+import ibm.labs.kc.order.query.model.VoyageAssignment;
+import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
+import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
+import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.Event;
 import ibm.labs.kc.order.query.model.events.EventListener;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
+import ibm.labs.kc.order.query.model.events.UpdateOrderEvent;
 
 @Path("orders")
 public class QueryService implements EventListener {
@@ -43,12 +50,11 @@ public class QueryService implements EventListener {
             @APIResponse(responseCode = "404", description = "Order not found", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order found", content = @Content(mediaType = "application/json")) })
     public Response getById(@PathParam("Id") String orderId) {
-        logger.warning("QueryService.getById(" + orderId+")");
+        logger.info("QueryService.getById(" + orderId + ")");
 
-        Optional<Order> oo = orderDAO.getById(orderId);
+        Optional<QueryOrder> oo = orderDAO.getById(orderId);
         if (oo.isPresent()) {
-            Order order = oo.get();
-            return Response.ok().entity(order).build();
+            return Response.ok().entity(oo.get()).build();
         } else {
             return Response.status(Status.NOT_FOUND).build();
         }
@@ -61,31 +67,78 @@ public class QueryService implements EventListener {
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Orders found", content = @Content(mediaType = "application/json")) })
     public Response getByManuf(@PathParam("manuf") String manuf) {
-        logger.warning("QueryService.getByManuf(" + manuf+")");
+        logger.info("QueryService.getByManuf(" + manuf + ")");
 
-        Collection<Order> orders = orderDAO.getByManuf(manuf);
+        Collection<QueryOrder> orders = orderDAO.getByManuf(manuf);
+        return Response.ok().entity(orders).build();
+    }
+
+    @GET
+    @Path("byStatus/{status}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Query orders by status", description = "")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Orders found", content = @Content(mediaType = "application/json")) })
+    public Response getByStatus(@PathParam("status") String status) {
+        logger.info("QueryService.getByStatus(" + status + ")");
+
+        Collection<QueryOrder> orders = orderDAO.getByStatus(status);
         return Response.ok().entity(orders).build();
     }
 
     @Override
     public void handle(Event event) {
+        String orderID;
+        Optional<QueryOrder> oqo;
         try {
-            OrderEvent orderEvent = (OrderEvent)event;
-            Order order = orderEvent.getPayload();
+            OrderEvent orderEvent = (OrderEvent) event;
             switch (orderEvent.getType()) {
             case OrderEvent.TYPE_CREATED:
-                order.setStatus(Order.STATUS_PENDING);
-                orderDAO.add(order);
+                synchronized (orderDAO) {
+                    Order o1 = ((CreateOrderEvent) orderEvent).getPayload();
+                    orderDAO.add(QueryOrder.newFromOrder(o1));
+                }
                 break;
             case OrderEvent.TYPE_UPDATED:
-                //TODO better logic !! guard against race
-                Optional<Order> oold = orderDAO.getById(order.getOrderID());
-                if(oold.isPresent()) {
-                    Order old = oold.get();
-                    order.setStatus(old.getStatus());
-                    orderDAO.update(order);
-                } else {
-                    throw new IllegalStateException("Cannot update - Unknown order Id " + order.getOrderID());
+                synchronized (orderDAO) {
+                    Order o2 = ((UpdateOrderEvent) orderEvent).getPayload();
+                    orderID = o2.getOrderID();
+                    oqo = orderDAO.getById(orderID);
+                    if (oqo.isPresent()) {
+                        QueryOrder qo = oqo.get();
+                        qo.update(o2);
+                        orderDAO.update(qo);
+                    } else {
+                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    }
+                }
+                break;
+            case OrderEvent.TYPE_ASSIGNED:
+                synchronized (orderDAO) {
+                    VoyageAssignment voyageAssignment = ((AssignOrderEvent) orderEvent).getPayload();
+                    orderID = voyageAssignment.getOrderID();
+                    oqo = orderDAO.getById(orderID);
+                    if (oqo.isPresent()) {
+                        QueryOrder qo = oqo.get();
+                        qo.assign(voyageAssignment);
+                        orderDAO.update(qo);
+                    } else {
+                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    }
+                }
+                break;
+            case OrderEvent.TYPE_CANCELLED:
+                synchronized (orderDAO) {
+                    Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
+                    orderID = cancellation.getOrderID();
+                    oqo = orderDAO.getById(orderID);
+                    if (oqo.isPresent()) {
+                        QueryOrder qo = oqo.get();
+                        qo.cancel(cancellation);
+                        orderDAO.update(qo);
+                    } else {
+                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    }
                 }
                 break;
             default:

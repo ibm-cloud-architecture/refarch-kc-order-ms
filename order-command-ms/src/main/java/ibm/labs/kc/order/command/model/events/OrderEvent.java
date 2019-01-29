@@ -6,6 +6,8 @@ public class OrderEvent extends AbstractEvent {
 
     public static final String TYPE_CREATED = "OrderCreated";
     public static final String TYPE_UPDATED = "OrderUpdated";
+    public static final String TYPE_ASSIGNED = "OrderAssigned";
+    public static final String TYPE_CANCELLED = "OrderCancelled";
 
     private Order payload;
 

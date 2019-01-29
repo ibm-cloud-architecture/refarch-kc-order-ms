@@ -57,7 +57,8 @@ public class OrderCRUDService {
                 dto.getCustomerID(),
                 dto.getQuantity(),
                 dto.getPickupAddress(), dto.getPickupDate(),
-                dto.getDestinationAddress(), dto.getExpectedDeliveryDate());
+                dto.getDestinationAddress(), dto.getExpectedDeliveryDate(),
+                Order.PENDING_STATUS);
 
         OrderEvent orderEvent = new OrderEvent(System.currentTimeMillis(),
                 OrderEvent.TYPE_CREATED, "1", order);
@@ -87,15 +88,17 @@ public class OrderCRUDService {
             throw new IllegalArgumentException("OrderID in body does not match PUT path");
         }
 
-        if (orderDAO.getByID(orderID) != null) {
-            OrderUpdate.validate(dto);
+        Order existingOrder = orderDAO.getByID(orderID);
+        if (existingOrder != null) {
+            OrderUpdate.validate(dto, existingOrder);
 
             Order updatedOrder = new Order(orderID,
                     dto.getProductID(),
                     dto.getCustomerID(),
                     dto.getQuantity(),
                     dto.getPickupAddress(), dto.getPickupDate(),
-                    dto.getDestinationAddress(), dto.getExpectedDeliveryDate());
+                    dto.getDestinationAddress(), dto.getExpectedDeliveryDate(),
+                    Order.PENDING_STATUS);
 
             OrderEvent orderEvent = new OrderEvent(System.currentTimeMillis(),
                     OrderEvent.TYPE_UPDATED, "1", updatedOrder);
