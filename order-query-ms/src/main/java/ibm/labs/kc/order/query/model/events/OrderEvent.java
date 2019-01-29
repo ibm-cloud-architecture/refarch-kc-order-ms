@@ -18,6 +18,8 @@ public class OrderEvent extends AbstractEvent {
     public OrderEvent() {}
 
     public static OrderEvent deserialize(String json) {
+        // OrderEvent is a concrete class just to find the type of the event
+        // We could do a "normal" JSON deserialization instead
         OrderEvent orderEvent = gson.fromJson(json, OrderEvent.class);
         switch (orderEvent.type) {
         case TYPE_CREATED:

@@ -91,49 +91,54 @@ public class QueryService implements EventListener {
         String orderID;
         Optional<QueryOrder> oqo;
         try {
-            OrderEvent orderEvent = (OrderEvent)event;
+            OrderEvent orderEvent = (OrderEvent) event;
             switch (orderEvent.getType()) {
             case OrderEvent.TYPE_CREATED:
-                Order o1 = ((CreateOrderEvent)orderEvent).getPayload();
-                orderDAO.add(QueryOrder.newFromOrder(o1));
+                synchronized (orderDAO) {
+                    Order o1 = ((CreateOrderEvent) orderEvent).getPayload();
+                    orderDAO.add(QueryOrder.newFromOrder(o1));
+                }
                 break;
             case OrderEvent.TYPE_UPDATED:
-                //TODO handle race
-                Order o2 = ((UpdateOrderEvent)orderEvent).getPayload();
-                orderID = o2.getOrderID();
-                oqo = orderDAO.getById(orderID);
-                if (oqo.isPresent()) {
-                    QueryOrder qo = oqo.get();
-                    qo.update(o2);
-                    orderDAO.update(qo);
-                } else {
-                    throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                synchronized (orderDAO) {
+                    Order o2 = ((UpdateOrderEvent) orderEvent).getPayload();
+                    orderID = o2.getOrderID();
+                    oqo = orderDAO.getById(orderID);
+                    if (oqo.isPresent()) {
+                        QueryOrder qo = oqo.get();
+                        qo.update(o2);
+                        orderDAO.update(qo);
+                    } else {
+                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    }
                 }
                 break;
             case OrderEvent.TYPE_ASSIGNED:
-                //TODO handle race
-                VoyageAssignment voyageAssignment = ((AssignOrderEvent)orderEvent).getPayload();
-                orderID = voyageAssignment.getOrderID();
-                oqo = orderDAO.getById(orderID);
-                if (oqo.isPresent()) {
-                    QueryOrder qo = oqo.get();
-                    qo.assign(voyageAssignment);
-                    orderDAO.update(qo);
-                } else {
-                    throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                synchronized (orderDAO) {
+                    VoyageAssignment voyageAssignment = ((AssignOrderEvent) orderEvent).getPayload();
+                    orderID = voyageAssignment.getOrderID();
+                    oqo = orderDAO.getById(orderID);
+                    if (oqo.isPresent()) {
+                        QueryOrder qo = oqo.get();
+                        qo.assign(voyageAssignment);
+                        orderDAO.update(qo);
+                    } else {
+                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    }
                 }
                 break;
             case OrderEvent.TYPE_CANCELLED:
-                //TODO handle race
-                Cancellation cancellation = ((CancelOrderEvent)orderEvent).getPayload();
-                orderID = cancellation.getOrderID();
-                oqo = orderDAO.getById(orderID);
-                if (oqo.isPresent()) {
-                    QueryOrder qo = oqo.get();
-                    qo.cancel(cancellation);
-                    orderDAO.update(qo);
-                } else {
-                    throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                synchronized (orderDAO) {
+                    Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
+                    orderID = cancellation.getOrderID();
+                    oqo = orderDAO.getById(orderID);
+                    if (oqo.isPresent()) {
+                        QueryOrder qo = oqo.get();
+                        qo.cancel(cancellation);
+                        orderDAO.update(qo);
+                    } else {
+                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    }
                 }
                 break;
             default:
