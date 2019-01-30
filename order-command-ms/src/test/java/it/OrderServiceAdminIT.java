@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import ibm.labs.kc.order.command.kafka.ApplicationConfig;
 import ibm.labs.kc.order.command.model.Address;
 import ibm.labs.kc.order.command.model.Order;
+import ibm.labs.kc.order.command.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 public class OrderServiceAdminIT {
@@ -42,7 +43,7 @@ public class OrderServiceAdminIT {
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z",
                 Order.PENDING_STATUS);
-        OrderEvent event = new OrderEvent(System.currentTimeMillis(), OrderEvent.TYPE_CREATED, "1", order);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
 
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
             String value = new Gson().toJson(event);

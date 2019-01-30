@@ -1,14 +1,15 @@
 package ibm.labs.kc.order.command.dao;
 
 import java.util.Collection;
+import java.util.Optional;
 
-import ibm.labs.kc.order.command.model.Order;
+import ibm.labs.kc.order.command.model.CommandOrder;
 
 public interface OrderDAO {
 
-    public void add(Order order);
-    public void update(Order order);
-    public Collection<Order> getAll();
-    public Order getByID(String orderID);
+    public void add(CommandOrder order);
+    public void update(CommandOrder order);
+    public Collection<CommandOrder> getAll();
+    public Optional<CommandOrder> getByID(String orderId);
 
 }

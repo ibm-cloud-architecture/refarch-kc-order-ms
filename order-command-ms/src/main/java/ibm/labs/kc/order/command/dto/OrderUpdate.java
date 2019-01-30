@@ -2,6 +2,7 @@ package ibm.labs.kc.order.command.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import ibm.labs.kc.order.command.model.CommandOrder;
 import ibm.labs.kc.order.command.model.Order;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -25,7 +26,7 @@ public class OrderUpdate extends OrderRequest {
     public void setStatus(String status) {
     }
 
-    public static void validate(OrderUpdate co, Order existingOrder) {
+    public static void validate(OrderUpdate co, CommandOrder existingOrder) {
         if (co.getOrderID() == null) {
             throw new IllegalArgumentException("Order ID is null");
         }

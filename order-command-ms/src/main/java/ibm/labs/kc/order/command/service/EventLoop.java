@@ -4,36 +4,64 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.apache.kafka.common.KafkaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import ibm.labs.kc.order.command.kafka.ApplicationConfig;
 import ibm.labs.kc.order.command.kafka.ErrorProducer;
 import ibm.labs.kc.order.command.kafka.OrderConsumer;
 import ibm.labs.kc.order.command.model.events.ErrorEvent;
 import ibm.labs.kc.order.command.model.events.EventEmitter;
 import ibm.labs.kc.order.command.model.events.EventListener;
 import ibm.labs.kc.order.command.model.events.OrderEvent;
-import ibm.labs.kc.order.command.kafka.ApplicationConfig;
 
 @WebListener
 public class EventLoop implements ServletContextListener{
-    private static final Logger logger = Logger.getLogger(EventLoop.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(EventLoop.class);
 
     private volatile boolean running = true;
+    private OrderConsumer consumer;
     private ExecutorService executor;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("ConsumerLoop contextInitialized");
 
+        consumer = new OrderConsumer();
         executor = Executors.newFixedThreadPool(1);
+        executor.execute(newReloadRunnable());
         executor.execute(newRunnable());
+    }
+
+    private Runnable newReloadRunnable() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                logger.info("ReloadState started");
+                EventListener listener = new OrderAdminService();
+
+                while (!consumer.reloadCompleted()) {
+                    List<OrderEvent> events = consumer.pollForReload();
+                    for (OrderEvent event : events) {
+                        try {
+                            listener.handle(event);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            // TODO fail to restart would be the correct handling
+                            // mark the app as unhealthy
+                        }
+                    }
+                }
+                logger.info("ReloadState completed");
+                consumer.safeReloadClose();
+            }
+        };
     }
 
     private Runnable newRunnable() {
@@ -42,7 +70,6 @@ public class EventLoop implements ServletContextListener{
             public void run() {
                 logger.info("ConsumerLoop thread started");
                 EventListener listener = new OrderAdminService();
-                OrderConsumer consumer = new OrderConsumer();
                 EventEmitter emitter = new ErrorProducer();
                 boolean ok = true;
                 try {
@@ -58,7 +85,7 @@ public class EventLoop implements ServletContextListener{
                                     try {
                                         emitter.emit(errorEvent);
                                     } catch (Exception e1) {
-                                        logger.log(Level.SEVERE, "Failed emitting Error event " + errorEvent, e1);
+                                        logger.error("Failed emitting Error event " + errorEvent, e1);
                                     }
                                 }
                             }
@@ -85,7 +112,7 @@ public class EventLoop implements ServletContextListener{
         try {
             executor.awaitTermination(ApplicationConfig.TERMINATION_TIMEOUT_SEC, TimeUnit.SECONDS);
         } catch (InterruptedException ie) {
-            logger.log(Level.WARNING, "awaitTermination( interrupted", ie);
+            logger.warn("awaitTermination( interrupted", ie);
         }
     }
 
