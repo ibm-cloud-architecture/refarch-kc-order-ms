@@ -12,6 +12,7 @@ public class QueryOrder {
     private String expectedDeliveryDate;
     private String status;
     private String voyageID;
+    private String reason;
 
     public QueryOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status) {
@@ -24,7 +25,6 @@ public class QueryOrder {
         this.destinationAddress = destinationAddress;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
-        this.voyageID = "";
     }
 
     public static QueryOrder newFromOrder(Order order) {
@@ -70,6 +70,7 @@ public class QueryOrder {
 
     public void cancel(Cancellation cancellation) {
         this.status = Order.CANCELLED_STATUS;
+        this.reason = cancellation.getReason();
     }
 
     public String getStatus() {
@@ -146,6 +147,14 @@ public class QueryOrder {
 
     public void setExpectedDeliveryDate(String expectedDeliveryDate) {
         this.expectedDeliveryDate = expectedDeliveryDate;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     @Override
