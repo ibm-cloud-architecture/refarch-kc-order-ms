@@ -22,6 +22,7 @@ public class OrderConsumer {
     private final KafkaConsumer<String, String> kafkaConsumer;
     private final KafkaConsumer<String, String> reloadConsumer;
 
+    private boolean initDone = false;
     private OffsetAndMetadata reloadLimit;
     private boolean reloadCompleted = false;
 
@@ -34,52 +35,60 @@ public class OrderConsumer {
     }
 
     public List<OrderEvent> pollForReload() {
-        if (reloadLimit == null) {
+        if (!initDone) {
             reloadConsumer.subscribe(
                     Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
                     new ConsumerRebalanceListener() {
 
-                @Override
-                public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-                    logger.info("Partitions revoked " + partitions);
-                }
+                        @Override
+                        public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                            logger.info("Partitions revoked " + partitions);
+                        }
 
-                @Override
-                public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-                    logger.info("Partitions assigned " + partitions);
-                }
-            });
+                        @Override
+                        public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+                            logger.info("Partitions assigned " + partitions);
+                        }
+                    });
 
             kafkaConsumer.subscribe(
                     Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
                     new ConsumerRebalanceListener() {
 
-                @Override
-                public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-                    logger.info("Partitions revoked " + partitions);
-                }
+                        @Override
+                        public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                            logger.info("Partitions revoked " + partitions);
+                        }
 
-                @Override
-                public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-                    logger.info("Partitions assigned " + partitions);
-                }
-            });
+                        @Override
+                        public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+                            logger.info("Partitions assigned " + partitions);
+                        }
+                    });
 
             // blocking call !
             // TODO - need to handle multiple partitions
             reloadLimit = kafkaConsumer.committed(new TopicPartition(ApplicationConfig.ORDER_TOPIC, 0));
+            logger.info("Reload limit " + reloadLimit);
+            initDone = true;
         }
 
-        ConsumerRecords<String, String> recs = reloadConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
         List<OrderEvent> result = new ArrayList<>();
-        for (ConsumerRecord<String, String> rec : recs) {
-            if (rec.offset() <= reloadLimit.offset()) {
-                OrderEvent event = OrderEvent.deserialize(rec.value());
-                result.add(event);
-            } else {
-                logger.info("Reload Completed");
-                reloadCompleted = true;
-                break;
+
+        if (reloadLimit==null) {
+            // no prior commits found
+            reloadCompleted = true;
+        } else {
+            ConsumerRecords<String, String> recs = reloadConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
+            for (ConsumerRecord<String, String> rec : recs) {
+                if (rec.offset() <= reloadLimit.offset()) {
+                    OrderEvent event = OrderEvent.deserialize(rec.value());
+                    result.add(event);
+                } else {
+                    logger.info("Reload Completed");
+                    reloadCompleted = true;
+                    break;
+                }
             }
         }
         return result;
