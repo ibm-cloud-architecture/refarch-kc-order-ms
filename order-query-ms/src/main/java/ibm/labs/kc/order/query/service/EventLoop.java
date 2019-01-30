@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.kafka.ErrorProducer;
@@ -21,7 +22,7 @@ import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 @WebListener
 public class EventLoop implements ServletContextListener {
-    static final Logger logger = Logger.getLogger(EventLoop.class.getName());
+    static final Logger logger = LoggerFactory.getLogger(EventLoop.class);
 
     private boolean running = true;
     private OrderConsumer consumer;
@@ -56,6 +57,7 @@ public class EventLoop implements ServletContextListener {
                         }
                     }
                 }
+                logger.info("ReloadState completed");
                 consumer.safeReloadClose();
             }
         };
@@ -83,7 +85,7 @@ public class EventLoop implements ServletContextListener {
                                     try {
                                         emitter.emit(errorEvent);
                                     } catch (Exception e1) {
-                                        logger.log(Level.SEVERE, "Failed emitting Error event " + errorEvent, e1);
+                                        logger.error("Failed emitting Error event " + errorEvent, e1);
                                     }
                                 }
                             }
@@ -112,7 +114,7 @@ public class EventLoop implements ServletContextListener {
         try {
             executor.awaitTermination(ApplicationConfig.TERMINATION_TIMEOUT_SEC, TimeUnit.SECONDS);
         } catch (InterruptedException ie) {
-            logger.log(Level.WARNING, "awaitTermination( interrupted", ie);
+            logger.warn("awaitTermination( interrupted", ie);
         }
     }
 

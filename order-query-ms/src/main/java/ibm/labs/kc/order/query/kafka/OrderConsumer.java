@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -13,11 +12,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 public class OrderConsumer {
-    private static final Logger logger = Logger.getLogger(OrderConsumer.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(OrderConsumer.class.getName());
     private final KafkaConsumer<String, String> kafkaConsumer;
     private final KafkaConsumer<String, String> reloadConsumer;
 
@@ -76,7 +77,7 @@ public class OrderConsumer {
                 OrderEvent event = OrderEvent.deserialize(rec.value());
                 result.add(event);
             } else {
-                logger.warning("Reload Completed");
+                logger.info("Reload Completed");
                 reloadCompleted = true;
                 break;
             }
@@ -102,7 +103,7 @@ public class OrderConsumer {
         try {
             reloadConsumer.close(ApplicationConfig.CONSUMER_CLOSE_TIMEOUT);
         } catch (Exception e) {
-            logger.warning("Failed closing Consumer");
+            logger.warn("Failed closing reload Consumer",e);
         }
     }
 
@@ -111,7 +112,7 @@ public class OrderConsumer {
         try {
             kafkaConsumer.close(ApplicationConfig.CONSUMER_CLOSE_TIMEOUT);
         } catch (Exception e) {
-            logger.warning("Failed closing Consumer");
+            logger.warn("Failed closing Consumer",e);
         }
     }
 
