@@ -108,7 +108,15 @@ Each microservice has a build script to perform the maven package and build the 
  ./scripts/buildDocker.sh
  ```
 
+To run the complete solution locally we use [docker compose](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/docker/kc-solution-compose.yml) in the root project.
+
 ## How we implemented it
+
+As introduced in the [high level design note](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/docs/design.md) the order life cycle looks like in the following diagram:
+
+![](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/docs/order-life-cycle.png)
+
+The order microservice supports the implementations of this life cycle, using event sourcing and CQRS.
 
 There are different possible design approaches to use event sourcing. The following diagram illustrates the CQRS and event sourcing as well as the Saga pattern as the order command service is persisting order in its own datasource before creating event. The query part is a consumer of event and build projections to support the different queries:
 
@@ -122,7 +130,16 @@ The alternate is to have the BFF pushing events to the event source and then hav
 
 ![](docs/bff-es-cqrs.png)
 
-As the BFF still need to get order by ID or perform complex query it has to access the order service. The responsability is splitted and if CQRS is not a viable pattern in long term, the BFF code needs to be modified. It is also simpler for the BFF to do HTTP calls than posting to kafka topic.
+As the BFF still needs to get order by ID or perform complex query it has to access the order service. The responsability is splitted and if CQRS is not a viable pattern in long term, the BFF code needs to be modified. It is also simpler for the BFF to do HTTP calls than posting to kafka topic.
+
+The following sequence diagram illustrates the relationships between the components and one potential implementation of the Saga pattern.
+
+![](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/docs/kc-order-seq-diag.png)
+
+See [the REST end point source code here](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/6de424c443c05262ae013620f5f11b4a1b2e6f90/order-command-ms/src/main/java/ibm/labs/kc/order/command/service/OrderCRUDService.java#L51-L74)
+
+and the [order events consumer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/6de424c443c05262ae013620f5f11b4a1b2e6f90/order-command-ms/src/main/java/ibm/labs/kc/order/command/service/OrderAdminService.java#L35) in the command pattern.
+
 
 ## Contribute
 
