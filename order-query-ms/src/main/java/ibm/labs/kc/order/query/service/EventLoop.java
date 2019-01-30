@@ -24,14 +24,41 @@ public class EventLoop implements ServletContextListener {
     static final Logger logger = Logger.getLogger(EventLoop.class.getName());
 
     private boolean running = true;
+    private OrderConsumer consumer;
     private ExecutorService executor;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("ConsumerLoop contextInitialized");
 
+        consumer = new OrderConsumer();
         executor = Executors.newFixedThreadPool(1);
+        executor.execute(newReloadRunnable());
         executor.execute(newRunnable());
+    }
+
+    private Runnable newReloadRunnable() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                logger.info("ReloadState started");
+                EventListener listener = new QueryService();
+
+                while (!consumer.reloadCompleted()) {
+                    List<OrderEvent> events = consumer.pollForReload();
+                    for (OrderEvent event : events) {
+                        try {
+                            listener.handle(event);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            // TODO fail to restart would be the correct handling
+                            // mark the app as unhealthy
+                        }
+                    }
+                }
+                consumer.safeReloadClose();
+            }
+        };
     }
 
     private Runnable newRunnable() {
@@ -40,7 +67,6 @@ public class EventLoop implements ServletContextListener {
             public void run() {
                 logger.info("ConsumerLoop thread started");
                 EventListener listener = new QueryService();
-                OrderConsumer consumer = new OrderConsumer();
                 EventEmitter emitter = new ErrorProducer();
                 boolean ok = true;
                 try {
@@ -67,6 +93,7 @@ public class EventLoop implements ServletContextListener {
                             // stop this task and queue a new one
                             ok = false;
                             executor.execute(newRunnable());
+                            // TODO: after a number of retrying, mark app as unhealthy for external monitoring restart
                         }
                     }
                 } finally {

@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response;
 public class HealthEndpoint {
     static final Logger logger = Logger.getLogger(HealthEndpoint.class.getName());
 
+
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response healthcheck() {
