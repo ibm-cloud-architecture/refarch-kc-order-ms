@@ -15,8 +15,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 import ibm.labs.kc.order.command.model.events.OrderEvent;
 
 
@@ -98,13 +96,11 @@ public class OrderConsumer {
     }
 
     public List<OrderEvent> poll() {
-        Gson gson = new Gson();
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
         List<OrderEvent> result = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {
-            String orderString = rec.value();
-            OrderEvent o = gson.fromJson(orderString, OrderEvent.class);
-            result.add(o);
+            OrderEvent event = OrderEvent.deserialize(rec.value());
+            result.add(event);
         }
         return result;
     }
