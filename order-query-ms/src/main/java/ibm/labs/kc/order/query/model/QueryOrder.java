@@ -1,5 +1,7 @@
 package ibm.labs.kc.order.query.model;
 
+import java.util.Objects;
+
 public class QueryOrder {
 
     private String orderID;
@@ -159,78 +161,11 @@ public class QueryOrder {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((customerID == null) ? 0 : customerID.hashCode());
-        result = prime * result + ((destinationAddress == null) ? 0 : destinationAddress.hashCode());
-        result = prime * result + ((expectedDeliveryDate == null) ? 0 : expectedDeliveryDate.hashCode());
-        result = prime * result + ((orderID == null) ? 0 : orderID.hashCode());
-        result = prime * result + ((pickupAddress == null) ? 0 : pickupAddress.hashCode());
-        result = prime * result + ((pickupDate == null) ? 0 : pickupDate.hashCode());
-        result = prime * result + ((productID == null) ? 0 : productID.hashCode());
-        result = prime * result + quantity;
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
-        result = prime * result + ((voyageID == null) ? 0 : voyageID.hashCode());
-        return result;
+        return Objects.hash(this);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        QueryOrder other = (QueryOrder) obj;
-        if (customerID == null) {
-            if (other.customerID != null)
-                return false;
-        } else if (!customerID.equals(other.customerID))
-            return false;
-        if (destinationAddress == null) {
-            if (other.destinationAddress != null)
-                return false;
-        } else if (!destinationAddress.equals(other.destinationAddress))
-            return false;
-        if (expectedDeliveryDate == null) {
-            if (other.expectedDeliveryDate != null)
-                return false;
-        } else if (!expectedDeliveryDate.equals(other.expectedDeliveryDate))
-            return false;
-        if (orderID == null) {
-            if (other.orderID != null)
-                return false;
-        } else if (!orderID.equals(other.orderID))
-            return false;
-        if (pickupAddress == null) {
-            if (other.pickupAddress != null)
-                return false;
-        } else if (!pickupAddress.equals(other.pickupAddress))
-            return false;
-        if (pickupDate == null) {
-            if (other.pickupDate != null)
-                return false;
-        } else if (!pickupDate.equals(other.pickupDate))
-            return false;
-        if (productID == null) {
-            if (other.productID != null)
-                return false;
-        } else if (!productID.equals(other.productID))
-            return false;
-        if (quantity != other.quantity)
-            return false;
-        if (status == null) {
-            if (other.status != null)
-                return false;
-        } else if (!status.equals(other.status))
-            return false;
-        if (voyageID == null) {
-            if (other.voyageID != null)
-                return false;
-        } else if (!voyageID.equals(other.voyageID))
-            return false;
-        return true;
+        return Objects.equals(this, obj);
     }
-
 }
