@@ -38,19 +38,18 @@ public class OrderDAOMock implements OrderDAO {
     }
 
     @Override
-    public void add(QueryOrder o) {
-        logger.info("Adding order id " + o.getOrderID());
-        try {
-            orders.put(o.getOrderID(), o);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+    public void add(QueryOrder order) {
+        logger.info("Adding order id " + order.getOrderID());
+        if (orders.putIfAbsent(order.getOrderID(), order) != null) {
+            throw new IllegalStateException("order already exists " + order.getOrderID());
         }
     }
 
     @Override
     public void update(QueryOrder order) {
+        logger.info("Updating order id " + order.getOrderID());
         if (orders.replace(order.getOrderID(), order) == null) {
-            throw new IllegalStateException("order does not already exist");
+            throw new IllegalStateException("order does not already exist " + order.getOrderID());
         }
     }
 
