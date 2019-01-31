@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import ibm.labs.kc.order.command.model.CommandOrder;
-
 public class OrderDAOMock implements OrderDAO {
 
     private final Map<String, CommandOrder> orders;

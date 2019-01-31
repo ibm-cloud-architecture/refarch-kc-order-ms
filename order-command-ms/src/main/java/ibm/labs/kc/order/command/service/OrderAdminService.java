@@ -16,10 +16,10 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibm.labs.kc.order.command.dao.CommandOrder;
 import ibm.labs.kc.order.command.dao.OrderDAO;
 import ibm.labs.kc.order.command.dao.OrderDAOMock;
 import ibm.labs.kc.order.command.model.Cancellation;
-import ibm.labs.kc.order.command.model.CommandOrder;
 import ibm.labs.kc.order.command.model.Order;
 import ibm.labs.kc.order.command.model.VoyageAssignment;
 import ibm.labs.kc.order.command.model.events.AssignOrderEvent;
@@ -43,7 +43,7 @@ public class OrderAdminService implements EventListener {
     @Override
     public void handle(Event event) {
         String orderID;
-        Optional<CommandOrder> oqo;
+        Optional<CommandOrder> oco;
         try {
             OrderEvent orderEvent = (OrderEvent) event;
             switch (orderEvent.getType()) {
@@ -57,11 +57,11 @@ public class OrderAdminService implements EventListener {
                 synchronized (orderDAO) {
                     Order o2 = ((UpdateOrderEvent) orderEvent).getPayload();
                     orderID = o2.getOrderID();
-                    oqo = orderDAO.getByID(orderID);
-                    if (oqo.isPresent()) {
-                        CommandOrder qo = oqo.get();
-                        qo.update(o2);
-                        orderDAO.update(qo);
+                    oco = orderDAO.getByID(orderID);
+                    if (oco.isPresent()) {
+                        CommandOrder co = oco.get();
+                        co.update(o2);
+                        orderDAO.update(co);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -71,11 +71,11 @@ public class OrderAdminService implements EventListener {
                 synchronized (orderDAO) {
                     VoyageAssignment voyageAssignment = ((AssignOrderEvent) orderEvent).getPayload();
                     orderID = voyageAssignment.getOrderID();
-                    oqo = orderDAO.getByID(orderID);
-                    if (oqo.isPresent()) {
-                        CommandOrder qo = oqo.get();
-                        qo.assign(voyageAssignment);
-                        orderDAO.update(qo);
+                    oco = orderDAO.getByID(orderID);
+                    if (oco.isPresent()) {
+                        CommandOrder co = oco.get();
+                        co.assign(voyageAssignment);
+                        orderDAO.update(co);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -85,11 +85,11 @@ public class OrderAdminService implements EventListener {
                 synchronized (orderDAO) {
                     Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
                     orderID = cancellation.getOrderID();
-                    oqo = orderDAO.getByID(orderID);
-                    if (oqo.isPresent()) {
-                        CommandOrder qo = oqo.get();
-                        qo.cancel(cancellation);
-                        orderDAO.update(qo);
+                    oco = orderDAO.getByID(orderID);
+                    if (oco.isPresent()) {
+                        CommandOrder co = oco.get();
+                        co.cancel(cancellation);
+                        orderDAO.update(co);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }

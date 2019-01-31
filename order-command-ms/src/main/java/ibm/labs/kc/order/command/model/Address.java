@@ -1,7 +1,5 @@
 package ibm.labs.kc.order.command.model;
 
-import java.util.Objects;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 

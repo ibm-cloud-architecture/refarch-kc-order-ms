@@ -21,10 +21,10 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.order.query.dao.QueryOrder;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Order;
-import ibm.labs.kc.order.query.model.QueryOrder;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;

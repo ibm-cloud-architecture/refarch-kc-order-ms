@@ -1,8 +1,14 @@
-package ibm.labs.kc.order.query.model;
+package ibm.labs.kc.order.command.dao;
 
-import java.util.Objects;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class QueryOrder {
+import ibm.labs.kc.order.command.model.Address;
+import ibm.labs.kc.order.command.model.Cancellation;
+import ibm.labs.kc.order.command.model.Order;
+import ibm.labs.kc.order.command.model.VoyageAssignment;
+
+public class CommandOrder {
 
     private String orderID;
     private String productID;
@@ -13,10 +19,8 @@ public class QueryOrder {
     private Address destinationAddress;
     private String expectedDeliveryDate;
     private String status;
-    private String voyageID;
-    private String reason;
 
-    public QueryOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+    public CommandOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status) {
         this.orderID = orderID;
         this.productID = productID;
@@ -29,8 +33,8 @@ public class QueryOrder {
         this.status = status;
     }
 
-    public static QueryOrder newFromOrder(Order order) {
-        return new QueryOrder(order.getOrderID(),
+    public static CommandOrder newFromOrder(Order order) {
+        return new CommandOrder(order.getOrderID(),
                 order.getProductID(), order.getCustomerID(), order.getQuantity(),
                 order.getPickupAddress(), order.getPickupDate(),
                 order.getDestinationAddress(), order.getExpectedDeliveryDate(),
@@ -66,106 +70,57 @@ public class QueryOrder {
     }
 
     public void assign(VoyageAssignment voyageAssignment) {
-        this.voyageID = voyageAssignment.getVoyageID();
         this.status = Order.ASSIGNED_STATUS;
     }
 
     public void cancel(Cancellation cancellation) {
         this.status = Order.CANCELLED_STATUS;
-        this.reason = cancellation.getReason();
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getVoyageID() {
-        return voyageID;
-    }
-
     public String getOrderID() {
         return orderID;
-    }
-
-    public void setOrderID(String orderID) {
-        this.orderID = orderID;
     }
 
     public String getProductID() {
         return productID;
     }
 
-    public void setProductID(String productID) {
-        this.productID = productID;
-    }
-
     public String getCustomerID() {
         return customerID;
-    }
-
-    public void setCustomerID(String customerID) {
-        this.customerID = customerID;
     }
 
     public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public Address getPickupAddress() {
         return pickupAddress;
-    }
-
-    public void setPickupAddress(Address pickupAddress) {
-        this.pickupAddress = pickupAddress;
     }
 
     public String getPickupDate() {
         return pickupDate;
     }
 
-    public void setPickupDate(String pickupDate) {
-        this.pickupDate = pickupDate;
-    }
-
     public Address getDestinationAddress() {
         return destinationAddress;
-    }
-
-    public void setDestinationAddress(Address destinationAddress) {
-        this.destinationAddress = destinationAddress;
     }
 
     public String getExpectedDeliveryDate() {
         return expectedDeliveryDate;
     }
 
-    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
-        this.expectedDeliveryDate = expectedDeliveryDate;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(this);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return Objects.equals(this, obj);
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
+
 }

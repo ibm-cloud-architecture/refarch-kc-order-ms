@@ -2,7 +2,7 @@ package ibm.labs.kc.order.command.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import ibm.labs.kc.order.command.model.CommandOrder;
+import ibm.labs.kc.order.command.dao.CommandOrder;
 import ibm.labs.kc.order.command.model.Order;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

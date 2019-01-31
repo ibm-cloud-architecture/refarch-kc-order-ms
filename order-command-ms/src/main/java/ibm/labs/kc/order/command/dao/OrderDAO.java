@@ -3,8 +3,6 @@ package ibm.labs.kc.order.command.dao;
 import java.util.Collection;
 import java.util.Optional;
 
-import ibm.labs.kc.order.command.model.CommandOrder;
-
 public interface OrderDAO {
 
     public void add(CommandOrder order);

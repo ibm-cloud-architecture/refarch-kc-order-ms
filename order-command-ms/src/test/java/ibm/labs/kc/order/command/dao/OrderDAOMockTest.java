@@ -12,7 +12,6 @@ import java.util.UUID;
 import org.junit.Test;
 
 import ibm.labs.kc.order.command.model.Address;
-import ibm.labs.kc.order.command.model.CommandOrder;
 import ibm.labs.kc.order.command.model.Order;
 
 public class OrderDAOMockTest {
@@ -45,7 +44,8 @@ public class OrderDAOMockTest {
         } catch (IllegalStateException ise) {}
 
         // Update
-        co1Clone.setPickupDate("2018-01-10T13:30Z");
+        order1.setPickupDate("2018-01-10T13:30Z");
+        co1Clone = CommandOrder.newFromOrder(order1);
         dao.update(co1Clone);
         assertEquals(1, dao.getAll().size());
         assertEquals(co1Clone, dao.getByID(order1.getOrderID()).get());

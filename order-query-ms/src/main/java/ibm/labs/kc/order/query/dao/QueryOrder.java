@@ -1,9 +1,14 @@
-package ibm.labs.kc.order.command.model;
+package ibm.labs.kc.order.query.dao;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class CommandOrder {
+import ibm.labs.kc.order.query.model.Address;
+import ibm.labs.kc.order.query.model.Cancellation;
+import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.VoyageAssignment;
+
+public class QueryOrder {
 
     private String orderID;
     private String productID;
@@ -17,7 +22,7 @@ public class CommandOrder {
     private String voyageID;
     private String reason;
 
-    public CommandOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+    public QueryOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status) {
         this.orderID = orderID;
         this.productID = productID;
@@ -30,8 +35,8 @@ public class CommandOrder {
         this.status = status;
     }
 
-    public static CommandOrder newFromOrder(Order order) {
-        return new CommandOrder(order.getOrderID(),
+    public static QueryOrder newFromOrder(Order order) {
+        return new QueryOrder(order.getOrderID(),
                 order.getProductID(), order.getCustomerID(), order.getQuantity(),
                 order.getPickupAddress(), order.getPickupDate(),
                 order.getDestinationAddress(), order.getExpectedDeliveryDate(),
@@ -80,10 +85,6 @@ public class CommandOrder {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getVoyageID() {
         return voyageID;
     }
@@ -92,72 +93,36 @@ public class CommandOrder {
         return orderID;
     }
 
-    public void setOrderID(String orderID) {
-        this.orderID = orderID;
-    }
-
     public String getProductID() {
         return productID;
-    }
-
-    public void setProductID(String productID) {
-        this.productID = productID;
     }
 
     public String getCustomerID() {
         return customerID;
     }
 
-    public void setCustomerID(String customerID) {
-        this.customerID = customerID;
-    }
-
     public int getQuantity() {
         return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
     }
 
     public Address getPickupAddress() {
         return pickupAddress;
     }
 
-    public void setPickupAddress(Address pickupAddress) {
-        this.pickupAddress = pickupAddress;
-    }
-
     public String getPickupDate() {
         return pickupDate;
-    }
-
-    public void setPickupDate(String pickupDate) {
-        this.pickupDate = pickupDate;
     }
 
     public Address getDestinationAddress() {
         return destinationAddress;
     }
 
-    public void setDestinationAddress(Address destinationAddress) {
-        this.destinationAddress = destinationAddress;
-    }
-
     public String getExpectedDeliveryDate() {
         return expectedDeliveryDate;
     }
 
-    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
-        this.expectedDeliveryDate = expectedDeliveryDate;
-    }
-
     public String getReason() {
         return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
     }
 
     @Override
@@ -169,5 +134,4 @@ public class CommandOrder {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
-
 }

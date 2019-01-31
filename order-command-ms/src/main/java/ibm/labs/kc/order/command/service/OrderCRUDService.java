@@ -21,12 +21,12 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibm.labs.kc.order.command.dao.CommandOrder;
 import ibm.labs.kc.order.command.dao.OrderDAO;
 import ibm.labs.kc.order.command.dao.OrderDAOMock;
 import ibm.labs.kc.order.command.dto.OrderCreate;
 import ibm.labs.kc.order.command.dto.OrderUpdate;
 import ibm.labs.kc.order.command.kafka.OrderProducer;
-import ibm.labs.kc.order.command.model.CommandOrder;
 import ibm.labs.kc.order.command.model.Order;
 import ibm.labs.kc.order.command.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.command.model.events.EventEmitter;

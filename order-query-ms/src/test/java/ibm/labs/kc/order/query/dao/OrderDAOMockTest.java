@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Order;
-import ibm.labs.kc.order.query.model.QueryOrder;
 
 public class OrderDAOMockTest {
 
