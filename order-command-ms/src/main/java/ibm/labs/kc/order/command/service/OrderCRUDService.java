@@ -1,9 +1,8 @@
 package ibm.labs.kc.order.command.service;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -19,19 +18,24 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import ibm.labs.kc.order.command.dao.CommandOrder;
 import ibm.labs.kc.order.command.dao.OrderDAO;
 import ibm.labs.kc.order.command.dao.OrderDAOMock;
 import ibm.labs.kc.order.command.dto.OrderCreate;
 import ibm.labs.kc.order.command.dto.OrderUpdate;
 import ibm.labs.kc.order.command.kafka.OrderProducer;
 import ibm.labs.kc.order.command.model.Order;
+import ibm.labs.kc.order.command.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.command.model.events.EventEmitter;
 import ibm.labs.kc.order.command.model.events.OrderEvent;
+import ibm.labs.kc.order.command.model.events.UpdateOrderEvent;
 
 @Path("orders")
 public class OrderCRUDService {
-    private static final Logger logger = Logger.getLogger(OrderCRUDService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(OrderCRUDService.class);
 
     private EventEmitter emitter;
     private OrderDAO orderDAO;
@@ -60,13 +64,12 @@ public class OrderCRUDService {
                 dto.getDestinationAddress(), dto.getExpectedDeliveryDate(),
                 Order.PENDING_STATUS);
 
-        OrderEvent orderEvent = new OrderEvent(System.currentTimeMillis(),
-                OrderEvent.TYPE_CREATED, "1", order);
+        OrderEvent orderEvent = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
 
         try {
             emitter.emit(orderEvent);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Fail to publish order created event", e);
+            logger.error("Fail to publish order created event", e);
             return Response.serverError().build();
         }
 
@@ -88,9 +91,9 @@ public class OrderCRUDService {
             throw new IllegalArgumentException("OrderID in body does not match PUT path");
         }
 
-        Order existingOrder = orderDAO.getByID(orderID);
-        if (existingOrder != null) {
-            OrderUpdate.validate(dto, existingOrder);
+        Optional<CommandOrder> existingOrder = orderDAO.getByID(orderID);
+        if (existingOrder.isPresent()) {
+            OrderUpdate.validate(dto, existingOrder.get());
 
             Order updatedOrder = new Order(orderID,
                     dto.getProductID(),
@@ -100,13 +103,12 @@ public class OrderCRUDService {
                     dto.getDestinationAddress(), dto.getExpectedDeliveryDate(),
                     Order.PENDING_STATUS);
 
-            OrderEvent orderEvent = new OrderEvent(System.currentTimeMillis(),
-                    OrderEvent.TYPE_UPDATED, "1", updatedOrder);
+            OrderEvent orderEvent = new UpdateOrderEvent(System.currentTimeMillis(), "1", updatedOrder);
 
             try {
                 emitter.emit(orderEvent);
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Fail to publish order updated event", e);
+                logger.error("Fail to publish order updated event", e);
                 return Response.serverError().build();
             }
 

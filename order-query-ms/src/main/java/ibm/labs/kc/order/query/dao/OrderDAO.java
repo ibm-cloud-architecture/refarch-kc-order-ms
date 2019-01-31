@@ -3,8 +3,6 @@ package ibm.labs.kc.order.query.dao;
 import java.util.Collection;
 import java.util.Optional;
 
-import ibm.labs.kc.order.query.model.QueryOrder;
-
 public interface OrderDAO {
 
     public Optional<QueryOrder> getById(String orderId);

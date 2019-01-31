@@ -7,14 +7,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import ibm.labs.kc.order.query.model.QueryOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class OrderDAOMock implements OrderDAO {
-    static final Logger logger = Logger.getLogger(OrderDAOMock.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(OrderDAOMock.class);
 
     private final Map<String, QueryOrder> orders;
 
@@ -44,7 +43,7 @@ public class OrderDAOMock implements OrderDAO {
         try {
             orders.put(o.getOrderID(), o);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
     }
 

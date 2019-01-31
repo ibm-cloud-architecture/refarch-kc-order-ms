@@ -5,11 +5,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -17,9 +18,10 @@ import ibm.labs.kc.order.command.model.events.ErrorEvent;
 import ibm.labs.kc.order.command.model.events.Event;
 import ibm.labs.kc.order.command.model.events.EventEmitter;
 
+
 public class ErrorProducer implements EventEmitter {
 
-    private static final Logger logger = Logger.getLogger(ErrorProducer.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ErrorProducer.class);
 
     private KafkaProducer<String, String> kafkaProducer;
 
@@ -44,7 +46,7 @@ public class ErrorProducer implements EventEmitter {
         try {
             kafkaProducer.close(ApplicationConfig.PRODUCER_CLOSE_TIMEOUT_SEC, TimeUnit.SECONDS);
         } catch (Exception e) {
-            logger.warning("Failed to close Producer");
+            logger.warn("Failed to close Producer", e);
         }
     }
 

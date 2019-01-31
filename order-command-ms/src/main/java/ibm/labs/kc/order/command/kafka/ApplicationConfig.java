@@ -46,6 +46,19 @@ public class ApplicationConfig {
         return properties;
     }
 
+    public static Properties getConsumerReloadProperties() {
+        Properties properties = buildCommonProperties();
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID + "-reload");
+        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-command-reload");
+        return properties;
+    }
+
     /**
      * Take into account the environment variables if set
      * 

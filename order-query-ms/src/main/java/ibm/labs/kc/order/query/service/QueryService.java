@@ -2,8 +2,6 @@ package ibm.labs.kc.order.query.service;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,12 +15,14 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ibm.labs.kc.order.query.dao.OrderDAO;
 import ibm.labs.kc.order.query.dao.OrderDAOMock;
+import ibm.labs.kc.order.query.dao.QueryOrder;
 import ibm.labs.kc.order.query.model.Cancellation;
 import ibm.labs.kc.order.query.model.Order;
-import ibm.labs.kc.order.query.model.QueryOrder;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
@@ -34,7 +34,7 @@ import ibm.labs.kc.order.query.model.events.UpdateOrderEvent;
 
 @Path("orders")
 public class QueryService implements EventListener {
-    static final Logger logger = Logger.getLogger(QueryService.class.getName());
+    static final Logger logger = LoggerFactory.getLogger(QueryService.class);
 
     private OrderDAO orderDAO;
 
@@ -142,10 +142,10 @@ public class QueryService implements EventListener {
                 }
                 break;
             default:
-                logger.warning("Unknown event type: " + orderEvent);
+                logger.warn("Unknown event type: " + orderEvent);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
     }
 

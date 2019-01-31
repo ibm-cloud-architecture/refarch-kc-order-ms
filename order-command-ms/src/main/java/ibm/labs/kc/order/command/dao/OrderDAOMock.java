@@ -3,13 +3,12 @@ package ibm.labs.kc.order.command.dao;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
-import ibm.labs.kc.order.command.model.Order;
 
 public class OrderDAOMock implements OrderDAO {
 
-    private final Map<String, Order> orders;
+    private final Map<String, CommandOrder> orders;
 
     private static OrderDAOMock instance;
 
@@ -25,27 +24,28 @@ public class OrderDAOMock implements OrderDAO {
     }
 
     @Override
-    public void add(Order order) {
+    public void add(CommandOrder order) {
         if (orders.putIfAbsent(order.getOrderID(), order) != null) {
             throw new IllegalStateException("order already exists");
         }
     }
 
     @Override
-    public Collection<Order> getAll() {
+    public Collection<CommandOrder> getAll() {
         return Collections.unmodifiableCollection(orders.values());
     }
 
     @Override
-    public Order getByID(String orderID) {
-        return orders.get(orderID);
-    }
-
-    @Override
-    public void update(Order order) {
+    public void update(CommandOrder order) {
         if (orders.replace(order.getOrderID(), order) == null) {
             throw new IllegalStateException("order does not already exist");
         }
+    }
+
+    @Override
+    public Optional<CommandOrder> getByID(String orderId) {
+        CommandOrder o = orders.get(orderId);
+        return Optional.ofNullable(o);
     }
 
 }
