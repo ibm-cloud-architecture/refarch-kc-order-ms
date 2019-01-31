@@ -2,6 +2,9 @@ package ibm.labs.kc.order.command.model;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Address {
     private String street;
     private String city;
@@ -19,16 +22,6 @@ public class Address {
     }
 
     public Address() {
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return Objects.equals(this, obj);
     }
 
     public String getStreet() {
@@ -69,6 +62,16 @@ public class Address {
 
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
 }

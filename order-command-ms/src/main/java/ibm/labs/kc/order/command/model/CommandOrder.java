@@ -1,6 +1,7 @@
 package ibm.labs.kc.order.command.model;
 
-import java.util.Objects;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class CommandOrder {
 
@@ -161,12 +162,12 @@ public class CommandOrder {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return Objects.equals(this, obj);
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
 }
