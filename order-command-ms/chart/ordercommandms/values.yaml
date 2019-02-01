@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: ibmcase/kc-ordercommandms
+  repository: ibmcase/kc-ordercmdms
   tag: latest
   pullPolicy: IfNotPresent
   resources:
@@ -14,6 +14,7 @@ service:
   name: Node
   type: NodePort
   servicePort: 9080
+  nodePort: 31200
   servicePortHttps: 9443
 hpa:
   enabled: false
@@ -35,3 +36,5 @@ istio:
   weight: 100
 generatedBindings:
   enabled: true
+eventstreams:
+  brokers: "<KAFKA_BROKERS>"
