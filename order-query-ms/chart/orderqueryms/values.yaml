@@ -3,8 +3,8 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: orderqueryms
-  tag: v1.0.0
+  repository: edobrez/kc-orderqueryms
+  tag: latest
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -15,6 +15,7 @@ service:
   type: NodePort
   servicePort: 9080
   servicePortHttps: 9443
+  nodePort: 31100
 hpa:
   enabled: false
   minReplicas: 1
@@ -35,3 +36,5 @@ istio:
   weight: 100
 generatedBindings:
   enabled: true
+eventstreams:
+  brokers: "kafka05-prod01.messagehub.services.eu-de.bluemix.net:9093"
