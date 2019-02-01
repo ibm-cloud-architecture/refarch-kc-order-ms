@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: mimaison/order-command-ms
+  repository: ibmcase/kc-ordercmdms
   tag: latest
   pullPolicy: IfNotPresent
   resources:
@@ -37,4 +37,4 @@ istio:
 generatedBindings:
   enabled: true
 eventstreams:
-  brokers: "kafka05-prod01.messagehub.services.eu-de.bluemix.net:9093"
+  brokers: "<KAFKA_BROKERS>"
