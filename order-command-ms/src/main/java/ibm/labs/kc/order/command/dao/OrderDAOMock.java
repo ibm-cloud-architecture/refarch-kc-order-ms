@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class OrderDAOMock implements OrderDAO {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class OrderDAOMock implements OrderDAO {
+    private static final Logger logger = LoggerFactory.getLogger(OrderDAOMock.class);
     private final Map<String, CommandOrder> orders;
 
     private static OrderDAOMock instance;
@@ -25,8 +28,9 @@ public class OrderDAOMock implements OrderDAO {
 
     @Override
     public void add(CommandOrder order) {
+        logger.info("Adding order id " + order.getOrderID());
         if (orders.putIfAbsent(order.getOrderID(), order) != null) {
-            throw new IllegalStateException("order already exists");
+            throw new IllegalStateException("order already exists " + order.getOrderID());
         }
     }
 
@@ -37,8 +41,9 @@ public class OrderDAOMock implements OrderDAO {
 
     @Override
     public void update(CommandOrder order) {
+        logger.info("Updating order id " + order.getOrderID());
         if (orders.replace(order.getOrderID(), order) == null) {
-            throw new IllegalStateException("order does not already exist");
+            throw new IllegalStateException("order does not already exist " + order.getOrderID());
         }
     }
 
