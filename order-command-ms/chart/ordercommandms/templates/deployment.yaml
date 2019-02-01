@@ -34,6 +34,15 @@ spec:
             value: "{{ .Values.service.servicePort }}"
           - name: APPLICATION_NAME
             value: "{{ .Release.Name }}"
+          - name: KAFKA_ENV
+            value: "IBMCLOUD"
+          - name: KAFKA_BROKERS
+            value: "{{ .Values.eventstreams.brokers }}"
+          - name: KAFKA_APIKEY
+            valueFrom: 
+              secretKeyRef:
+                name: eventstreams-apikey
+                key: binding
 {{- if .Values.generatedBindings.enabled }}
 {{.Files.Get "bindings.yaml" | indent 10 }}
 {{- end }}
