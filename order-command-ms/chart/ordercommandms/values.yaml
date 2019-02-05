@@ -5,7 +5,7 @@ revisionHistoryLimit: 1
 image:
   repository: ibmcase/kc-ordercommandms
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   resources:
     requests:
       cpu: 200m
