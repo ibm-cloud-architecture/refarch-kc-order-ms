@@ -3,9 +3,10 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: ibmcase/kc-orderqueryms
+  repository: registry.ng.bluemix.net/ibmcaseeda/kc-orderqueryms
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
+  pullSecret: bluemix-browncompute-secret-regional
   resources:
     requests:
       cpu: 200m
@@ -37,4 +38,5 @@ istio:
 generatedBindings:
   enabled: true
 eventstreams:
-  brokers: "<KAFKA_BROKERS>"
+  brokers: kafka03-prod02.messagehub.services.us-south.bluemix.net:9093,kafka01-prod02.messagehub.services.us-south.bluemix.net:9093,kafka02-prod02.messagehub.services.us-south.bluemix.net:9093,kafka04-prod02.messagehub.services.us-south.bluemix.net:9093,kafka05-prod02.messagehub.services.us-south.bluemix.net:9093
+  env: IBMCLOUD

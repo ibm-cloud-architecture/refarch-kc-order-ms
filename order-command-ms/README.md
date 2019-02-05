@@ -1,8 +1,6 @@
-## Microservice
-IBM Cloud Microservice Starter for Java - MicroProfile / Java EE
+## Order Command Microservice
 
-[![](https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg)](https://bluemix.net)
-[![Platform](https://img.shields.io/badge/platform-java-lightgrey.svg?style=flat)](https://www.ibm.com/developerworks/learn/java/)
+This project is part of the EDA reference implementation solution.
 
 ### Table of Contents
 * [Summary](#summary)
@@ -57,8 +55,11 @@ The context root is set in the `src/main/webapp/WEB-INF/ibm-web-ext.xml` file. T
 
 ### Notices
 
-This project was generated using:
+This project was generated using IBM Cloud Microservice Starter for Java - MicroProfile / Java EE
+[![](https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg)](https://ibmcloud.com)
+[![Platform](https://img.shields.io/badge/platform-java-lightgrey.svg?style=flat)](https://www.ibm.com/developerworks/learn/java/)
+
 * generator-ibm-java v5.13.7
 * generator-ibm-service-enablement v3.1.2
 * generator-ibm-cloud-enablement v1.5.4
-* generator-ibm-java-liberty v
+* generator-ibm-java-liberty 

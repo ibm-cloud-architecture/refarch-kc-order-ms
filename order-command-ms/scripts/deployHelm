@@ -1,0 +1,23 @@
+#!/bin/bash
+. ./setenv.sh
+
+echo "Deploy helm chart for $chart project to $ns"
+
+
+verifyPod(){
+  kubectl logs $1 -n $ns
+}
+
+echo "############################"
+oq=$(helm list | grep $kname | awk '{print $1}')
+if [[ -z "$oq" ]]
+then 
+  echo "$chart release not deployed..."
+  cd ../chart
+  helm install $chart/ --name $kname --namespace $ns
+  sleep 4
+else 
+    echo "$kname release deployed, here is the pod logs" 
+fi
+podId=$(kubectl get pods -n $ns | grep $msname | awk '{print $1}')
+verifyPod $podId
