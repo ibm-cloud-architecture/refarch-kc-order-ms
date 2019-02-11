@@ -9,6 +9,7 @@ import ibm.labs.kc.order.command.model.Order;
 public class OrderUpdate extends OrderRequest {
 
     private String orderID;
+    private String status;
 
     public String getOrderID() {
         return orderID;
@@ -18,12 +19,12 @@ public class OrderUpdate extends OrderRequest {
         this.orderID = orderID;
     }
 
-    //TODO need to ignore this
     public String getStatus() {
-        return "";
+        return this.status;
     }
 
     public void setStatus(String status) {
+    	this.status = status;
     }
 
     public static void validate(OrderUpdate co, CommandOrder existingOrder) {

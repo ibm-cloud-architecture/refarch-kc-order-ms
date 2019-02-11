@@ -101,7 +101,7 @@ public class OrderCRUDService {
                     dto.getQuantity(),
                     dto.getPickupAddress(), dto.getPickupDate(),
                     dto.getDestinationAddress(), dto.getExpectedDeliveryDate(),
-                    Order.PENDING_STATUS);
+                    dto.getStatus());
 
             OrderEvent orderEvent = new UpdateOrderEvent(System.currentTimeMillis(), "1", updatedOrder);
 

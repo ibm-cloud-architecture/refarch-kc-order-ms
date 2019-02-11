@@ -1,6 +1,6 @@
 ## Order Command Microservice
 
-This project is part of the EDA reference implementation solution.
+This project is part of the EDA reference implementation solution. 
 
 ### Table of Contents
 * [Summary](#summary)
@@ -11,10 +11,20 @@ This project is part of the EDA reference implementation solution.
 
 ### Summary
 
-The IBM Cloud Microservice Starter for Java - MicroProfile / Java EE provides a starting point for creating Java microservice applications running on [WebSphere Liberty](https://developer.ibm.com/wasdev/).
+The order command microservice supports the following features:
 
-To deploy this application to IBM Cloud using a toolchain click the **Create Toolchain** button.
-[![Create Toolchain](https://console.ng.bluemix.net/devops/graphics/create_toolchain_button.png)](https://console.ng.bluemix.net/devops/setup/deploy/)
+* Create a new order via POST to `/orders`: emit a OrderCreated event and save to internal data store. (memory only)
+* Update existing order via PUT on `/orders/:id` 
+See the class [OrderCRUDService.java](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/labs/kc/order/command/service/OrderCRUDService.java).
+
+* Produce order events to the `orders` topic. 
+* Consume events to update its data source.
+
+When the application starts there is a [ServletContextListener](https://docs.oracle.com/javaee/6/api/javax/servlet/ServletContextListener.html) class started to create a consumer to subscribe to order events (different types) from `orders` topic. When consumer reaches an issue to get event it creates an error to the `errors` topic, so administrator user could replay the event source from the last committed offset. Any kafka broker communication issue is shutting down the consumer loop.
+
+
+This Java microservice applications runs on [WebSphere Liberty](https://developer.ibm.com/wasdev/).
+
 
 ### Requirements
 * [Maven](https://maven.apache.org/install.html)
@@ -28,14 +38,6 @@ To deploy this application to IBM Cloud using a toolchain click the **Create Too
 The application is configured to provide JAX-RS REST capabilities, JNDI, JSON parsing and Contexts and Dependency Injection (CDI).
 
 These capabilities are provided through dependencies in the pom.xml file and Liberty features enabled in the server config file found in `src/main/liberty/config/server.xml`.
-
-### Project contents
-The microservice application has a health endpoint which is accessible at `<host>:<port>/ordercommandms/health`. The context root is set in the `src/main/webapp/WEB-INF/ibm-web-ext.xml` file. The ports are set in the pom.xml file and exposed to the CLI in the cli-config.yml file.
-
-The project contains IBM Cloud specific files that are used to deploy the application as part of a IBM Cloud DevOps flow. The `.bluemix` directory contains files used to define the IBM Cloud toolchain and pipeline for your application. The `manifest.yml` file specifies the name of your application in IBM Cloud, the timeout value during deployment and which services to bind to.
-
-
-Credentials are either taken from the VCAP_SERVICES environment variable that IBM Cloud provides or from environment variables passed in by JNDI (see the server config file `src/main/liberty/config/server.xml`).
 
 ### Run
 

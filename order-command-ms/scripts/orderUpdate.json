@@ -1,10 +1,11 @@
 {
-  "orderID": "dfd79376-c46e-41c4-aa88-08a3594fe2f8",
-  "productID":"myProductID",
-  "quantity":101,
+  "orderID": "3c79f38f-7915-4a6a-aca1-ac2643b03198",
+  "productID":"soybean",
+  "quantity": 155,
   "customerID": "GoodManuf",
-  "expectedDeliveryDate":"2020-01-10T13:30Z",
-  "pickupDate":"2020-01-10T13:30Z",
-  "pickupAddress": {"street": "100 2nd street", "city": "Shanghai", "country": "China", "state": "", "zipcode": "09430"},
-  "destinationAddress": {"street": "200 other street", "city": "San Leonardo", "country": "USA", "state": "CA", "zipcode": "95030"}
+  "expectedDeliveryDate":"2019-03-10T13:30Z",
+  "pickupDate":"2019-02-13T13:30Z",
+  "destinationAddress": {"street": "200 1st street", "city": "Shanghai", "country": "China", "state": "", "zipcode": "09430"},
+  "pickupAddress": {"street": "2500 farm road", "city": "Oakland", "country": "USA", "state": "CA", "zipcode": "95030"},
+  "status": "OrderBooked"
 }

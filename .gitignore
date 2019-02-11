@@ -1,4 +1,7 @@
 /order-command-ms/bin/
+/order-command-ms/es-cert.der
 /order-query-ms/.settings/org.eclipse.jdt.apt.core.prefs
 /order-query-ms/.settings/org.eclipse.jdt.core.prefs
 /order-query-ms/.factorypath
+/order-query-ms/es-cert.der
+

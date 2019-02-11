@@ -11,7 +11,7 @@ else
   else
     echo "Usage $0 orderID [hostname]"
   fi
-  hostn="localhost:9080"
+  hostn="localhost:10080"
 fi
 url="http://$hostn/orders/$orderID"
 

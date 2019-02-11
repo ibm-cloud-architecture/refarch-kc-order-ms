@@ -1,15 +1,21 @@
 FROM websphere-liberty:webProfile7
 LABEL maintainer="IBM Java Engineering at IBM Cloud"
+# 3 next lines need to be there to avoid NPE on javametrics-rest, javametrics-dash,
 COPY /target/liberty/wlp/usr/servers/defaultServer /config/
 COPY /target/liberty/wlp/usr/shared/resources /config/resources/
 COPY /src/main/liberty/config/jvmbx.options /config/jvm.options
 # Grant write access to apps folder, this is to support old and new docker versions.
 # Liberty document reference : https://hub.docker.com/_/websphere-liberty/
 USER root
-RUN chmod g+w /config/apps
+COPY es-cert.der /tmp/es-cert.der
+RUN apt-get update -q -y && apt-get dist-upgrade -q -y && chmod g+w /config/apps &&\
+    echo yes | keytool -importcert -alias startssl -keystore \
+    $JAVA_HOME/lib/security/cacerts -storepass changeit -file /tmp/es-cert.der 
 USER 1001
+
 # install any missing features required by server config
-RUN installUtility install --acceptLicense defaultServer
+RUN installUtility install --acceptLicense defaultServer 
+
 
 # Upgrade to production license if URL to JAR provided
 ARG LICENSE_JAR_URL

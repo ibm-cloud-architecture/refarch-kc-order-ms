@@ -6,7 +6,11 @@ public class OrderEvent extends AbstractEvent {
 
     public static final String TYPE_CREATED = "OrderCreated";
     public static final String TYPE_UPDATED = "OrderUpdated";
+    public static final String TYPE_BOOKED = "OrderBooked";
     public static final String TYPE_ASSIGNED = "OrderAssigned";
+    public static final String TYPE_TRANSIT = "OrderInTransit";
+    public static final String TYPE_COMPLETED = "OrderCompleted";
+    public static final String TYPE_REJECTED = "OrderRejected";
     public static final String TYPE_CANCELLED = "OrderCancelled";
 
     private static final Gson gson = new Gson();
