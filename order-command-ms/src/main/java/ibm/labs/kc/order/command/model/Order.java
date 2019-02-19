@@ -8,7 +8,14 @@ public class Order {
     public static final String PENDING_STATUS = "pending";
     public static final String CANCELLED_STATUS = "cancelled";
     public static final String ASSIGNED_STATUS = "assigned";
-
+    public static final String BOOKED_STATUS = "booked";
+    public static final String REJECTED_STATUS = "rejected";
+    public static final String CONTAINER_ALLOCATED_STATUS = "container-allocated";
+    public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
+    public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
+    public static final String CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
+    public static final String CONTAINER_DELIVERED_STATUS = "container-delivered";
+    
     private String orderID;
     private String productID;
     private String customerID;
