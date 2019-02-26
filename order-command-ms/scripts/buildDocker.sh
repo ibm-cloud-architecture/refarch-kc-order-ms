@@ -9,16 +9,25 @@ fi
 . ./scripts/setenv.sh
 # When deploying to a cluster with CA certificate we need to install those
 # certificates in java keystore. So first transform into der format 
-if [ -f ../../refarch-kc/certs/es-cert.pem ] 
+if [[ $kcenv -ne "local" && -f ../../refarch-kc/certs/es-cert.pem ]] 
 then
    openssl x509 -in ../../refarch-kc/certs/es-cert.pem -inform pem -out es-cert.der -outform der
 fi
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
 rm -rf target/liberty/wlp/usr/servers/defaultServer/apps/expanded
-mvn install -DskipITs
+tools=$(docker images | grep javatools)
+if [[ -z "$tools" ]]
+then
+   mvn install -DskipITs
+else
+ docker run -v $(pwd):/home -ti ibmcase/javatools bash -c "cd /home && mvn install -DskipITs"
+fi
 
 # image for public docker hub
 docker build -t ibmcase/kc-ordercmdms .
-# image for private registry in IBM Cloud
-docker tag ibmcase/kc-ordercmdms registry.ng.bluemix.net/ibmcaseeda/kc-ordercmdms
+if [[ $kcenv -ne "local" ]]
+then
+   # image for private registry in IBM Cloud
+   docker tag ibmcase/kc-ordercmdms registry.ng.bluemix.net/ibmcaseeda/kc-ordercmdms
+fi
