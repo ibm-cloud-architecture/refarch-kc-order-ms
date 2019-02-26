@@ -23,6 +23,7 @@ import ibm.labs.kc.order.query.dao.OrderDAOMock;
 import ibm.labs.kc.order.query.dao.QueryOrder;
 import ibm.labs.kc.order.query.model.Cancellation;
 import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.Rejection;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
@@ -31,6 +32,7 @@ import ibm.labs.kc.order.query.model.events.Event;
 import ibm.labs.kc.order.query.model.events.EventListener;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
 import ibm.labs.kc.order.query.model.events.UpdateOrderEvent;
+import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
 
 @Path("orders")
 public class QueryService implements EventListener {
@@ -121,6 +123,20 @@ public class QueryService implements EventListener {
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.assign(voyageAssignment);
+                        orderDAO.update(qo);
+                    } else {
+                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    }
+                }
+                break;
+            case OrderEvent.TYPE_REJECTED:
+                synchronized (orderDAO) {
+                    Rejection rejection = ((RejectOrderEvent) orderEvent).getPayload();
+                    orderID = rejection.getOrderID();
+                    oqo = orderDAO.getById(orderID);
+                    if (oqo.isPresent()) {
+                        QueryOrder qo = oqo.get();
+                        qo.reject(rejection);
                         orderDAO.update(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);

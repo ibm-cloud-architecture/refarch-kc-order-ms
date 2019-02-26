@@ -5,9 +5,16 @@ import com.google.gson.Gson;
 public class OrderEvent extends AbstractEvent {
 
     public static final String TYPE_CREATED = "OrderCreated";
-    public static final String TYPE_UPDATED = "OrderUpdated";
     public static final String TYPE_ASSIGNED = "OrderAssigned";
+    public static final String TYPE_REJECTED = "OrderRejected";
+    public static final String TYPE_UPDATED = "OrderUpdated";
     public static final String TYPE_CANCELLED = "OrderCancelled";
+  
+//    public static final String CONTAINER_ALLOCATED_STATUS = "container-allocated";
+//    public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
+//    public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
+//    public static final String CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
+//    public static final String CONTAINER_DELIVERED_STATUS = "container-delivered";
 
     private static final Gson gson = new Gson();
 
@@ -24,10 +31,12 @@ public class OrderEvent extends AbstractEvent {
         switch (orderEvent.type) {
         case TYPE_CREATED:
             return gson.fromJson(json, CreateOrderEvent.class);
-        case TYPE_UPDATED:
-            return gson.fromJson(json, UpdateOrderEvent.class);
         case TYPE_ASSIGNED:
             return gson.fromJson(json, AssignOrderEvent.class);
+        case TYPE_REJECTED:
+        	return gson.fromJson(json, RejectOrderEvent.class);
+        case TYPE_UPDATED:
+            return gson.fromJson(json, UpdateOrderEvent.class);
         case TYPE_CANCELLED:
             return gson.fromJson(json, CancelOrderEvent.class);
         default:

@@ -18,6 +18,9 @@ import org.apache.kafka.common.serialization.StringSerializer;
 public class ApplicationConfig {
 
     public static final String ORDER_TOPIC = "orders";
+    public static final String VOYAGE_TOPIC = "voyages";
+    public static final String SHIP_TOPIC = "ships";
+    public static final String CONTAINER_TOPIC = "containers";
     public static final String ERROR_TOPIC = "errors";
     public static final String CONSUMER_GROUP_ID = "order-query-grp";
     public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
@@ -35,6 +38,7 @@ public class ApplicationConfig {
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 //        properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,"1000");
 //        properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
+        properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
 
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());

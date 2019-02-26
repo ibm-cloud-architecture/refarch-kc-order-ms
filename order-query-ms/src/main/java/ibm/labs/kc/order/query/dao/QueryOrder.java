@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Cancellation;
 import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.Rejection;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
 
 public class QueryOrder {
@@ -79,6 +80,10 @@ public class QueryOrder {
     public void cancel(Cancellation cancellation) {
         this.status = Order.CANCELLED_STATUS;
         this.reason = cancellation.getReason();
+    }
+    
+    public void reject(Rejection rejection){
+    	this.status = Order.REJECTED_STATUS;
     }
 
     public String getStatus() {

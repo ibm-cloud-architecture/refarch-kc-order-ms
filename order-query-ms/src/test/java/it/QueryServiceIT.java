@@ -25,10 +25,12 @@ import ibm.labs.kc.order.query.dao.QueryOrder;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Order;
+import ibm.labs.kc.order.query.model.Rejection;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
+import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
 
 public class QueryServiceIT {
     private String port = System.getProperty("liberty.test.port");
@@ -142,7 +144,7 @@ public class QueryServiceIT {
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
 
-        VoyageAssignment va = new VoyageAssignment(orderID, "12345");
+        VoyageAssignment va = new VoyageAssignment(orderID, "12345", "custId", "myShip");
         OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
         sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
 
@@ -152,6 +154,45 @@ public class QueryServiceIT {
         boolean ok = false;
         outer: for(int i=0; i<maxattempts; i++) {
             Response response = makeGetRequest(url + "byStatus/assigned");
+            if(response.getStatus() == 200) {
+                String responseString = response.readEntity(String.class);
+                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+                for (QueryOrder o : orders) {
+                    if (orderID.equals(o.getOrderID())) {
+                        assertEquals(expectedOrder, o);
+                        ok = true;
+                        break outer;
+                    }
+                }
+                Thread.sleep(1000L);
+            } else {
+                Thread.sleep(1000L);
+            }
+        }
+        assertTrue(ok);
+    }
+    
+    @Test
+    public void testNoAvailability() throws Exception {
+        String orderID = UUID.randomUUID().toString();
+
+        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+        Order order = new Order(orderID, "productId", "custId", 2,
+                addr, "2019-01-10T13:30Z",
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+        Rejection rejection = new Rejection(orderID, "custId");
+        OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
+        sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+        expectedOrder.reject(rejection);
+        int maxattempts = 10;
+        boolean ok = false;
+        outer: for(int i=0; i<maxattempts; i++) {
+            Response response = makeGetRequest(url + "byStatus/rejected");
             if(response.getStatus() == 200) {
                 String responseString = response.readEntity(String.class);
                 QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
