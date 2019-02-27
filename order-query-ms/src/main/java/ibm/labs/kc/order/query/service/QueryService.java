@@ -29,6 +29,7 @@ import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AllocatedContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
+import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
@@ -183,6 +184,20 @@ public class QueryService implements EventListener {
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.containerOffShip(container);
+                        orderDAO.update(qo);
+                    } else {
+                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    }
+                }
+                break;
+            case OrderEvent.TYPE_CONTAINER_DELIVERED_STATUS:
+                synchronized (orderDAO) {
+                    Container container = ((ContainerDeliveredEvent) orderEvent).getPayload();
+                    orderID = container.getOrderID();
+                    oqo = orderDAO.getById(orderID);
+                    if (oqo.isPresent()) {
+                        QueryOrder qo = oqo.get();
+                        qo.containerDelivered(container);
                         orderDAO.update(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);

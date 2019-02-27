@@ -98,6 +98,10 @@ public class QueryOrder {
     public void containerOffShip(Container container){
     	this.status = Order.CONTAINER_OFF_SHIP_STATUS;
     }
+    
+    public void containerDelivered(Container container){
+    	this.status = Order.CONTAINER_DELIVERED_STATUS;
+    }
 
     public String getStatus() {
         return status;
