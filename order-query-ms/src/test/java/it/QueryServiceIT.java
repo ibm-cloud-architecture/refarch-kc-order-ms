@@ -30,6 +30,7 @@ import ibm.labs.kc.order.query.model.Rejection;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AllocatedContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
+import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
@@ -297,6 +298,42 @@ public class QueryServiceIT {
     
     @Test
     public void testContainerOffShip() throws Exception {
+    	
+        String orderID = UUID.randomUUID().toString();
+    	
+    	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+        Order order = new Order(orderID, "productId", "custId", 2,
+                addr, "2019-01-10T13:30Z",
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        sendEvent("testContainerOffShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+        
+        Container container = new Container(orderID, "myContainer");
+        OrderEvent event2 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
+        sendEvent("testContainerOffShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+        
+        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+        expectedOrder.containerOffShip(container);
+        int maxattempts = 10;
+        boolean ok = false;
+        outer: for(int i=0; i<maxattempts; i++) {
+            Response response = makeGetRequest(url + "byStatus/container-off-ship");
+            if(response.getStatus() == 200) {
+                String responseString = response.readEntity(String.class);
+                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+                for (QueryOrder o : orders) {
+                    if (orderID.equals(o.getOrderID())) {
+                        assertEquals(expectedOrder, o);
+                        ok = true;
+                        break outer;
+                    }
+                }
+                Thread.sleep(1000L);
+            } else {
+                Thread.sleep(1000L);
+            }
+        }
+        assertTrue(ok);
     	
     }
     
