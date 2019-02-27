@@ -2,7 +2,7 @@
 echo "##########################################"
 echo " Build ORDER Query war and docker image  "
 echo "##########################################"
-set p = $(echo $PWD | awk -v h="scripts" '$0 ~h')
+
 if [[ $PWD = */scripts ]]; then
  cd ..
 fi
