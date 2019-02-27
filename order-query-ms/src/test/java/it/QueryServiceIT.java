@@ -24,9 +24,11 @@ import com.google.gson.Gson;
 import ibm.labs.kc.order.query.dao.QueryOrder;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
+import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.Rejection;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
+import ibm.labs.kc.order.query.model.events.AllocatedContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
@@ -209,6 +211,71 @@ public class QueryServiceIT {
             }
         }
         assertTrue(ok);
+    }
+    
+    @Test
+    public void testAllocatedContainer() throws Exception {
+    	String orderID = UUID.randomUUID().toString();
+    	
+    	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+        Order order = new Order(orderID, "productId", "custId", 2,
+                addr, "2019-01-10T13:30Z",
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+        
+        Container container = new Container(orderID, "myContainer");
+        OrderEvent event2 = new AllocatedContainerEvent(System.currentTimeMillis(), "1", container);
+        sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+        
+        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+        expectedOrder.allocatedContainer(container);
+        int maxattempts = 10;
+        boolean ok = false;
+        outer: for(int i=0; i<maxattempts; i++) {
+            Response response = makeGetRequest(url + "byStatus/container-allocated");
+            if(response.getStatus() == 200) {
+                String responseString = response.readEntity(String.class);
+                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+                for (QueryOrder o : orders) {
+                    if (orderID.equals(o.getOrderID())) {
+                        assertEquals(expectedOrder, o);
+                        ok = true;
+                        break outer;
+                    }
+                }
+                Thread.sleep(1000L);
+            } else {
+                Thread.sleep(1000L);
+            }
+        }
+        assertTrue(ok);
+    	
+    }
+    
+    @Test
+    public void testContainerOnShip() throws Exception {
+    	
+    }
+    
+    @Test
+    public void testContainerOffShip() throws Exception {
+    	
+    }
+    
+    @Test
+    public void testOrderSpoiled() throws Exception {
+    	
+    }
+    
+    @Test
+    public void testContainerDelivered() throws Exception {
+    	
+    }
+    
+    @Test
+    public void testOrderCompleted() throws Exception {
+    	
     }
 
     protected Response makeGetRequest(String url) {
