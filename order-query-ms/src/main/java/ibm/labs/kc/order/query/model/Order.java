@@ -15,6 +15,7 @@ public class Order {
     public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
     public static final String CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
     public static final String CONTAINER_DELIVERED_STATUS = "container-delivered";
+    public static final String ORDER_COMPLETED_STATUS = "order-completed";
     
     private String orderID;
     private String productID;
@@ -30,6 +31,10 @@ public class Order {
     private String status;
 
     public Order() {
+    }
+    
+    public Order(String orderID) {
+        this.orderID = orderID;
     }
 
     public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,

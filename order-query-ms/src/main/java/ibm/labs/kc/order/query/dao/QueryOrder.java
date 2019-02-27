@@ -102,6 +102,10 @@ public class QueryOrder {
     public void containerDelivered(Container container){
     	this.status = Order.CONTAINER_DELIVERED_STATUS;
     }
+    
+    public void orderCompleted(Order order){
+    	this.status = Order.ORDER_COMPLETED_STATUS;
+    }
 
     public String getStatus() {
         return status;

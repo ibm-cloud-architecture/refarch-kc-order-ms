@@ -4,7 +4,7 @@ import ibm.labs.kc.order.query.model.Container;
 
 public class ContainerDeliveredEvent extends OrderEvent {
 	
-private Container payload;
+    private Container payload;
 	
 	public ContainerDeliveredEvent(long timestampMillis, String version, Container payload) {
         super(timestampMillis, OrderEvent.TYPE_CONTAINER_DELIVERED_STATUS, version);

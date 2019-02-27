@@ -13,8 +13,7 @@ public class OrderEvent extends AbstractEvent {
     public static final String TYPE_CONTAINER_ON_SHIP_STATUS = "container-on-ship";
     public static final String TYPE_CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
     public static final String TYPE_CONTAINER_DELIVERED_STATUS = "container-delivered";
-    
-//    public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";    
+    public static final String TYPE_ORDER_COMPLETED = "order-completed";    
 
     private static final Gson gson = new Gson();
 
@@ -47,6 +46,8 @@ public class OrderEvent extends AbstractEvent {
             return gson.fromJson(json, UpdateOrderEvent.class);
         case TYPE_CANCELLED:
             return gson.fromJson(json, CancelOrderEvent.class);
+        case TYPE_ORDER_COMPLETED:
+        	return gson.fromJson(json, OrderCompletedEvent.class);
         default:
             //TODO handle
             return null;
