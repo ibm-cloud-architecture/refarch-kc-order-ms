@@ -90,6 +90,10 @@ public class QueryOrder {
     public void allocatedContainer(Container container){
     	this.status = Order.CONTAINER_ALLOCATED_STATUS;
     }
+    
+    public void containerOnShip(Container container){
+    	this.status = Order.CONTAINER_ON_SHIP_STATUS;
+    }
 
     public String getStatus() {
         return status;
