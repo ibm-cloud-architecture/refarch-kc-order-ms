@@ -93,6 +93,18 @@ public class QueryService implements EventListener {
         Collection<QueryOrder> orders = orderDAO.getByStatus(status);
         return Response.ok().entity(orders).build();
     }
+    
+    @GET
+    @Path("orderHistory/{orderId}/{customerID}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Query order history by order ID for a particular customer", description = "")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Order history found", content = @Content(mediaType = "application/json")) })
+    public Response getOrderHistory(@PathParam("orderId") String orderId, @PathParam("customerID") String customerID) {
+        logger.info("QueryService.getOrderHistory(" + orderId + ","+ customerID +")");
+        Collection<QueryOrder> orders = orderDAO.getOrderStatus(orderId, customerID);
+        return Response.ok(orders, MediaType.APPLICATION_JSON).build();
+    }
 
     @Override
     public void handle(Event event) {
@@ -105,6 +117,7 @@ public class QueryService implements EventListener {
                 synchronized (orderDAO) {
                     Order o1 = ((CreateOrderEvent) orderEvent).getPayload();
                     orderDAO.add(QueryOrder.newFromOrder(o1));
+                    orderDAO.orderHistory(QueryOrder.newFromOrder(o1));
                 }
                 break;
             case OrderEvent.TYPE_UPDATED:

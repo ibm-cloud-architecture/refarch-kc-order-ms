@@ -38,8 +38,7 @@ public class ApplicationConfig {
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 //        properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,"1000");
 //        properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
-        properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
-
+        properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1000);
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-query");
@@ -51,7 +50,7 @@ public class ApplicationConfig {
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
+        properties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1000);
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID + "-reload");

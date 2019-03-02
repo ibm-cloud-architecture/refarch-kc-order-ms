@@ -74,7 +74,7 @@ public class QueryOrder {
     }
 
     public void assign(VoyageAssignment voyageAssignment) {
-        this.voyageID = voyageAssignment.getVoyageID();
+        //this.voyageID = voyageAssignment.getVoyageID();
         this.status = Order.ASSIGNED_STATUS;
     }
 
