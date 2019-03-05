@@ -5,7 +5,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Cancellation;
-import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.Rejection;
@@ -37,6 +36,35 @@ public class QueryOrder {
         this.destinationAddress = destinationAddress;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
+    }
+    
+    public QueryOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+            String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String voyageID) {
+        this.orderID = orderID;
+        this.productID = productID;
+        this.customerID = customerID;
+        this.quantity = quantity;
+        this.pickupAddress = pickupAddress;
+        this.pickupDate = pickupDate;
+        this.destinationAddress = destinationAddress;
+        this.expectedDeliveryDate = expectedDeliveryDate;
+        this.status = status;
+        this.voyageID = voyageID;
+    }
+    
+    public QueryOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+            String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String voyageID, String containerID) {
+        this.orderID = orderID;
+        this.productID = productID;
+        this.customerID = customerID;
+        this.quantity = quantity;
+        this.pickupAddress = pickupAddress;
+        this.pickupDate = pickupDate;
+        this.destinationAddress = destinationAddress;
+        this.expectedDeliveryDate = expectedDeliveryDate;
+        this.status = status;
+        this.voyageID = voyageID;
+        this.containerID = containerID;
     }
 
     public static QueryOrder newFromOrder(Order order) {
@@ -73,10 +101,16 @@ public class QueryOrder {
         if (order.getExpectedDeliveryDate() != null) {
             expectedDeliveryDate = order.getExpectedDeliveryDate();
         }
+        if (order.getVoyageID() != null) {
+            voyageID = order.getVoyageID();
+        }
+        if (order.getContainerID() != null) {
+        	containerID = order.getContainerID();
+        }
     }
 
     public void assign(VoyageAssignment voyageAssignment) {
-        //this.voyageID = voyageAssignment.getVoyageID();
+        this.voyageID = voyageAssignment.getVoyageID();
         this.status = Order.ASSIGNED_STATUS;
     }
 
@@ -94,19 +128,15 @@ public class QueryOrder {
     	this.status = Order.REJECTED_STATUS;
     }
     
-    public void allocatedContainer(Container container){
-    	this.status = Order.CONTAINER_ALLOCATED_STATUS;
-    }
-    
-    public void containerOnShip(Container container){
+    public void containerOnShip(ContainerAssignment container){
     	this.status = Order.CONTAINER_ON_SHIP_STATUS;
     }
     
-    public void containerOffShip(Container container){
+    public void containerOffShip(ContainerAssignment container){
     	this.status = Order.CONTAINER_OFF_SHIP_STATUS;
     }
     
-    public void containerDelivered(Container container){
+    public void containerDelivered(ContainerAssignment container){
     	this.status = Order.CONTAINER_DELIVERED_STATUS;
     }
     

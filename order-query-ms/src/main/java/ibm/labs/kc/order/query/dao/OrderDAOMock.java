@@ -56,12 +56,30 @@ public class OrderDAOMock implements OrderDAO {
     
     @Override
 	public void orderHistory(QueryOrder o) {
-    	QueryOrder ord = new QueryOrder(orders.get(o.getOrderID()).getOrderID(),orders.get(o.getOrderID()).getProductID(),
-		orders.get(o.getOrderID()).getCustomerID(), orders.get(o.getOrderID()).getQuantity(), orders.get(o.getOrderID()).getPickupAddress(),
-		orders.get(o.getOrderID()).getPickupDate(), orders.get(o.getOrderID()).getDestinationAddress(), orders.get(o.getOrderID()).getExpectedDeliveryDate(),
-		orders.get(o.getOrderID()).getStatus());
-    	logger.info("Adding to order history " + ord.getOrderID() + ord.getStatus()+ ord.getCustomerID());
-    	orderHistory.add(ord);
+    	if(o.getVoyageID() == null) {
+    		QueryOrder ord = new QueryOrder(orders.get(o.getOrderID()).getOrderID(),orders.get(o.getOrderID()).getProductID(),
+    				orders.get(o.getOrderID()).getCustomerID(), orders.get(o.getOrderID()).getQuantity(), orders.get(o.getOrderID()).getPickupAddress(),
+    				orders.get(o.getOrderID()).getPickupDate(), orders.get(o.getOrderID()).getDestinationAddress(), orders.get(o.getOrderID()).getExpectedDeliveryDate(),
+    				orders.get(o.getOrderID()).getStatus());
+    		logger.info("Adding to order history " + ord.getOrderID() + ord.getStatus()+ ord.getCustomerID());
+    		orderHistory.add(ord);
+    	}
+    	else if(o.getContainerID() == null){
+    		QueryOrder ord = new QueryOrder(orders.get(o.getOrderID()).getOrderID(),orders.get(o.getOrderID()).getProductID(),
+    				orders.get(o.getOrderID()).getCustomerID(), orders.get(o.getOrderID()).getQuantity(), orders.get(o.getOrderID()).getPickupAddress(),
+    				orders.get(o.getOrderID()).getPickupDate(), orders.get(o.getOrderID()).getDestinationAddress(), orders.get(o.getOrderID()).getExpectedDeliveryDate(),
+    				orders.get(o.getOrderID()).getStatus(), orders.get(o.getOrderID()).getVoyageID());
+    		logger.info("Adding to order history " + ord.getOrderID() + ord.getStatus()+ ord.getCustomerID()+ ord.getVoyageID());
+    		orderHistory.add(ord);
+    	}
+    	else{
+    		QueryOrder ord = new QueryOrder(orders.get(o.getOrderID()).getOrderID(),orders.get(o.getOrderID()).getProductID(),
+    				orders.get(o.getOrderID()).getCustomerID(), orders.get(o.getOrderID()).getQuantity(), orders.get(o.getOrderID()).getPickupAddress(),
+    				orders.get(o.getOrderID()).getPickupDate(), orders.get(o.getOrderID()).getDestinationAddress(), orders.get(o.getOrderID()).getExpectedDeliveryDate(),
+    				orders.get(o.getOrderID()).getStatus(), orders.get(o.getOrderID()).getVoyageID(), orders.get(o.getOrderID()).getContainerID());
+    		logger.info("Adding to order history " + ord.getOrderID() + ord.getStatus()+ ord.getCustomerID()+ ord.getVoyageID()+ ord.getContainerID());
+    		orderHistory.add(ord);
+    	}
 	}
 
     @Override

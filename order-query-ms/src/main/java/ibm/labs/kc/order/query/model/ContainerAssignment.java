@@ -24,4 +24,5 @@ public class ContainerAssignment {
 	public void setContainerID(String containerID) {
 		this.containerID = containerID;
 	}
+
 }

@@ -22,12 +22,10 @@ import ibm.labs.kc.order.query.dao.OrderDAO;
 import ibm.labs.kc.order.query.dao.OrderDAOMock;
 import ibm.labs.kc.order.query.dao.QueryOrder;
 import ibm.labs.kc.order.query.model.Cancellation;
-import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.Rejection;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
-import ibm.labs.kc.order.query.model.events.AllocatedContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
@@ -167,14 +165,14 @@ public class QueryService implements EventListener {
                     }
                 }
                 break;
-            case OrderEvent.TYPE_CONTAINER_ALLOCATED_STATUS:
+            case OrderEvent.TYPE_CONTAINER_ALLOCATED:
                 synchronized (orderDAO) {
-                    Container container = ((AllocatedContainerEvent) orderEvent).getPayload();
+                	ContainerAssignment container = ((AssignContainerEvent) orderEvent).getPayload();
                     orderID = container.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
-                        qo.allocatedContainer(container);
+                        qo.assignContainer(container);
                         orderDAO.update(qo);
                         orderDAO.orderHistory(qo);
                     } else {
@@ -184,7 +182,7 @@ public class QueryService implements EventListener {
                 break;
             case OrderEvent.TYPE_CONTAINER_ON_SHIP_STATUS:
                 synchronized (orderDAO) {
-                    Container container = ((ContainerOnShipEvent) orderEvent).getPayload();
+                	ContainerAssignment container = ((ContainerOnShipEvent) orderEvent).getPayload();
                     orderID = container.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
@@ -199,7 +197,7 @@ public class QueryService implements EventListener {
                 break;
             case OrderEvent.TYPE_CONTAINER_OFF_SHIP_STATUS:
                 synchronized (orderDAO) {
-                    Container container = ((ContainerOffShipEvent) orderEvent).getPayload();
+                	ContainerAssignment container = ((ContainerOffShipEvent) orderEvent).getPayload();
                     orderID = container.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
@@ -214,7 +212,7 @@ public class QueryService implements EventListener {
                 break;
             case OrderEvent.TYPE_CONTAINER_DELIVERED_STATUS:
                 synchronized (orderDAO) {
-                    Container container = ((ContainerDeliveredEvent) orderEvent).getPayload();
+                	ContainerAssignment container = ((ContainerDeliveredEvent) orderEvent).getPayload();
                     orderID = container.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
@@ -227,20 +225,6 @@ public class QueryService implements EventListener {
                     }
                 }
                 break;
-            case OrderEvent.TYPE_CONTAINER_ALLOCATED:
-            	synchronized (orderDAO) {
-	            	ContainerAssignment ca = ((AssignContainerEvent) orderEvent).getPayload();
-	            	orderID = ca.getOrderID();
-	            	 oqo = orderDAO.getById(orderID);
-	            	 if (oqo.isPresent()) {
-	            		 QueryOrder qo = oqo.get();
-	                     qo.assignContainer(ca);
-	                     orderDAO.update(qo);
-	                 } else {
-	                     throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-	                 }
-            	}
-            	break;
             case OrderEvent.TYPE_CANCELLED:
                 synchronized (orderDAO) {
                     Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();

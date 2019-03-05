@@ -1,12 +1,12 @@
 package ibm.labs.kc.order.query.model.events;
 
-import ibm.labs.kc.order.query.model.Container;
+import ibm.labs.kc.order.query.model.ContainerAssignment;
 
 public class ContainerOffShipEvent extends OrderEvent {
 	
-    private Container payload;
+    private ContainerAssignment payload;
 	
-	public ContainerOffShipEvent(long timestampMillis, String version, Container payload) {
+	public ContainerOffShipEvent(long timestampMillis, String version, ContainerAssignment payload) {
         super(timestampMillis, OrderEvent.TYPE_CONTAINER_OFF_SHIP_STATUS, version);
         this.setPayload(payload);
     }
@@ -15,11 +15,11 @@ public class ContainerOffShipEvent extends OrderEvent {
     }
 
     @Override
-    public Container getPayload() {
+    public ContainerAssignment getPayload() {
         return payload;
     }
 
-    public void setPayload(Container payload) {
+    public void setPayload(ContainerAssignment payload) {
         this.payload = payload;
     }
 

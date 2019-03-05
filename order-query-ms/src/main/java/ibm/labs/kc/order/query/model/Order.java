@@ -10,7 +10,6 @@ public class Order {
     public static final String ASSIGNED_STATUS = "assigned";
     public static final String BOOKED_STATUS = "booked";
     public static final String REJECTED_STATUS = "rejected";
-    public static final String COMPLETED_STATUS = "completed";
     public static final String CONTAINER_ALLOCATED_STATUS = "container-allocated";
     public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
     public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
@@ -30,6 +29,10 @@ public class Order {
     private String expectedDeliveryDate;
 
     private String status;
+    
+    private String voyageID;
+    
+    private String containerID;
 
     public Order() {
     }
@@ -49,6 +52,35 @@ public class Order {
         this.destinationAddress = destinationAddress;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
+    }
+    
+    public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+            String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String voyageID) {
+        this.orderID = orderID;
+        this.productID = productID;
+        this.customerID = customerID;
+        this.quantity = quantity;
+        this.pickupAddress = pickupAddress;
+        this.pickupDate = pickupDate;
+        this.destinationAddress = destinationAddress;
+        this.expectedDeliveryDate = expectedDeliveryDate;
+        this.status = status;
+        this.voyageID = voyageID;
+    }
+    
+    public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+            String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String voyageID, String containerID) {
+        this.orderID = orderID;
+        this.productID = productID;
+        this.customerID = customerID;
+        this.quantity = quantity;
+        this.pickupAddress = pickupAddress;
+        this.pickupDate = pickupDate;
+        this.destinationAddress = destinationAddress;
+        this.expectedDeliveryDate = expectedDeliveryDate;
+        this.status = status;
+        this.voyageID = voyageID;
+        this.setContainerID(containerID);
     }
 
     public String getOrderID() {
@@ -116,5 +148,21 @@ public class Order {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+
+	public String getVoyageID() {
+		return voyageID;
+	}
+
+	public void setVoyageID(String voyageID) {
+		this.voyageID = voyageID;
+	}
+
+	public String getContainerID() {
+		return containerID;
+	}
+
+	public void setContainerID(String containerID) {
+		this.containerID = containerID;
+	}
     
 }

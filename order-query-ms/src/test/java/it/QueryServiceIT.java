@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
@@ -29,11 +28,11 @@ import com.google.gson.reflect.TypeToken;
 import ibm.labs.kc.order.query.dao.QueryOrder;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
-import ibm.labs.kc.order.query.model.Container;
+import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.Rejection;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
-import ibm.labs.kc.order.query.model.events.AllocatedContainerEvent;
+import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
@@ -233,12 +232,12 @@ public class QueryServiceIT {
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
         
-        Container container = new Container(orderID, "myContainer");
-        OrderEvent event2 = new AllocatedContainerEvent(System.currentTimeMillis(), "1", container);
+        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
+        OrderEvent event2 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
         
         QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        expectedOrder.allocatedContainer(container);
+        expectedOrder.assignContainer(container);
         int maxattempts = 10;
         boolean ok = false;
         outer: for(int i=0; i<maxattempts; i++) {
@@ -274,7 +273,7 @@ public class QueryServiceIT {
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testContainerOnShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
         
-        Container container = new Container(orderID, "myContainer", "myVoyage");
+        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
         OrderEvent event2 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testContainerOnShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
         
@@ -315,7 +314,7 @@ public class QueryServiceIT {
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testContainerOffShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
         
-        Container container = new Container(orderID, "myContainer");
+        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
         OrderEvent event2 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testContainerOffShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
         
@@ -356,7 +355,7 @@ public class QueryServiceIT {
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testContainerDelivered", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
         
-        Container container = new Container(orderID, "myContainer");
+        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
         OrderEvent event2 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testContainerDelivered", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
         
@@ -475,23 +474,22 @@ public class QueryServiceIT {
         
         QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
         
-        VoyageAssignment va = new VoyageAssignment(orderID, "12345", custID, "myShip");
+        VoyageAssignment va = new VoyageAssignment(orderID, "myVoyage", custID, "myShip");
         OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
         
         expectedOrder.assign(va);
         
-        Container container = new Container(orderID, "myContainer");
-        OrderEvent event3 = new AllocatedContainerEvent(System.currentTimeMillis(), "1", container);
+        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
+        OrderEvent event3 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event3));
         
-        expectedOrder.allocatedContainer(container);
+        expectedOrder.assignContainer(container);
         
-        Container cont = new Container(orderID, "myContainer", "myVoyage");
-        OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", cont);
+        OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));
         
-        expectedOrder.containerOnShip(cont);
+        expectedOrder.containerOnShip(container);
         
         OrderEvent event5 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event5));
@@ -516,7 +514,6 @@ public class QueryServiceIT {
           String responseString = response.readEntity(String.class);
           ArrayList<QueryOrder> orders = new Gson().fromJson(responseString, new TypeToken<List<QueryOrder>>(){}.getType());
           Assert.assertTrue(orders.contains(expectedOrder));
-          
         }
     }
     
