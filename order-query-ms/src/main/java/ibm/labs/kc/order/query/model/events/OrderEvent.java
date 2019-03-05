@@ -3,8 +3,6 @@ package ibm.labs.kc.order.query.model.events;
 import com.google.gson.Gson;
 
 public class OrderEvent extends AbstractEvent {
-
-
     
     public static final String TYPE_CREATED = "OrderCreated";
     public static final String TYPE_ASSIGNED = "OrderAssigned";
