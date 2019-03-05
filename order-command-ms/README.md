@@ -16,9 +16,8 @@ The order command microservice supports the following features:
 * Create a new order via POST to `/orders`: emit a OrderCreated event and save to internal data store. (memory only)
 * Update existing order via PUT on `/orders/:id` 
 See the class [OrderCRUDService.java](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/labs/kc/order/command/service/OrderCRUDService.java).
-
 * Produce order events to the `orders` topic. 
-* Consume events to update its data source.
+* Consume events to update the state of the order or enrich it with new elements.
 
 When the application starts there is a [ServletContextListener](https://docs.oracle.com/javaee/6/api/javax/servlet/ServletContextListener.html) class started to create a consumer to subscribe to order events (different types) from `orders` topic. When consumer reaches an issue to get event it creates an error to the `errors` topic, so administrator user could replay the event source from the last committed offset. Any kafka broker communication issue is shutting down the consumer loop.
 
@@ -42,8 +41,8 @@ These capabilities are provided through dependencies in the pom.xml file and Lib
 ### Run
 
 To build and run the application:
-1. `mvn install`
-1. `mvn liberty:run-server`
+1. `mvn install` or `mvn install  -DskipITs` to bypass integration tests, which need kafka and a running Liberty server
+1. `mvn liberty:run-server`  to start the server with the deployed wars.
 
 
 To run the application in Docker use the Docker file called `Dockerfile`. If you do not want to install Maven locally you can use `Dockerfile-tools` to build a container with Maven installed.

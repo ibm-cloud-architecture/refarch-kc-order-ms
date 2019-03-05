@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ibm.labs.kc.order.command.model.Address;
 import ibm.labs.kc.order.command.model.Cancellation;
+import ibm.labs.kc.order.command.model.ContainerAssignment;
 import ibm.labs.kc.order.command.model.Order;
 import ibm.labs.kc.order.command.model.VoyageAssignment;
 
@@ -70,9 +71,15 @@ public class CommandOrder {
     }
 
     public void assign(VoyageAssignment voyageAssignment) {
+    	// This is to illustrate CQRS. In an integrated microservice the voyage ID will be saved her too
         this.status = Order.ASSIGNED_STATUS;
     }
 
+    public void assignContainer(ContainerAssignment ca) {
+    	// This is to illustrate CQRS. In an integrated microservice the container ID will be saved her too
+    	this.status = Order.CONTAINER_ALLOCATED_STATUS;
+    }
+    
     public void cancel(Cancellation cancellation) {
         this.status = Order.CANCELLED_STATUS;
     }

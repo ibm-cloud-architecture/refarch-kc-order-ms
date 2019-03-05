@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Cancellation;
 import ibm.labs.kc.order.query.model.Container;
+import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.Rejection;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
@@ -22,6 +23,7 @@ public class QueryOrder {
     private String expectedDeliveryDate;
     private String status;
     private String voyageID;
+    private String containerID;
     private String reason;
 
     public QueryOrder(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
@@ -78,6 +80,11 @@ public class QueryOrder {
         this.status = Order.ASSIGNED_STATUS;
     }
 
+    public void assignContainer(ContainerAssignment ca) {
+    	this.containerID = ca.getContainerID();
+    	this.status = Order.CONTAINER_ALLOCATED_STATUS;
+    }
+    
     public void cancel(Cancellation cancellation) {
         this.status = Order.CANCELLED_STATUS;
         this.reason = cancellation.getReason();
@@ -160,4 +167,16 @@ public class QueryOrder {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+
+	public String getContainerID() {
+		return containerID;
+	}
+
+	public void setContainerID(String containerID) {
+		this.containerID = containerID;
+	}
+
+	public void setVoyageID(String voyageID) {
+		this.voyageID = voyageID;
+	}
 }

@@ -31,15 +31,12 @@ import ibm.labs.kc.order.command.model.Order;
 import ibm.labs.kc.order.command.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.command.model.events.OrderEvent;
 
-public class OrderCRUDServiceIT {
+public class OrderCRUDServiceIT extends CommonITTest {
 
-    private String port = System.getProperty("liberty.test.port");
-    private String endpoint = "/orders";
-    private String url = "http://localhost:" + port + endpoint;
 
     @Test
     public void testCreateSuccess() throws Exception {
-        System.out.println("Testing endpoint " + url);
+        System.out.println("Testing create order " + url);
 
         Address address = new Address("street", "city", "county", "state", "zipcode");
         OrderCreate cor = new OrderCreate();
@@ -200,26 +197,5 @@ public class OrderCRUDServiceIT {
         assertEquals(400, response.getStatus());
     }
 
-    protected Response makePutRequest(String url, String json) {
-        Client client = ClientBuilder.newClient();
-        Invocation.Builder invoBuild = client.target(url).request();
-        Response response = invoBuild.put(Entity.json(json));
-        return response;
-    }
-
-    protected int makeGetRequest(String url) {
-        Client client = ClientBuilder.newClient();
-        Invocation.Builder invoBuild = client.target(url).request();
-        Response response = invoBuild.get();
-        int responseCode = response.getStatus();
-        response.close();
-        return responseCode;
-    }
-
-    protected Response makePostRequest(String url, String json) {
-        Client client = ClientBuilder.newClient();
-        Invocation.Builder invoBuild = client.target(url).request();
-        Response response = invoBuild.post(Entity.json(json));
-        return response;
-    }
+   
 }

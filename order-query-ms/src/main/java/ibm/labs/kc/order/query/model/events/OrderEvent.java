@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 
 public class OrderEvent extends AbstractEvent {
 
+
+    
     public static final String TYPE_CREATED = "OrderCreated";
     public static final String TYPE_ASSIGNED = "OrderAssigned";
     public static final String TYPE_REJECTED = "OrderRejected";
@@ -14,6 +16,18 @@ public class OrderEvent extends AbstractEvent {
     public static final String TYPE_CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
     public static final String TYPE_CONTAINER_DELIVERED_STATUS = "container-delivered";
     public static final String TYPE_ORDER_COMPLETED = "order-completed";    
+
+    
+    public static final String TYPE_BOOKED = "OrderBooked";
+    public static final String TYPE_TRANSIT = "OrderInTransit";
+    public static final String TYPE_COMPLETED = "OrderCompleted";
+    
+    public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated";
+    public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";
+    public static final String TYPE_CONTAINER_ON_SHIP = "ContainerOnShip";
+    public static final String TYPE_CONTAINER_OFF_SHIP = "ContainerOffShip";
+    public static final String TYPE_CONTAINER_DELIVERED = "ContainerDelivered";
+
 
     private static final Gson gson = new Gson();
 
