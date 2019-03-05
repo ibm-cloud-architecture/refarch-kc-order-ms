@@ -129,6 +129,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.update(o2);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -143,6 +144,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.assign(voyageAssignment);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -157,6 +159,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.reject(rejection);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -171,6 +174,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.allocatedContainer(container);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -185,6 +189,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.containerOnShip(container);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -199,6 +204,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.containerOffShip(container);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -213,6 +219,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.containerDelivered(container);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -227,6 +234,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.cancel(cancellation);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -241,6 +249,7 @@ public class QueryService implements EventListener {
                         QueryOrder qo = oqo.get();
                         qo.orderCompleted(order);
                         orderDAO.update(qo);
+                        orderDAO.orderHistory(qo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }

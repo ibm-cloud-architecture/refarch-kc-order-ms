@@ -115,4 +115,5 @@ public class Order {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+    
 }

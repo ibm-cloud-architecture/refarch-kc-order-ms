@@ -433,43 +433,31 @@ public class QueryServiceIT {
     	String custID = "custID";
     	
     	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", custID, 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testOrderStatusNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
-        
-        Rejection rejection = new Rejection(orderID, custID);
-        OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
-        sendEvent("testOrderStatusNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
-        
-        QueryOrder expectedOrder1 = QueryOrder.newFromOrder(order);
-        
-        QueryOrder expectedOrder2 = QueryOrder.newFromOrder(order);
-        expectedOrder2.reject(rejection);
-
-        List<QueryOrder> expectedOrderList = new ArrayList<>();
-        expectedOrderList.add(expectedOrder1);
-        expectedOrderList.add(expectedOrder2);
+    	Order order = new Order(orderID, "productId", "custId", 2,
+    	                addr, "2019-02-10T13:30Z",
+    	                addr, "2019-02-10T13:30Z", Order.PENDING_STATUS);
+    	OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+    	sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+    	
+    	Rejection rejection = new Rejection(orderID, "custId");
+    	OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
+    	sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+    	
+    	QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+    	expectedOrder.reject(rejection);
         
         Thread.sleep(5000L);
         
         int maxattempts = 10;
-        boolean ok = false;
+     
         for(int i=0; i<maxattempts; i++) {
-            
           Response response = makeGetRequest(url + "orderHistory/"+orderID+"/"+custID);
-          if(response.getStatus() == 200) {
-        	  String responseString = response.readEntity(String.class);
-        	  ArrayList<QueryOrder> orders = new Gson().fromJson(responseString, new TypeToken<List<QueryOrder>>(){}.getType());
-              Assert.assertEquals(expectedOrderList, orders);
-              ok = true;
-              Thread.sleep(1000L);
-          } else {
-              Thread.sleep(1000L);
-          }
-      }
-      assertTrue(ok);
+          Assert.assertEquals(response.getStatus(), 200);
+          String responseString = response.readEntity(String.class);
+          ArrayList<QueryOrder> orders = new Gson().fromJson(responseString,new TypeToken<List<QueryOrder>>(){}.getType());
+          Assert.assertTrue("orders"+responseString,orders.contains(expectedOrder));
+        }
+
     }
     
     @Test
@@ -485,75 +473,51 @@ public class QueryServiceIT {
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
         
-        QueryOrder expectedOrder1 = QueryOrder.newFromOrder(order);
+        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
         
         VoyageAssignment va = new VoyageAssignment(orderID, "12345", custID, "myShip");
         OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
         
-        QueryOrder expectedOrder2 = QueryOrder.newFromOrder(order);
-        expectedOrder2.assign(va);
+        expectedOrder.assign(va);
         
         Container container = new Container(orderID, "myContainer");
         OrderEvent event3 = new AllocatedContainerEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event3));
         
-        QueryOrder expectedOrder3 = QueryOrder.newFromOrder(order);
-        expectedOrder3.allocatedContainer(container);
+        expectedOrder.allocatedContainer(container);
         
         Container cont = new Container(orderID, "myContainer", "myVoyage");
         OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));
         
-        QueryOrder expectedOrder4 = QueryOrder.newFromOrder(order);
-        expectedOrder4.containerOnShip(cont);
+        expectedOrder.containerOnShip(cont);
         
         OrderEvent event5 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event5));
         
-        QueryOrder expectedOrder5 = QueryOrder.newFromOrder(order);
-        expectedOrder5.containerOffShip(container);
+        expectedOrder.containerOffShip(container);
         
         OrderEvent event6 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event6));
         
-        QueryOrder expectedOrder6 = QueryOrder.newFromOrder(order);
-        expectedOrder6.containerDelivered(container);
+        expectedOrder.containerDelivered(container);
         
         Order order1 = new Order(orderID);
         OrderEvent event7 = new OrderCompletedEvent(System.currentTimeMillis(), "1", order1);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event7));
         
-        QueryOrder expectedOrder7 = QueryOrder.newFromOrder(order);
-        expectedOrder7.orderCompleted(order1);
-
-        List<QueryOrder> expectedOrderList = new ArrayList<>();
-        expectedOrderList.add(expectedOrder1);
-        expectedOrderList.add(expectedOrder2);
-        expectedOrderList.add(expectedOrder3);
-        expectedOrderList.add(expectedOrder4);
-        expectedOrderList.add(expectedOrder5);
-        expectedOrderList.add(expectedOrder6);
-        expectedOrderList.add(expectedOrder7);
-        
-        Thread.sleep(5000L);
+        expectedOrder.orderCompleted(order1);
         
         int maxattempts = 10;
-        boolean ok = false;
-        for(int i=0; i<maxattempts; i++) {
-            
+        for(int i=0; i<maxattempts; i++) { 
           Response response = makeGetRequest(url + "orderHistory/"+orderID+"/"+custID);
-          if(response.getStatus() == 200) {
-        	  String responseString = response.readEntity(String.class);
-        	  ArrayList<QueryOrder> orders = new Gson().fromJson(responseString, new TypeToken<List<QueryOrder>>(){}.getType());
-              Assert.assertEquals(expectedOrderList, orders);
-              ok = true;
-              Thread.sleep(1000L);
-          } else {
-              Thread.sleep(1000L);
-          }
-      }
-      assertTrue(ok);
+          Assert.assertEquals(response.getStatus(), 200);
+          String responseString = response.readEntity(String.class);
+          ArrayList<QueryOrder> orders = new Gson().fromJson(responseString, new TypeToken<List<QueryOrder>>(){}.getType());
+          Assert.assertTrue(orders.contains(expectedOrder));
+          
+        }
     }
     
     @Test
