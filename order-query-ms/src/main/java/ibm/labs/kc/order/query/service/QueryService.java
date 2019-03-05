@@ -18,6 +18,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 import ibm.labs.kc.order.query.dao.OrderDAO;
 import ibm.labs.kc.order.query.dao.OrderDAOMock;
 import ibm.labs.kc.order.query.dao.QueryOrder;
@@ -94,6 +96,7 @@ public class QueryService implements EventListener {
         Optional<QueryOrder> oqo;
         try {
             OrderEvent orderEvent = (OrderEvent) event;
+            System.out.println("@@@@ in handle " + new Gson().toJson(orderEvent));
             switch (orderEvent.getType()) {
             case OrderEvent.TYPE_CREATED:
                 synchronized (orderDAO) {

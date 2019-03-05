@@ -2,6 +2,8 @@ package ibm.labs.kc.order.query.model.events;
 
 import com.google.gson.Gson;
 
+import ibm.labs.kc.order.command.model.events.AssignContainerEvent;
+
 public class OrderEvent extends AbstractEvent {
 
 
@@ -42,6 +44,8 @@ public class OrderEvent extends AbstractEvent {
             return gson.fromJson(json, AssignOrderEvent.class);
         case TYPE_CANCELLED:
             return gson.fromJson(json, CancelOrderEvent.class);
+        case TYPE_CONTAINER_ALLOCATED:
+        	return gson.fromJson(json, AssignContainerEvent.class);
         default:
             //TODO handle
             return null;
