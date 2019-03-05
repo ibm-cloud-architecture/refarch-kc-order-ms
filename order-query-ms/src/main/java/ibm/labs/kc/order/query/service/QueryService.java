@@ -22,8 +22,10 @@ import ibm.labs.kc.order.query.dao.OrderDAO;
 import ibm.labs.kc.order.query.dao.OrderDAOMock;
 import ibm.labs.kc.order.query.dao.QueryOrder;
 import ibm.labs.kc.order.query.model.Cancellation;
+import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.VoyageAssignment;
+import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
@@ -127,6 +129,20 @@ public class QueryService implements EventListener {
                     }
                 }
                 break;
+            case OrderEvent.TYPE_CONTAINER_ALLOCATED:
+            	synchronized (orderDAO) {
+	            	ContainerAssignment ca = ((AssignContainerEvent) orderEvent).getPayload();
+	            	orderID = ca.getOrderID();
+	            	 oqo = orderDAO.getById(orderID);
+	            	 if (oqo.isPresent()) {
+	            		 QueryOrder qo = oqo.get();
+	                     qo.assignContainer(ca);
+	                     orderDAO.update(qo);
+	                 } else {
+	                     throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+	                 }
+            	}
+            	break;
             case OrderEvent.TYPE_CANCELLED:
                 synchronized (orderDAO) {
                     Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
