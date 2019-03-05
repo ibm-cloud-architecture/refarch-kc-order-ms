@@ -22,7 +22,7 @@ else
    docker run -v $(pwd):/home -ti ibmcase/javatools bash -c "cd /home && mvn install -DskipITs"
 fi
 # image for public docker hub
-#docker build -t ibmcase/kc-orderqueryms .
+docker build -t ibmcase/kc-orderqueryms .
 if [[ $kcenv -ne "local" ]]
 then
    # image for private registry in IBM Cloud
