@@ -16,6 +16,7 @@ public class OrderDAOMock implements OrderDAO {
     private static final Logger logger = LoggerFactory.getLogger(OrderDAOMock.class);
 
     private final Map<String, QueryOrder> orders;
+    private ArrayList<QueryOrder> ordHistory;
     private ArrayList<QueryOrder> orderHistory = new ArrayList<>();
 
     private static OrderDAOMock instance;
@@ -30,6 +31,7 @@ public class OrderDAOMock implements OrderDAO {
     // for testing
     public OrderDAOMock() {
         orders = new ConcurrentHashMap<>();
+        ordHistory = new ArrayList<>();
     }
 
     @Override
@@ -56,29 +58,35 @@ public class OrderDAOMock implements OrderDAO {
     
     @Override
 	public void orderHistory(QueryOrder o) {
+    	
+    	QueryOrder ord = orders.get(o.getOrderID()); 
+    	
     	if(o.getVoyageID() == null) {
-    		QueryOrder ord = new QueryOrder(orders.get(o.getOrderID()).getOrderID(),orders.get(o.getOrderID()).getProductID(),
-    				orders.get(o.getOrderID()).getCustomerID(), orders.get(o.getOrderID()).getQuantity(), orders.get(o.getOrderID()).getPickupAddress(),
-    				orders.get(o.getOrderID()).getPickupDate(), orders.get(o.getOrderID()).getDestinationAddress(), orders.get(o.getOrderID()).getExpectedDeliveryDate(),
-    				orders.get(o.getOrderID()).getStatus());
+    		QueryOrder modifiedOrder = new QueryOrder(ord.getOrderID(),ord.getProductID(),
+    				ord.getCustomerID(), ord.getQuantity(), ord.getPickupAddress(),
+    				ord.getPickupDate(), ord.getDestinationAddress(), ord.getExpectedDeliveryDate(),
+    				ord.getStatus());
     		logger.info("Adding to order history " + ord.getOrderID() + ord.getStatus()+ ord.getCustomerID());
-    		orderHistory.add(ord);
+    		orderHistory.add(modifiedOrder);
+    		ordHistory.add(modifiedOrder);
     	}
     	else if(o.getContainerID() == null){
-    		QueryOrder ord = new QueryOrder(orders.get(o.getOrderID()).getOrderID(),orders.get(o.getOrderID()).getProductID(),
-    				orders.get(o.getOrderID()).getCustomerID(), orders.get(o.getOrderID()).getQuantity(), orders.get(o.getOrderID()).getPickupAddress(),
-    				orders.get(o.getOrderID()).getPickupDate(), orders.get(o.getOrderID()).getDestinationAddress(), orders.get(o.getOrderID()).getExpectedDeliveryDate(),
-    				orders.get(o.getOrderID()).getStatus(), orders.get(o.getOrderID()).getVoyageID());
+    		QueryOrder modifiedOrder = new QueryOrder(ord.getOrderID(),ord.getProductID(),
+    				ord.getCustomerID(), ord.getQuantity(), ord.getPickupAddress(),
+    				ord.getPickupDate(), ord.getDestinationAddress(), ord.getExpectedDeliveryDate(),
+    				ord.getStatus(), ord.getVoyageID());
     		logger.info("Adding to order history " + ord.getOrderID() + ord.getStatus()+ ord.getCustomerID()+ ord.getVoyageID());
-    		orderHistory.add(ord);
+    		orderHistory.add(modifiedOrder);
+    		ordHistory.add(modifiedOrder);
     	}
     	else{
-    		QueryOrder ord = new QueryOrder(orders.get(o.getOrderID()).getOrderID(),orders.get(o.getOrderID()).getProductID(),
-    				orders.get(o.getOrderID()).getCustomerID(), orders.get(o.getOrderID()).getQuantity(), orders.get(o.getOrderID()).getPickupAddress(),
-    				orders.get(o.getOrderID()).getPickupDate(), orders.get(o.getOrderID()).getDestinationAddress(), orders.get(o.getOrderID()).getExpectedDeliveryDate(),
-    				orders.get(o.getOrderID()).getStatus(), orders.get(o.getOrderID()).getVoyageID(), orders.get(o.getOrderID()).getContainerID());
+    		QueryOrder modifiedOrder = new QueryOrder(ord.getOrderID(),ord.getProductID(),
+    				ord.getCustomerID(), ord.getQuantity(), ord.getPickupAddress(),
+    				ord.getPickupDate(), ord.getDestinationAddress(), ord.getExpectedDeliveryDate(),
+    				ord.getStatus(), ord.getVoyageID(), ord.getContainerID());
     		logger.info("Adding to order history " + ord.getOrderID() + ord.getStatus()+ ord.getCustomerID()+ ord.getVoyageID()+ ord.getContainerID());
-    		orderHistory.add(ord);
+    		orderHistory.add(modifiedOrder);
+    		ordHistory.add(modifiedOrder);
     	}
 	}
 
