@@ -47,7 +47,7 @@ public class OrderDAOMock implements OrderDAO {
 
     @Override
     public void update(QueryOrder order) {
-        logger.info("Updating order id " + order.getOrderID());
+    	logger.info("Updating order id " + order.getOrderID());
         if (orders.replace(order.getOrderID(), order) == null) {
             throw new IllegalStateException("order does not already exist " + order.getOrderID());
         }
@@ -72,7 +72,8 @@ public class OrderDAOMock implements OrderDAO {
         Collection<QueryOrder> result = new ArrayList<>();
 
         for (QueryOrder order : orders.values()) {
-            if (Objects.equals(status, order.getStatus())) {
+        	logger.info("Getting by status "+order.getCustomerID()+" "+order.getOrderID()+" "+order.getStatus());
+            if (status.equals(order.getStatus())) {
                 result.add(order);
             }
         }
