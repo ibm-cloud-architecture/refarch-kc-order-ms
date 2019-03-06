@@ -2,8 +2,6 @@ package ibm.labs.kc.order.query.model.events;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.command.model.events.AssignContainerEvent;
-
 public class OrderEvent extends AbstractEvent {
 
 
