@@ -75,7 +75,7 @@ public class ComplexQueryServiceIT {
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
           ArrayList<ComplexQueryOrder> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<ComplexQueryOrder>>(){}.getType());
-          Assert.assertTrue("orders "+responseString+" expected"+expectedComplexQueryOrder,complexQueryOrders.contains(expectedComplexQueryOrder));
+          Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
         }
 
     }
@@ -130,12 +130,13 @@ public class ComplexQueryServiceIT {
     	ComplexQueryOrder expectedComplexQueryOrder = ComplexQueryOrder.newFromHistoryOrder(expectedOrder, event7.getTimestampMillis(), event7.getType());
         
         int maxattempts = 10;
+        
         for(int i=0; i<maxattempts; i++) { 
           Response response = makeGetRequest(url + "orderHistory/"+orderID);
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
           ArrayList<ComplexQueryOrder> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<ComplexQueryOrder>>(){}.getType());
-          Assert.assertTrue("orders "+responseString+" expected"+expectedComplexQueryOrder,complexQueryOrders.contains(expectedComplexQueryOrder));
+          Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
         }
     }
     

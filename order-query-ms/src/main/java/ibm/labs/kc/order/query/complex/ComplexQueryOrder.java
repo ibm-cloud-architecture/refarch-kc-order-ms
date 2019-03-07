@@ -64,18 +64,6 @@ public class ComplexQueryOrder {
 		this.type = type;
 	}
 	
-	public String toString() {
-	    StringBuilder string = new StringBuilder();
-	    string.append("{\n");
-	    string.append(String.format("\t\"orderID\": %s,\n", this.orderID));
-	    string.append(String.format("\t\"timestampMillis\": \"%s\",\n", this.timestampMillis));
-	    string.append(String.format("\t\"action\": \"%s\",\n", this.action));
-	    string.append(String.format("\t\"type\": %s,\n", this.type));
-	    string.append("}");
-
-	    return string.toString();
-	  }
-	
 	@Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
