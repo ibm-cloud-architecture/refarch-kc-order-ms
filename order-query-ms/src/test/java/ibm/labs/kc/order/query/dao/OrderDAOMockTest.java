@@ -2,9 +2,7 @@ package ibm.labs.kc.order.query.dao;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
