@@ -12,7 +12,7 @@ echo "############################"
 oq=$(helm list | grep $kname | awk '{print $1}')
 if [[ -z "$oq" ]]
 then
-  echo "$chart release not deployed... which is expected so deploy it"
+  echo "$chart release not deployed...which is expected so deploy it!"
   cd ../chart
   helm install $chart/ --name $kname --namespace $ns
   sleep 4
