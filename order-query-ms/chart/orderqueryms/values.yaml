@@ -6,7 +6,7 @@ image:
   repository: us.icr.io/ibmcaseeda/kc-orderqueryms
   tag: latest
   pullPolicy: Always
-  pullSecret: bluemix-browncompute-secret-regional
+  pullSecret: browncompute-registry-secret
   resources:
     requests:
       cpu: 200m
