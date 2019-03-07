@@ -6,6 +6,12 @@ set p = $(echo $PWD | awk -v h="scripts" '$0 ~h')
 if [[ $PWD = */scripts ]]; then
  cd ..
 fi
+if [[ $# -eq 0 ]];then
+  kcenv="local"
+else
+  kcenv=$1
+fi
+
 . ./scripts/setenv.sh
 # When deploying to a cluster with CA certificate we need to install those
 # certificates in java keystore. So first transform into der format 
@@ -25,9 +31,9 @@ else
 fi
 
 # image for public docker hub
-docker build -t ibmcase/kc-ordercmdms .
-if [[ $kcenv -ne "local" ]]
+docker build -t ibmcase/$kname .
+if [[ $kcenv != "local" ]]
 then
    # image for private registry in IBM Cloud
-   docker tag ibmcase/kc-ordercmdms registry.ng.bluemix.net/ibmcaseeda/kc-ordercmdms
+   docker tag ibmcase/$kname us.icr.io/ibmcaseeda/$kname
 fi

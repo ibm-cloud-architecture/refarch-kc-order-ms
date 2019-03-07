@@ -6,6 +6,12 @@ echo "##########################################"
 if [[ $PWD = */scripts ]]; then
  cd ..
 fi
+if [[ $# -eq 0 ]];then
+  kcenv="local"
+else
+  kcenv=$1
+fi
+
 . ./scripts/setenv.sh
 if [[ $kcenv -ne "local" && -f ../../refarch-kc/certs/es-cert.pem ]] 
 then
@@ -22,9 +28,9 @@ else
    docker run -v $(pwd):/home -ti ibmcase/javatools bash -c "cd /home && mvn install -DskipITs"
 fi
 # image for public docker hub
-docker build -t ibmcase/kc-orderqueryms .
-if [[ $kcenv -ne "local" ]]
+docker build -t ibmcase/$kname .
+if [[ $kcenv != "local" ]]
 then
    # image for private registry in IBM Cloud
-   docker tag ibmcase/kc-orderqueryms registry.ng.bluemix.net/ibmcaseeda/kc-orderqueryms
+   docker tag ibmcase/$kname us.icr.io/ibmcaseeda/$kname
 fi

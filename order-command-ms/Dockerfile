@@ -14,7 +14,7 @@ RUN apt-get update -q -y && apt-get dist-upgrade -q -y && chmod g+w /config/apps
 USER 1001
 
 # install any missing features required by server config
-RUN installUtility install --acceptLicense defaultServer 
+RUN installUtility install defaultServer --acceptLicense  
 
 
 # Upgrade to production license if URL to JAR provided
