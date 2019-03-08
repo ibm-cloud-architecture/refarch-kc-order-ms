@@ -19,7 +19,7 @@ public class OrderEvent extends AbstractEvent {
     public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";
     public static final String TYPE_CONTAINER_ON_SHIP = "ContainerOnShip";
     public static final String TYPE_CONTAINER_OFF_SHIP = "ContainerOffShip";
-    public static final String TYPE_CONTAINER_DELIVERED = "ContainerDelivered";
+    public static final String TYPE_CONTAINER_DELIVERED = "ContainerDelivered";   
 
     private static final Gson gson = new Gson();
 
@@ -36,14 +36,24 @@ public class OrderEvent extends AbstractEvent {
         switch (orderEvent.type) {
         case TYPE_CREATED:
             return gson.fromJson(json, CreateOrderEvent.class);
-        case TYPE_UPDATED:
-            return gson.fromJson(json, UpdateOrderEvent.class);
         case TYPE_ASSIGNED:
             return gson.fromJson(json, AssignOrderEvent.class);
-        case TYPE_CANCELLED:
-            return gson.fromJson(json, CancelOrderEvent.class);
+        case TYPE_REJECTED:
+        	return gson.fromJson(json, RejectOrderEvent.class);
         case TYPE_CONTAINER_ALLOCATED:
         	return gson.fromJson(json, AssignContainerEvent.class);
+        case TYPE_CONTAINER_ON_SHIP:
+        	return gson.fromJson(json, ContainerOnShipEvent.class);
+        case TYPE_CONTAINER_OFF_SHIP:
+        	return gson.fromJson(json, ContainerOffShipEvent.class);
+        case TYPE_CONTAINER_DELIVERED:
+        	return gson.fromJson(json, ContainerDeliveredEvent.class);
+        case TYPE_UPDATED:
+            return gson.fromJson(json, UpdateOrderEvent.class);
+        case TYPE_CANCELLED:
+            return gson.fromJson(json, CancelOrderEvent.class);
+        case TYPE_COMPLETED:
+        	return gson.fromJson(json, OrderCompletedEvent.class);
         default:
             //TODO handle
             return null;

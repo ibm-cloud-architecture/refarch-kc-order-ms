@@ -17,6 +17,8 @@ public class Order {
     public static final String CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
     public static final String CONTAINER_DELIVERED_STATUS = "container-delivered";
     
+    public static final String ORDER_COMPLETED_STATUS = "order-completed";
+    
     private String orderID;
     private String productID;
     private String customerID;
@@ -29,8 +31,16 @@ public class Order {
     private String expectedDeliveryDate;
 
     private String status;
+    
+    private String voyageID;
+    
+    private String containerID;
 
     public Order() {
+    }
+    
+    public Order(String orderID) {
+        this.orderID = orderID;
     }
 
     public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
@@ -44,6 +54,35 @@ public class Order {
         this.destinationAddress = destinationAddress;
         this.expectedDeliveryDate = expectedDeliveryDate;
         this.status = status;
+    }
+    
+    public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+            String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String voyageID) {
+        this.orderID = orderID;
+        this.productID = productID;
+        this.customerID = customerID;
+        this.quantity = quantity;
+        this.pickupAddress = pickupAddress;
+        this.pickupDate = pickupDate;
+        this.destinationAddress = destinationAddress;
+        this.expectedDeliveryDate = expectedDeliveryDate;
+        this.status = status;
+        this.voyageID = voyageID;
+    }
+    
+    public Order(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
+            String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String voyageID, String containerID) {
+        this.orderID = orderID;
+        this.productID = productID;
+        this.customerID = customerID;
+        this.quantity = quantity;
+        this.pickupAddress = pickupAddress;
+        this.pickupDate = pickupDate;
+        this.destinationAddress = destinationAddress;
+        this.expectedDeliveryDate = expectedDeliveryDate;
+        this.status = status;
+        this.voyageID = voyageID;
+        this.setContainerID(containerID);
     }
 
     public String getOrderID() {
@@ -101,6 +140,22 @@ public class Order {
     public void setPickupDate(String pickupDate) {
         this.pickupDate = pickupDate;
     }
+    
+    public String getVoyageID() {
+		return voyageID;
+	}
+
+	public void setVoyageID(String voyageID) {
+		this.voyageID = voyageID;
+	}
+
+	public String getContainerID() {
+		return containerID;
+	}
+
+	public void setContainerID(String containerID) {
+		this.containerID = containerID;
+	}
 
     @Override
     public int hashCode() {
@@ -111,4 +166,5 @@ public class Order {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+
 }
