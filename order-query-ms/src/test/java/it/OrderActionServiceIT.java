@@ -22,8 +22,8 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import ibm.labs.kc.order.query.complex.ComplexQueryOrder;
-import ibm.labs.kc.order.query.dao.QueryOrder;
+import ibm.labs.kc.order.query.action.OrderAction;
+import ibm.labs.kc.order.query.action.OrderActionInfo;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.ContainerAssignment;
@@ -40,7 +40,7 @@ import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
 import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
 
-public class ComplexQueryServiceIT {
+public class OrderActionServiceIT {
 	
 	private String port = System.getProperty("liberty.test.port");
     private String endpoint = "/orders/";
@@ -56,15 +56,15 @@ public class ComplexQueryServiceIT {
     	                addr, "2019-02-10T13:30Z",
     	                addr, "2019-02-10T13:30Z", Order.PENDING_STATUS);
     	OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-    	sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+    	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
     	
     	Rejection rejection = new Rejection(orderID, "custId");
     	OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
-    	sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+    	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
     	
-    	QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+    	OrderActionInfo expectedOrder = OrderActionInfo.newFromOrder(order);
     	expectedOrder.reject(rejection);
-    	ComplexQueryOrder expectedComplexQueryOrder = ComplexQueryOrder.newFromHistoryOrder(expectedOrder, event2.getTimestampMillis(), event2.getType());
+    	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event2.getTimestampMillis(), event2.getType());
         
         Thread.sleep(5000L);
         
@@ -74,8 +74,8 @@ public class ComplexQueryServiceIT {
           Response response = makeGetRequest(url + "orderHistory/"+orderID);
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
-          ArrayList<ComplexQueryOrder> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<ComplexQueryOrder>>(){}.getType());
-          Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
+          ArrayList<OrderAction> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderAction>>(){}.getType());
+          Assert.assertTrue("response"+complexQueryOrders.get(0)+" "+complexQueryOrders.get(1)+" exxpected"+expectedComplexQueryOrder,complexQueryOrders.contains(expectedComplexQueryOrder));
         }
 
     }
@@ -92,7 +92,7 @@ public class ComplexQueryServiceIT {
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
         
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+        OrderActionInfo expectedOrder = OrderActionInfo.newFromOrder(order);
         
         VoyageAssignment va = new VoyageAssignment(orderID, "myVoyage");
         OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
@@ -127,7 +127,7 @@ public class ComplexQueryServiceIT {
         
         expectedOrder.orderCompleted(order1);
         
-    	ComplexQueryOrder expectedComplexQueryOrder = ComplexQueryOrder.newFromHistoryOrder(expectedOrder, event7.getTimestampMillis(), event7.getType());
+    	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event7.getTimestampMillis(), event7.getType());
         
         int maxattempts = 10;
         
@@ -135,7 +135,7 @@ public class ComplexQueryServiceIT {
           Response response = makeGetRequest(url + "orderHistory/"+orderID);
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
-          ArrayList<ComplexQueryOrder> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<ComplexQueryOrder>>(){}.getType());
+          ArrayList<OrderAction> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderAction>>(){}.getType());
           Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
         }
     }

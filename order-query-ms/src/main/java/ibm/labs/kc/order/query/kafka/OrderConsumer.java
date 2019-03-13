@@ -1,6 +1,7 @@
 package ibm.labs.kc.order.query.kafka;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,7 @@ public class OrderConsumer {
     public List<OrderEvent> pollForReload() {
         if (!initDone) {
             reloadConsumer.subscribe(
+//            		Arrays.asList(ApplicationConfig.ORDER_TOPIC, ApplicationConfig.CONTAINER_TOPIC),
                     Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
                     new ConsumerRebalanceListener() {
 
@@ -52,6 +54,7 @@ public class OrderConsumer {
                     });
 
             kafkaConsumer.subscribe(
+//            		Arrays.asList(ApplicationConfig.ORDER_TOPIC, ApplicationConfig.CONTAINER_TOPIC),
                     Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
                     new ConsumerRebalanceListener() {
 
