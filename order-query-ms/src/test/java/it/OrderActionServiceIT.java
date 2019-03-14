@@ -75,7 +75,7 @@ public class OrderActionServiceIT {
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
           ArrayList<OrderAction> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderAction>>(){}.getType());
-          Assert.assertTrue("response"+complexQueryOrders.get(0)+" "+complexQueryOrders.get(1)+" exxpected"+expectedComplexQueryOrder,complexQueryOrders.contains(expectedComplexQueryOrder));
+          Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
         }
 
     }

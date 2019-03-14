@@ -34,11 +34,9 @@ public class EventLoop implements ServletContextListener {
         logger.info("ConsumerLoop contextInitialized");
 
         consumer = new OrderConsumer();
-        executor = Executors.newFixedThreadPool(4);
+        executor = Executors.newFixedThreadPool(1);
         executor.execute(newReloadRunnable());
         executor.execute(newRunnable());
-        executor.execute(newOrderActionReloadRunnable());
-        executor.execute(newOrderActionRunnable());
     }
 
     private Runnable newReloadRunnable() {
@@ -46,13 +44,15 @@ public class EventLoop implements ServletContextListener {
             @Override
             public void run() {
                 logger.info("ReloadState started");
-                EventListener listener = new QueryService();
+                EventListener queryServiceListener = new QueryService();
+                EventListener orderActionServicelistener = new OrderActionService();
 
                 while (!consumer.reloadCompleted()) {
                     List<OrderEvent> events = consumer.pollForReload();
                     for (OrderEvent event : events) {
                         try {
-                            listener.handle(event);
+                        	queryServiceListener.handle(event);
+                        	orderActionServicelistener.handle(event);
                         } catch (Exception e) {
                             e.printStackTrace();
                             // TODO fail to restart would be the correct handling
@@ -71,7 +71,8 @@ public class EventLoop implements ServletContextListener {
             @Override
             public void run() {
                 logger.info("ConsumerLoop thread started");
-                EventListener listener = new QueryService();
+                EventListener queryServiceListener = new QueryService();
+                EventListener orderActionServicelistener = new OrderActionService();
                 EventEmitter emitter = new ErrorProducer();
                 boolean ok = true;
                 try {
@@ -80,7 +81,8 @@ public class EventLoop implements ServletContextListener {
                             List<OrderEvent> events = consumer.poll();
                             for (OrderEvent event : events) {
                                 try {
-                                    listener.handle(event);
+                                	queryServiceListener.handle(event);
+                                	orderActionServicelistener.handle(event);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     ErrorEvent errorEvent = new ErrorEvent(System.currentTimeMillis(),
@@ -98,74 +100,6 @@ public class EventLoop implements ServletContextListener {
                             // stop this task and queue a new one
                             ok = false;
                             executor.execute(newRunnable());
-                            // TODO: after a number of retrying, mark app as unhealthy for external monitoring restart
-                        }
-                    }
-                } finally {
-                    consumer.safeClose();
-                    emitter.safeClose();
-                }
-            };
-        };
-    }
-
-    private Runnable newOrderActionReloadRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                logger.info("ReloadState started for Order Action");
-                EventListener listener = new OrderActionService();
-
-                while (!consumer.reloadCompleted()) {
-                    List<OrderEvent> events = consumer.pollForReload();
-                    for (OrderEvent event : events) {
-                        try {
-                            listener.handle(event);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            // TODO fail to restart would be the correct handling
-                            // mark the app as unhealthy
-                        }
-                    }
-                }
-                logger.info("ReloadState completed");
-                consumer.safeReloadClose();
-            }
-        };
-    }
-
-    private Runnable newOrderActionRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                logger.info("ConsumerLoop thread started for order action");
-                EventListener listener = new OrderActionService();
-                EventEmitter emitter = new ErrorProducer();
-                boolean ok = true;
-                try {
-                    while (running && ok) {
-                        try {
-                            List<OrderEvent> events = consumer.poll();
-                            for (OrderEvent event : events) {
-                                try {
-                                    listener.handle(event);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    ErrorEvent errorEvent = new ErrorEvent(System.currentTimeMillis(),
-                                            ErrorEvent.TYPE_ERROR, "1", event, e.getMessage());
-                                    try {
-                                        emitter.emit(errorEvent);
-                                    } catch (Exception e1) {
-                                        logger.error("Failed emitting Error event " + errorEvent, e1);
-                                    }
-                                }
-                            }
-                        } catch (Exception ke) {
-                            ke.printStackTrace();
-                            // Treat a Kafka exception as unrecoverable
-                            // stop this task and queue a new one
-                            ok = false;
-                            executor.execute(newOrderActionRunnable());
                             // TODO: after a number of retrying, mark app as unhealthy for external monitoring restart
                         }
                     }

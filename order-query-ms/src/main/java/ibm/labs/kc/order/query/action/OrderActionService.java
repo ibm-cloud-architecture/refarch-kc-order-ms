@@ -53,7 +53,7 @@ public class OrderActionService implements EventListener{
 	@GET
     @Path("orderHistory/{orderId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Query order history by order ID for a particular customer", description = "")
+    @Operation(summary = "Order history by order ID", description = "")
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Order history found", content = @Content(mediaType = "application/json")) })
     public Response getOrderHistory(@PathParam("orderId") String orderId) {

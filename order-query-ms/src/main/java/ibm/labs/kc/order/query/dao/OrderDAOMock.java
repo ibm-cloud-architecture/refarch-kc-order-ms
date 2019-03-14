@@ -31,12 +31,14 @@ public class OrderDAOMock implements OrderDAO {
         orders = new ConcurrentHashMap<>();
     }
 
+    // Getting the order based on orderID
     @Override
     public Optional<QueryOrder> getById(String orderId) {
         QueryOrder o = orders.get(orderId);
         return Optional.ofNullable(o);
     }
 
+    // Storing the orders
     @Override
     public void add(QueryOrder order) {
         logger.info("Adding order id " + order.getOrderID());
@@ -45,6 +47,7 @@ public class OrderDAOMock implements OrderDAO {
         }
     }
 
+    // Updating the orders based on the recent status
     @Override
     public void update(QueryOrder order) {
     	logger.info("Updating order id " + order.getOrderID());
@@ -53,6 +56,7 @@ public class OrderDAOMock implements OrderDAO {
         }
     }
 
+    // Getting the order based on the Manufacturer
     @Override
     public Collection<QueryOrder> getByManuf(String manuf) {
         // DEMO: check manuf against customerID
@@ -67,6 +71,7 @@ public class OrderDAOMock implements OrderDAO {
         return Collections.unmodifiableCollection(result);
     }
 
+    // Getting the order based on the status
     @Override
     public Collection<QueryOrder> getByStatus(String status) {
         Collection<QueryOrder> result = new ArrayList<>();

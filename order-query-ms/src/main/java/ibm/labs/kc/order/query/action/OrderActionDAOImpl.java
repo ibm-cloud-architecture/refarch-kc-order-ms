@@ -33,53 +33,58 @@ public class OrderActionDAOImpl implements OrderActionDAO{
     	ordHistory = new ArrayList<>();
     }
 
+    // Storing the events
 	@Override
-	public void add(OrderAction complexQueryOrder) {
-		logger.info("Adding order event " + complexQueryOrder.getOrderActionItem().getOrderID());
-        if (orderEvents.putIfAbsent(complexQueryOrder.getOrderActionItem().getOrderID(), complexQueryOrder) != null) {
-            throw new IllegalStateException("Order Event already exists " + complexQueryOrder.getOrderActionItem().getOrderID());
+	public void add(OrderAction orderAction) {
+		logger.info("Adding order event " + orderAction.getOrderActionItem().getOrderID());
+        if (orderEvents.putIfAbsent(orderAction.getOrderActionItem().getOrderID(), orderAction) != null) {
+            throw new IllegalStateException("Order Event already exists " + orderAction.getOrderActionItem().getOrderID());
         }	
 	}
 
+	// Updating the stored events based on the recent status
 	@Override
-	public void update(OrderAction complexQueryOrder) {
-		logger.info("Updating order id " + complexQueryOrder.getOrderActionItem().getOrderID());
-        if (orderEvents.replace(complexQueryOrder.getOrderActionItem().getOrderID(), complexQueryOrder) == null) {
-            throw new IllegalStateException("Order does not exist " + complexQueryOrder.getOrderActionItem().getOrderID());
+	public void update(OrderAction orderAction) {
+		logger.info("Updating order id " + orderAction.getOrderActionItem().getOrderID());
+        if (orderEvents.replace(orderAction.getOrderActionItem().getOrderID(), orderAction) == null) {
+            throw new IllegalStateException("Order does not exist " + orderAction.getOrderActionItem().getOrderID());
         }	
 	}
 	
+	// Getting the event by Id
 	@Override
 	public Optional<OrderActionInfo> getById(String orderId) {
 		OrderActionInfo o = orderEvents.get(orderId).getOrderActionItem();
         return Optional.ofNullable(o);
 	}
 
+	// Maintaining the history of all events that happened so far
 	@Override
-	public void orderHistory(OrderAction complexQueryOrder) {
+	public void orderHistory(OrderAction orderAction) {
 
-		OrderAction newComplexQueryOrder = orderEvents.get(complexQueryOrder.getOrderActionItem().getOrderID());
+		OrderAction newOrderAction = orderEvents.get(orderAction.getOrderActionItem().getOrderID());
 		
-		OrderAction modifiedComplexQueryOrder = new OrderAction(newComplexQueryOrder.getOrderActionItem(),
-																			newComplexQueryOrder.getTimestampMillis(),
-																			newComplexQueryOrder.getAction(),
-																			newComplexQueryOrder.getType());
+		OrderAction modifiedOrderAction = new OrderAction(newOrderAction.getOrderActionItem(),
+																newOrderAction.getTimestampMillis(),
+																newOrderAction.getAction(),
+																newOrderAction.getType());
 		
-		logger.info("Adding to order events history " + modifiedComplexQueryOrder.getOrderActionItem().getOrderID() + modifiedComplexQueryOrder.getTimestampMillis()+
-				modifiedComplexQueryOrder.getAction(),modifiedComplexQueryOrder.getType());
+		logger.info("Adding to order events history " + modifiedOrderAction.getOrderActionItem().getOrderID() + modifiedOrderAction.getTimestampMillis()+
+				modifiedOrderAction.getAction(),modifiedOrderAction.getType());
 		
-		orderHistory.add(modifiedComplexQueryOrder);
-		ordHistory.add(modifiedComplexQueryOrder);
+		orderHistory.add(modifiedOrderAction);
+		ordHistory.add(modifiedOrderAction);
     		
 	}
 
+	// Getting the history based on the orderID
 	@Override
 	public Collection<OrderAction> getOrderStatus(String orderID) {
 		Collection<OrderAction> result = new ArrayList<>();
-        for (OrderAction complexQueryOrder : orderHistory) {
-            if (orderID.equals(complexQueryOrder.getOrderActionItem().getOrderID())) {
-            	logger.info("Getting order status "+complexQueryOrder.getTimestampMillis() + complexQueryOrder.getAction() + complexQueryOrder.getType());
-            	OrderAction reqOrder = new OrderAction(complexQueryOrder.getTimestampMillis(), complexQueryOrder.getAction(), complexQueryOrder.getType());
+        for (OrderAction orderAction : orderHistory) {
+            if (orderID.equals(orderAction.getOrderActionItem().getOrderID())) {
+            	logger.info("Getting order status "+orderAction.getTimestampMillis() + orderAction.getAction() + orderAction.getType());
+            	OrderAction reqOrder = new OrderAction(orderAction.getTimestampMillis(), orderAction.getAction(), orderAction.getType());
                 result.add(reqOrder);
             }
         }

@@ -47,12 +47,9 @@ public class QueryService implements EventListener {
     static final Logger logger = LoggerFactory.getLogger(QueryService.class);
 
     private OrderDAO orderDAO;
-    
-//    private ComplexQueryDAO complexQueryOrderDAO;
 
     public QueryService() {
         orderDAO = OrderDAOMock.instance();
-//        complexQueryOrderDAO = ComplexQueryDAOImpl.instance();
     }
 
     @GET
@@ -110,29 +107,19 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_CREATED:
                 synchronized (orderDAO) {
                     Order o1 = ((CreateOrderEvent) orderEvent).getPayload();
-//                    long timestampMillis = ((CreateOrderEvent) orderEvent).getTimestampMillis();
-//                    String action = ((CreateOrderEvent) orderEvent).getType();
                     QueryOrder qo = QueryOrder.newFromOrder(o1);
                     orderDAO.add(qo);
-//                    ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                    complexQueryOrderDAO.add(cqo);
-//                    complexQueryOrderDAO.orderHistory(cqo);
                 }
                 break;
             case OrderEvent.TYPE_UPDATED:
                 synchronized (orderDAO) {
                     Order o2 = ((UpdateOrderEvent) orderEvent).getPayload();
-//                    long timestampMillis = ((UpdateOrderEvent) orderEvent).getTimestampMillis();
-//                    String action = ((UpdateOrderEvent) orderEvent).getType();
                     orderID = o2.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.update(o2);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -141,17 +128,12 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_ASSIGNED:
                 synchronized (orderDAO) {
                     VoyageAssignment voyageAssignment = ((AssignOrderEvent) orderEvent).getPayload();
-//                    long timestampMillis = ((AssignOrderEvent) orderEvent).getTimestampMillis();
-//                    String action = ((AssignOrderEvent) orderEvent).getType();
                     orderID = voyageAssignment.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.assign(voyageAssignment);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -160,17 +142,12 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_REJECTED:
                 synchronized (orderDAO) {
                     Rejection rejection = ((RejectOrderEvent) orderEvent).getPayload();
-//                    long timestampMillis = ((RejectOrderEvent) orderEvent).getTimestampMillis();
-//                    String action = ((RejectOrderEvent) orderEvent).getType();
                     orderID = rejection.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.reject(rejection);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -179,17 +156,12 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_CONTAINER_ALLOCATED:
                 synchronized (orderDAO) {
                 	ContainerAssignment container = ((AssignContainerEvent) orderEvent).getPayload();
-//                	long timestampMillis = ((AssignContainerEvent) orderEvent).getTimestampMillis();
-//                	String action = ((AssignContainerEvent) orderEvent).getType();
                     orderID = container.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.assignContainer(container);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -198,17 +170,12 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_CONTAINER_ON_SHIP:
                 synchronized (orderDAO) {
                 	ContainerAssignment container = ((ContainerOnShipEvent) orderEvent).getPayload();
-//                	long timestampMillis = ((ContainerOnShipEvent) orderEvent).getTimestampMillis();
-//                	String action = ((ContainerOnShipEvent) orderEvent).getType();
                     orderID = container.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.containerOnShip(container);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -217,17 +184,12 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_CONTAINER_OFF_SHIP:
                 synchronized (orderDAO) {
                 	ContainerAssignment container = ((ContainerOffShipEvent) orderEvent).getPayload();
-//                	long timestampMillis = ((ContainerOffShipEvent) orderEvent).getTimestampMillis();
-//                	String action = ((ContainerOffShipEvent) orderEvent).getType();
                     orderID = container.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.containerOffShip(container);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -236,17 +198,12 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_CONTAINER_DELIVERED:
                 synchronized (orderDAO) {
                 	ContainerAssignment container = ((ContainerDeliveredEvent) orderEvent).getPayload();
-//                	long timestampMillis = ((ContainerDeliveredEvent) orderEvent).getTimestampMillis();
-//                	String action = ((ContainerDeliveredEvent) orderEvent).getType();
                     orderID = container.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.containerDelivered(container);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -255,17 +212,12 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_CANCELLED:
                 synchronized (orderDAO) {
                     Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
-//                    long timestampMillis = ((CancelOrderEvent) orderEvent).getTimestampMillis();
-//                    String action = ((CancelOrderEvent) orderEvent).getType();
                     orderID = cancellation.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.cancel(cancellation);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
@@ -274,17 +226,12 @@ public class QueryService implements EventListener {
             case OrderEvent.TYPE_COMPLETED:
                 synchronized (orderDAO) {
                     Order order = ((OrderCompletedEvent) orderEvent).getPayload();
-//                    long timestampMillis = ((OrderCompletedEvent) orderEvent).getTimestampMillis();
-//                    String action = ((OrderCompletedEvent) orderEvent).getType();
                     orderID = order.getOrderID();
                     oqo = orderDAO.getById(orderID);
                     if (oqo.isPresent()) {
                         QueryOrder qo = oqo.get();
                         qo.orderCompleted(order);
                         orderDAO.update(qo);
-//                        ComplexQueryOrder cqo = ComplexQueryOrder.newFromOrder(qo, timestampMillis, action);
-//                        complexQueryOrderDAO.update(cqo);
-//                        complexQueryOrderDAO.orderHistory(cqo);
                     } else {
                         throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
