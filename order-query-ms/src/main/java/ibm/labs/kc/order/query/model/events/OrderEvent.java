@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 
 public class OrderEvent extends AbstractEvent {
 
-
-    
     public static final String TYPE_CREATED = "OrderCreated";
     public static final String TYPE_UPDATED = "OrderUpdated";
     public static final String TYPE_BOOKED = "OrderBooked";

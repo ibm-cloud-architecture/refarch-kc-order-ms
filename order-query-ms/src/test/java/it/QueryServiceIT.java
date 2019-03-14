@@ -76,362 +76,362 @@ public class QueryServiceIT {
         assertTrue(ok);
     }
 
-    @Test
-    public void testGetByStatus() throws Exception {
-        String orderID = UUID.randomUUID().toString();
+   @Test
+   public void testGetByStatus() throws Exception {
+       String orderID = UUID.randomUUID().toString();
 
-        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testGetByStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testGetByStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
 
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byStatus/pending");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(QueryOrder.newFromOrder(order), o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);
-    }
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byStatus/pending");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(QueryOrder.newFromOrder(order), o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+   }
 
-    @Test
-    public void testGetByManuf() throws Exception {
-        String orderID = UUID.randomUUID().toString();
+   @Test
+   public void testGetByManuf() throws Exception {
+       String orderID = UUID.randomUUID().toString();
 
-        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testGetByManuf", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testGetByManuf", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
 
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byManuf/custId");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(expectedOrder, o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);
-    }
+       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byManuf/custId");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(expectedOrder, o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+   }
 
-    @Test
-    public void testHandleVoyageAssignment() throws Exception {
-        String orderID = UUID.randomUUID().toString();
+   @Test
+   public void testHandleVoyageAssignment() throws Exception {
+       String orderID = UUID.randomUUID().toString();
 
-        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
 
-        VoyageAssignment va = new VoyageAssignment(orderID, "12345");
-        OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
-        sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+       VoyageAssignment va = new VoyageAssignment(orderID, "12345");
+       OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
+       sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
 
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        expectedOrder.assign(va);
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byStatus/assigned");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(expectedOrder, o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);
-    }
-    
-    @Test
-    public void testNoAvailability() throws Exception {
-        String orderID = UUID.randomUUID().toString();
+       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+       expectedOrder.assign(va);
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byStatus/assigned");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(expectedOrder, o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+   }
 
-        Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+   @Test
+   public void testNoAvailability() throws Exception {
+       String orderID = UUID.randomUUID().toString();
 
-        Rejection rejection = new Rejection(orderID, "custId");
-        OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
-        sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+       Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
 
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        expectedOrder.reject(rejection);
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byStatus/rejected");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(expectedOrder, o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);
-    }
-    
-    @Test
-    public void testAllocatedContainer() throws Exception {
-    	String orderID = UUID.randomUUID().toString();
-    	
-    	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
-        
-        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
-        OrderEvent event2 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
-        sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
-        
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        expectedOrder.assignContainer(container);
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byStatus/container-allocated");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(expectedOrder, o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);
-    	
-    }
-    
-    @Test
-    public void testContainerOnShip() throws Exception {
-    	
-        String orderID = UUID.randomUUID().toString();
-    	
-    	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testContainerOnShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
-        
-        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
-        OrderEvent event2 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
-        sendEvent("testContainerOnShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
-        
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        expectedOrder.containerOnShip(container);
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byStatus/container-on-ship");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(expectedOrder, o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);
-    	
-    }
-    
-    @Test
-    public void testContainerOffShip() throws Exception {
-    	
-        String orderID = UUID.randomUUID().toString();
-    	
-    	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testContainerOffShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
-        
-        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
-        OrderEvent event2 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
-        sendEvent("testContainerOffShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
-        
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        expectedOrder.containerOffShip(container);
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byStatus/container-off-ship");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(expectedOrder, o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);
-    	
-    }
-    
-    @Test
-    public void testContainerDelivered() throws Exception {
-    	
-        String orderID = UUID.randomUUID().toString();
-    	
-    	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testContainerDelivered", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
-        
-        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
-        OrderEvent event2 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
-        sendEvent("testContainerDelivered", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
-        
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        expectedOrder.containerDelivered(container);
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byStatus/container-delivered");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(expectedOrder, o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);
-    	
-    }
-    
-    @Test
-    public void testOrderCompleted() throws Exception {
-    	
-        String orderID = UUID.randomUUID().toString();
-    	
-    	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
-                addr, "2019-01-10T13:30Z",
-                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testOrderCompleted", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
-        
-        Order order1 = new Order(orderID);
-        OrderEvent event2 = new OrderCompletedEvent(System.currentTimeMillis(), "1", order1);
-        sendEvent("testOrderCompleted", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
-        
-        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-        expectedOrder.orderCompleted(order1);
-        int maxattempts = 10;
-        boolean ok = false;
-        outer: for(int i=0; i<maxattempts; i++) {
-            Response response = makeGetRequest(url + "byStatus/order-completed");
-            if(response.getStatus() == 200) {
-                String responseString = response.readEntity(String.class);
-                QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-                for (QueryOrder o : orders) {
-                    if (orderID.equals(o.getOrderID())) {
-                        assertEquals(expectedOrder, o);
-                        ok = true;
-                        break outer;
-                    }
-                }
-                Thread.sleep(1000L);
-            } else {
-                Thread.sleep(1000L);
-            }
-        }
-        assertTrue(ok);	
-    }
-    
+       Rejection rejection = new Rejection(orderID, "custId");
+       OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
+       sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+       expectedOrder.reject(rejection);
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byStatus/rejected");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(expectedOrder, o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+   }
+
+   @Test
+   public void testAllocatedContainer() throws Exception {
+   	String orderID = UUID.randomUUID().toString();
+
+   	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+       ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
+       OrderEvent event2 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
+       sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+       expectedOrder.assignContainer(container);
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byStatus/container-allocated");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(expectedOrder, o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+
+   }
+
+   @Test
+   public void testContainerOnShip() throws Exception {
+
+       String orderID = UUID.randomUUID().toString();
+
+   	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testContainerOnShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+       ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
+       OrderEvent event2 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
+       sendEvent("testContainerOnShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+       expectedOrder.containerOnShip(container);
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byStatus/container-on-ship");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(expectedOrder, o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+
+   }
+
+   @Test
+   public void testContainerOffShip() throws Exception {
+
+       String orderID = UUID.randomUUID().toString();
+
+   	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testContainerOffShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+       ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
+       OrderEvent event2 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
+       sendEvent("testContainerOffShip", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+       expectedOrder.containerOffShip(container);
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byStatus/container-off-ship");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(expectedOrder, o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+
+   }
+
+   @Test
+   public void testContainerDelivered() throws Exception {
+
+       String orderID = UUID.randomUUID().toString();
+
+   	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testContainerDelivered", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+       ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
+       OrderEvent event2 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
+       sendEvent("testContainerDelivered", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+       expectedOrder.containerDelivered(container);
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byStatus/container-delivered");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(expectedOrder, o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+
+   }
+
+   @Test
+   public void testOrderCompleted() throws Exception {
+
+       String orderID = UUID.randomUUID().toString();
+
+   	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+       Order order = new Order(orderID, "productId", "custId", 2,
+               addr, "2019-01-10T13:30Z",
+               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+       sendEvent("testOrderCompleted", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+       Order order1 = new Order(orderID);
+       OrderEvent event2 = new OrderCompletedEvent(System.currentTimeMillis(), "1", order1);
+       sendEvent("testOrderCompleted", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
+       expectedOrder.orderCompleted(order1);
+       int maxattempts = 10;
+       boolean ok = false;
+       outer: for(int i=0; i<maxattempts; i++) {
+           Response response = makeGetRequest(url + "byStatus/order-completed");
+           if(response.getStatus() == 200) {
+               String responseString = response.readEntity(String.class);
+               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
+               for (QueryOrder o : orders) {
+                   if (orderID.equals(o.getOrderID())) {
+                       assertEquals(expectedOrder, o);
+                       ok = true;
+                       break outer;
+                   }
+               }
+               Thread.sleep(1000L);
+           } else {
+               Thread.sleep(1000L);
+           }
+       }
+       assertTrue(ok);
+   }
+
     @Test
     public void testVoyageReady() throws Exception {
-    	
+
     }
-    
+
     @Test
     public void testOrderSpoiled() throws Exception {
-    	
+
     }
 
     protected Response makeGetRequest(String url) {

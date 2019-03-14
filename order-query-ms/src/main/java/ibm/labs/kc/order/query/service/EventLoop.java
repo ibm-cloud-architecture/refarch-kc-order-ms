@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibm.labs.kc.order.query.action.OrderActionService;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.kafka.ErrorProducer;
 import ibm.labs.kc.order.query.kafka.OrderConsumer;
@@ -43,13 +44,15 @@ public class EventLoop implements ServletContextListener {
             @Override
             public void run() {
                 logger.info("ReloadState started");
-                EventListener listener = new QueryService();
+                EventListener queryServiceListener = new QueryService();
+                EventListener orderActionServicelistener = new OrderActionService();
 
                 while (!consumer.reloadCompleted()) {
                     List<OrderEvent> events = consumer.pollForReload();
                     for (OrderEvent event : events) {
                         try {
-                            listener.handle(event);
+                        	queryServiceListener.handle(event);
+                        	orderActionServicelistener.handle(event);
                         } catch (Exception e) {
                             e.printStackTrace();
                             // TODO fail to restart would be the correct handling
@@ -68,7 +71,8 @@ public class EventLoop implements ServletContextListener {
             @Override
             public void run() {
                 logger.info("ConsumerLoop thread started");
-                EventListener listener = new QueryService();
+                EventListener queryServiceListener = new QueryService();
+                EventListener orderActionServicelistener = new OrderActionService();
                 EventEmitter emitter = new ErrorProducer();
                 boolean ok = true;
                 try {
@@ -77,7 +81,8 @@ public class EventLoop implements ServletContextListener {
                             List<OrderEvent> events = consumer.poll();
                             for (OrderEvent event : events) {
                                 try {
-                                    listener.handle(event);
+                                	queryServiceListener.handle(event);
+                                	orderActionServicelistener.handle(event);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     ErrorEvent errorEvent = new ErrorEvent(System.currentTimeMillis(),

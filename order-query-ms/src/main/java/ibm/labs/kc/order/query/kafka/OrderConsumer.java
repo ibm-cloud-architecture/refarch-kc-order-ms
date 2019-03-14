@@ -37,6 +37,7 @@ public class OrderConsumer {
     public List<OrderEvent> pollForReload() {
         if (!initDone) {
             reloadConsumer.subscribe(
+//            		Arrays.asList(ApplicationConfig.ORDER_TOPIC, ApplicationConfig.CONTAINER_TOPIC),
                     Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
                     new ConsumerRebalanceListener() {
 
@@ -52,6 +53,7 @@ public class OrderConsumer {
                     });
 
             kafkaConsumer.subscribe(
+//            		Arrays.asList(ApplicationConfig.ORDER_TOPIC, ApplicationConfig.CONTAINER_TOPIC),
                     Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
                     new ConsumerRebalanceListener() {
 

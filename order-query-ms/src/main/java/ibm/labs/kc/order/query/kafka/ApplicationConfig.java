@@ -18,6 +18,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 public class ApplicationConfig {
 
     public static final String ORDER_TOPIC = "orders";
+    public static final String CONTAINER_TOPIC = "containers";
     public static final String ERROR_TOPIC = "errors";
     public static final String CONSUMER_GROUP_ID = "order-query-grp";
     public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
