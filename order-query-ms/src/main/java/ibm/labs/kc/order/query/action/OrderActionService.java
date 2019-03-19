@@ -68,183 +68,185 @@ public class OrderActionService implements EventListener{
         Optional<OrderActionInfo> oqo;
         try {
             OrderEvent orderEvent = (OrderEvent) event;
-            System.out.println("@@@@ in handle order action" + new Gson().toJson(orderEvent));
-            switch (orderEvent.getType()) {
-            case OrderEvent.TYPE_CREATED:
-                synchronized (orderActionDAO) {
-                    Order o1 = ((CreateOrderEvent) orderEvent).getPayload();
-                    long timestampMillis = ((CreateOrderEvent) orderEvent).getTimestampMillis();
-                    String action = ((CreateOrderEvent) orderEvent).getType();
-                    OrderActionInfo orderActionItem = OrderActionInfo.newFromOrder(o1);
-                    OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    orderActionDAO.add(orderAction);
-                    orderActionDAO.orderHistory(orderAction);
-                }
-                break;
-            case OrderEvent.TYPE_UPDATED:
-                synchronized (orderActionDAO) {
-                    Order o2 = ((UpdateOrderEvent) orderEvent).getPayload();
-                    long timestampMillis = ((UpdateOrderEvent) orderEvent).getTimestampMillis();
-                    String action = ((UpdateOrderEvent) orderEvent).getType();
-                    orderID = o2.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.update(o2);
-                    	OrderAction cqo = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    	orderActionDAO.update(cqo);
-                    	orderActionDAO.orderHistory(cqo);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-                    }
-                }
-                break;
-            case OrderEvent.TYPE_ASSIGNED:
-                synchronized (orderActionDAO) {
-                    VoyageAssignment voyageAssignment = ((AssignOrderEvent) orderEvent).getPayload();
-                    long timestampMillis = ((AssignOrderEvent) orderEvent).getTimestampMillis();
-                    String action = ((AssignOrderEvent) orderEvent).getType();
-                    orderID = voyageAssignment.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.assign(voyageAssignment);
-                    	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                        orderActionDAO.update(orderAction);
+            if(orderEvent!=null){
+            	System.out.println("@@@@ in handle order action" + new Gson().toJson(orderEvent));
+                switch (orderEvent.getType()) {
+                case OrderEvent.TYPE_CREATED:
+                    synchronized (orderActionDAO) {
+                        Order o1 = ((CreateOrderEvent) orderEvent).getPayload();
+                        long timestampMillis = ((CreateOrderEvent) orderEvent).getTimestampMillis();
+                        String action = ((CreateOrderEvent) orderEvent).getType();
+                        OrderActionInfo orderActionItem = OrderActionInfo.newFromOrder(o1);
+                        OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        orderActionDAO.add(orderAction);
                         orderActionDAO.orderHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
                     }
-                }
-                break;
-            case OrderEvent.TYPE_REJECTED:
-                synchronized (orderActionDAO) {
-                    Rejection rejection = ((RejectOrderEvent) orderEvent).getPayload();
-                    long timestampMillis = ((RejectOrderEvent) orderEvent).getTimestampMillis();
-                    String action = ((RejectOrderEvent) orderEvent).getType();
-                    orderID = rejection.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.reject(rejection);
-                    	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    	orderActionDAO.update(orderAction);
-                    	orderActionDAO.orderHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    break;
+                case OrderEvent.TYPE_UPDATED:
+                    synchronized (orderActionDAO) {
+                        Order o2 = ((UpdateOrderEvent) orderEvent).getPayload();
+                        long timestampMillis = ((UpdateOrderEvent) orderEvent).getTimestampMillis();
+                        String action = ((UpdateOrderEvent) orderEvent).getType();
+                        orderID = o2.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.update(o2);
+                        	OrderAction cqo = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        	orderActionDAO.update(cqo);
+                        	orderActionDAO.orderHistory(cqo);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
                     }
-                }
-                break;
-            case OrderEvent.TYPE_CONTAINER_ALLOCATED:
-                synchronized (orderActionDAO) {
-                	ContainerAssignment container = ((AssignContainerEvent) orderEvent).getPayload();
-                	long timestampMillis = ((AssignContainerEvent) orderEvent).getTimestampMillis();
-                	String action = ((AssignContainerEvent) orderEvent).getType();
-                    orderID = container.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.assignContainer(container);
-                    	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    	orderActionDAO.update(orderAction);
-                    	orderActionDAO.orderHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    break;
+                case OrderEvent.TYPE_ASSIGNED:
+                    synchronized (orderActionDAO) {
+                        VoyageAssignment voyageAssignment = ((AssignOrderEvent) orderEvent).getPayload();
+                        long timestampMillis = ((AssignOrderEvent) orderEvent).getTimestampMillis();
+                        String action = ((AssignOrderEvent) orderEvent).getType();
+                        orderID = voyageAssignment.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.assign(voyageAssignment);
+                        	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                            orderActionDAO.update(orderAction);
+                            orderActionDAO.orderHistory(orderAction);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
                     }
-                }
-                break;
-            case OrderEvent.TYPE_CONTAINER_ON_SHIP:
-                synchronized (orderActionDAO) {
-                	ContainerAssignment container = ((ContainerOnShipEvent) orderEvent).getPayload();
-                	long timestampMillis = ((ContainerOnShipEvent) orderEvent).getTimestampMillis();
-                	String action = ((ContainerOnShipEvent) orderEvent).getType();
-                    orderID = container.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.containerOnShip(container);
-                    	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    	orderActionDAO.update(orderAction);
-                    	orderActionDAO.orderHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    break;
+                case OrderEvent.TYPE_REJECTED:
+                    synchronized (orderActionDAO) {
+                        Rejection rejection = ((RejectOrderEvent) orderEvent).getPayload();
+                        long timestampMillis = ((RejectOrderEvent) orderEvent).getTimestampMillis();
+                        String action = ((RejectOrderEvent) orderEvent).getType();
+                        orderID = rejection.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.reject(rejection);
+                        	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        	orderActionDAO.update(orderAction);
+                        	orderActionDAO.orderHistory(orderAction);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
                     }
-                }
-                break;
-            case OrderEvent.TYPE_CONTAINER_OFF_SHIP:
-                synchronized (orderActionDAO) {
-                	ContainerAssignment container = ((ContainerOffShipEvent) orderEvent).getPayload();
-                	long timestampMillis = ((ContainerOffShipEvent) orderEvent).getTimestampMillis();
-                	String action = ((ContainerOffShipEvent) orderEvent).getType();
-                    orderID = container.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.containerOffShip(container);
-                    	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    	orderActionDAO.update(orderAction);
-                    	orderActionDAO.orderHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    break;
+                case OrderEvent.TYPE_CONTAINER_ALLOCATED:
+                    synchronized (orderActionDAO) {
+                    	ContainerAssignment container = ((AssignContainerEvent) orderEvent).getPayload();
+                    	long timestampMillis = ((AssignContainerEvent) orderEvent).getTimestampMillis();
+                    	String action = ((AssignContainerEvent) orderEvent).getType();
+                        orderID = container.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.assignContainer(container);
+                        	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        	orderActionDAO.update(orderAction);
+                        	orderActionDAO.orderHistory(orderAction);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
                     }
-                }
-                break;
-            case OrderEvent.TYPE_CONTAINER_DELIVERED:
-                synchronized (orderActionDAO) {
-                	ContainerAssignment container = ((ContainerDeliveredEvent) orderEvent).getPayload();
-                	long timestampMillis = ((ContainerDeliveredEvent) orderEvent).getTimestampMillis();
-                	String action = ((ContainerDeliveredEvent) orderEvent).getType();
-                    orderID = container.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.containerDelivered(container);
-                    	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    	orderActionDAO.update(orderAction);
-                    	orderActionDAO.orderHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    break;
+                case OrderEvent.TYPE_CONTAINER_ON_SHIP:
+                    synchronized (orderActionDAO) {
+                    	ContainerAssignment container = ((ContainerOnShipEvent) orderEvent).getPayload();
+                    	long timestampMillis = ((ContainerOnShipEvent) orderEvent).getTimestampMillis();
+                    	String action = ((ContainerOnShipEvent) orderEvent).getType();
+                        orderID = container.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.containerOnShip(container);
+                        	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        	orderActionDAO.update(orderAction);
+                        	orderActionDAO.orderHistory(orderAction);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
                     }
-                }
-                break;
-            case OrderEvent.TYPE_CANCELLED:
-                synchronized (orderActionDAO) {
-                    Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
-                    long timestampMillis = ((CancelOrderEvent) orderEvent).getTimestampMillis();
-                    String action = ((CancelOrderEvent) orderEvent).getType();
-                    orderID = cancellation.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.cancel(cancellation);
-                    	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    	orderActionDAO.update(orderAction);
-                    	orderActionDAO.orderHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    break;
+                case OrderEvent.TYPE_CONTAINER_OFF_SHIP:
+                    synchronized (orderActionDAO) {
+                    	ContainerAssignment container = ((ContainerOffShipEvent) orderEvent).getPayload();
+                    	long timestampMillis = ((ContainerOffShipEvent) orderEvent).getTimestampMillis();
+                    	String action = ((ContainerOffShipEvent) orderEvent).getType();
+                        orderID = container.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.containerOffShip(container);
+                        	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        	orderActionDAO.update(orderAction);
+                        	orderActionDAO.orderHistory(orderAction);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
                     }
-                }
-                break;
-            case OrderEvent.TYPE_COMPLETED:
-                synchronized (orderActionDAO) {
-                    Order order = ((OrderCompletedEvent) orderEvent).getPayload();
-                    long timestampMillis = ((OrderCompletedEvent) orderEvent).getTimestampMillis();
-                    String action = ((OrderCompletedEvent) orderEvent).getType();
-                    orderID = order.getOrderID();
-                    oqo = orderActionDAO.getById(orderID);
-                    if (oqo.isPresent()) {
-                    	OrderActionInfo orderActionItem = oqo.get();
-                    	orderActionItem.orderCompleted(order);
-                    	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
-                    	orderActionDAO.update(orderAction);
-                    	orderActionDAO.orderHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                    break;
+                case OrderEvent.TYPE_CONTAINER_DELIVERED:
+                    synchronized (orderActionDAO) {
+                    	ContainerAssignment container = ((ContainerDeliveredEvent) orderEvent).getPayload();
+                    	long timestampMillis = ((ContainerDeliveredEvent) orderEvent).getTimestampMillis();
+                    	String action = ((ContainerDeliveredEvent) orderEvent).getType();
+                        orderID = container.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.containerDelivered(container);
+                        	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        	orderActionDAO.update(orderAction);
+                        	orderActionDAO.orderHistory(orderAction);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
                     }
+                    break;
+                case OrderEvent.TYPE_CANCELLED:
+                    synchronized (orderActionDAO) {
+                        Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
+                        long timestampMillis = ((CancelOrderEvent) orderEvent).getTimestampMillis();
+                        String action = ((CancelOrderEvent) orderEvent).getType();
+                        orderID = cancellation.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.cancel(cancellation);
+                        	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        	orderActionDAO.update(orderAction);
+                        	orderActionDAO.orderHistory(orderAction);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
+                    }
+                    break;
+                case OrderEvent.TYPE_COMPLETED:
+                    synchronized (orderActionDAO) {
+                        Order order = ((OrderCompletedEvent) orderEvent).getPayload();
+                        long timestampMillis = ((OrderCompletedEvent) orderEvent).getTimestampMillis();
+                        String action = ((OrderCompletedEvent) orderEvent).getType();
+                        orderID = order.getOrderID();
+                        oqo = orderActionDAO.getById(orderID);
+                        if (oqo.isPresent()) {
+                        	OrderActionInfo orderActionItem = oqo.get();
+                        	orderActionItem.orderCompleted(order);
+                        	OrderAction orderAction = OrderAction.newFromOrder(orderActionItem, timestampMillis, action);
+                        	orderActionDAO.update(orderAction);
+                        	orderActionDAO.orderHistory(orderAction);
+                        } else {
+                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+                        }
+                    }
+                    break;
+                default:
+                    logger.warn("Unknown event type: " + orderEvent);
                 }
-                break;
-            default:
-                logger.warn("Unknown event type: " + orderEvent);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

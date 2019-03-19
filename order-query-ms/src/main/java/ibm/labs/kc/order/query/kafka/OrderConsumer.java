@@ -1,6 +1,7 @@
 package ibm.labs.kc.order.query.kafka;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +16,8 @@ import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibm.labs.kc.order.query.model.Events;
+import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
 
 public class OrderConsumer {
@@ -23,7 +26,8 @@ public class OrderConsumer {
     private final KafkaConsumer<String, String> reloadConsumer;
 
     private boolean initDone = false;
-    private OffsetAndMetadata reloadLimit;
+    private OffsetAndMetadata reloadLimitOrder;
+    private OffsetAndMetadata reloadLimitContainer;
     private boolean reloadCompleted = false;
 
     public OrderConsumer() {
@@ -34,11 +38,10 @@ public class OrderConsumer {
         reloadConsumer = new KafkaConsumer<String, String>(reloadProperties);
     }
 
-    public List<OrderEvent> pollForReload() {
+    public Events pollForReload() {
         if (!initDone) {
             reloadConsumer.subscribe(
-//            		Arrays.asList(ApplicationConfig.ORDER_TOPIC, ApplicationConfig.CONTAINER_TOPIC),
-                    Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
+            		Arrays.asList(ApplicationConfig.ORDER_TOPIC, ApplicationConfig.CONTAINER_TOPIC),
                     new ConsumerRebalanceListener() {
 
                         @Override
@@ -53,8 +56,7 @@ public class OrderConsumer {
                     });
 
             kafkaConsumer.subscribe(
-//            		Arrays.asList(ApplicationConfig.ORDER_TOPIC, ApplicationConfig.CONTAINER_TOPIC),
-                    Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
+            		Arrays.asList(ApplicationConfig.ORDER_TOPIC, ApplicationConfig.CONTAINER_TOPIC),
                     new ConsumerRebalanceListener() {
 
                         @Override
@@ -70,22 +72,33 @@ public class OrderConsumer {
 
             // blocking call !
             // TODO - need to handle multiple partitions
-            reloadLimit = kafkaConsumer.committed(new TopicPartition(ApplicationConfig.ORDER_TOPIC, 0));
-            logger.info("Reload limit " + reloadLimit);
+            reloadLimitOrder = kafkaConsumer.committed(new TopicPartition(ApplicationConfig.ORDER_TOPIC, 0));
+            logger.info("Reload limit Order" + reloadLimitOrder);
+            
+            reloadLimitContainer = kafkaConsumer.committed(new TopicPartition(ApplicationConfig.CONTAINER_TOPIC, 0));
+            logger.info("Reload limit Container" + reloadLimitContainer);
+            
             initDone = true;
         }
 
-        List<OrderEvent> result = new ArrayList<>();
+        List<OrderEvent> orderResult = new ArrayList<>();
+        List<ContainerEvent> containerResult = new ArrayList<>();
 
-        if (reloadLimit==null) {
+        if (reloadLimitOrder==null && reloadLimitContainer==null) {
             // no prior commits found
-            reloadCompleted = true;
+        	reloadCompleted = true;
         } else {
             ConsumerRecords<String, String> recs = reloadConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
             for (ConsumerRecord<String, String> rec : recs) {
-                if (rec.offset() <= reloadLimit.offset()) {
-                    OrderEvent event = OrderEvent.deserialize(rec.value());
-                    result.add(event);
+                if (rec.offset() <= reloadLimitOrder.offset() || rec.offset() <= reloadLimitContainer.offset()) {
+                	if(rec.offset() <= reloadLimitOrder.offset()){
+                		OrderEvent ordEvent = OrderEvent.deserialize(rec.value());
+                        orderResult.add(ordEvent);
+                	}
+                    if(rec.offset() <= reloadLimitContainer.offset()){
+                    	ContainerEvent conEvent = ContainerEvent.deserialize(rec.value());
+                    	containerResult.add(conEvent);
+                    }
                 } else {
                     logger.info("Reload Completed");
                     reloadCompleted = true;
@@ -93,21 +106,26 @@ public class OrderConsumer {
                 }
             }
         }
-        return result;
+        Events events = new Events(orderResult, containerResult);
+        return events;
     }
 
     public boolean reloadCompleted() {
         return reloadCompleted;
     }
 
-    public List<OrderEvent> poll() {
+    public Events poll() {
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
-        List<OrderEvent> result = new ArrayList<>();
+        List<OrderEvent> orderResult = new ArrayList<>();
+        List<ContainerEvent> containerResult = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {
-            OrderEvent event = OrderEvent.deserialize(rec.value());
-            result.add(event);
+            OrderEvent ordEvent = OrderEvent.deserialize(rec.value());
+            orderResult.add(ordEvent);
+            ContainerEvent conEvent = ContainerEvent.deserialize(rec.value());
+            containerResult.add(conEvent);
         }
-        return result;
+        Events events = new Events(orderResult, containerResult);
+        return events;
     }
 
     public void safeReloadClose() {
