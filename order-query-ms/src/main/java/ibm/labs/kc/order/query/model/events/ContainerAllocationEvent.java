@@ -2,19 +2,18 @@ package ibm.labs.kc.order.query.model.events;
 
 import ibm.labs.kc.order.query.model.ContainerAssignment;
 
-public class AssignContainerEvent extends OrderEvent{
-
+public class ContainerAllocationEvent extends ContainerEvent {
+	
 	private ContainerAssignment payload;
 
-	public AssignContainerEvent(long timestampMillis, String version,ContainerAssignment payload) {
-		super(timestampMillis,OrderEvent.TYPE_CONTAINER_ALLOCATED,version);
+	public ContainerAllocationEvent(long timestampMillis, String version,ContainerAssignment payload) {
+		super(timestampMillis,ContainerEvent.TYPE_ASSIGNED,version);
 		this.payload = payload;
 	}
 
-	public AssignContainerEvent() {
+	public ContainerAllocationEvent() {
 		
 	}
-	
 	
 	public ContainerAssignment getPayload() {
 		return payload;
@@ -23,6 +22,5 @@ public class AssignContainerEvent extends OrderEvent{
 	public void setPayload(ContainerAssignment payload) {
 		this.payload = payload;
 	}
-	
-	
+
 }
