@@ -66,7 +66,7 @@ public class OrderActionServiceIT {
     	expectedOrder.reject(rejection);
     	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event2.getTimestampMillis(), event2.getType());
         
-        Thread.sleep(5000L);
+        Thread.sleep(7000L);
         
         int maxattempts = 10;
      
