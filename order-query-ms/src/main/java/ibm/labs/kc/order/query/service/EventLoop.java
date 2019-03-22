@@ -60,8 +60,8 @@ public class EventLoop implements ServletContextListener {
                     List<OrderEvent> events = orderConsumer.pollForReload();
                     for (OrderEvent event : events) {
                         try {
-                        	queryServiceListener.handle(event);
-                        	orderActionServicelistener.handle(event);
+                        	queryServiceListener.handle(event, "order");
+                        	orderActionServicelistener.handle(event, "order");
                         } catch (Exception e) {
                             e.printStackTrace();
                             // TODO fail to restart would be the correct handling
@@ -83,12 +83,14 @@ public class EventLoop implements ServletContextListener {
             public void run() {
                 logger.info("ReloadState started");
                 EventListener containerServicelistener = new ContainerService();
+                EventListener orderActionServicelistener = new OrderActionService();
 
                 while (!containerConsumer.reloadCompleted()) {
                     List<ContainerEvent> events = containerConsumer.pollForReload();
                     for (ContainerEvent event : events) {
                         try {
-                        	containerServicelistener.handle(event);
+                        	containerServicelistener.handle(event, "container");
+                        	orderActionServicelistener.handle(event, "container");
                         } catch (Exception e) {
                             e.printStackTrace();
                             // TODO fail to restart would be the correct handling
@@ -118,8 +120,8 @@ public class EventLoop implements ServletContextListener {
                             List<OrderEvent> ordEvents = orderConsumer.poll();
                             for (OrderEvent event : ordEvents) {
                                 try {
-                                	queryServiceListener.handle(event);
-                                	orderActionServicelistener.handle(event);
+                                	queryServiceListener.handle(event, "order");
+                                	orderActionServicelistener.handle(event, "order");
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     ErrorEvent errorEvent = new ErrorEvent(System.currentTimeMillis(),
@@ -155,6 +157,7 @@ public class EventLoop implements ServletContextListener {
             public void run() {
                 logger.info("ConsumerLoop thread started");
                 EventListener containerServicelistener = new ContainerService();
+                EventListener orderActionServicelistener = new OrderActionService();
                 EventEmitter emitter = new ErrorProducer();
                 boolean ok = true;
                 try {
@@ -163,7 +166,8 @@ public class EventLoop implements ServletContextListener {
                             List<ContainerEvent> contEvents = containerConsumer.poll();
                             for (ContainerEvent event : contEvents) {
                                 try {
-                                	containerServicelistener.handle(event);
+                                	containerServicelistener.handle(event, "container");
+                                	orderActionServicelistener.handle(event, "container");
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     ErrorEvent errorEvent = new ErrorEvent(System.currentTimeMillis(),

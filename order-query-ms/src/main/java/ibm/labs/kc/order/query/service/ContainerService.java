@@ -26,7 +26,7 @@ import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.events.ContainerAllocationEvent;
 import ibm.labs.kc.order.query.model.events.ContainerEvent;
-import ibm.labs.kc.order.query.model.events.CreateContainerEvent;
+import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 import ibm.labs.kc.order.query.model.events.Event;
 import ibm.labs.kc.order.query.model.events.EventListener;
 
@@ -60,7 +60,7 @@ public class ContainerService implements EventListener {
     }
 
 	@Override
-	public void handle(Event event) {
+	public void handle(Event event, String event_type) {
 		String containerID;
         Optional<QueryContainer> qc;
         try {
@@ -68,25 +68,11 @@ public class ContainerService implements EventListener {
             if(containerEvent!=null){
             	System.out.println("@@@@ in handle container" + new Gson().toJson(containerEvent));
                 switch (containerEvent.getType()) {
-                case ContainerEvent.TYPE_CREATED:
+                case ContainerEvent.TYPE_AVAILABLE:
                     synchronized (containerDAO) {
-                        Container conatiner = ((CreateContainerEvent) containerEvent).getPayload();
+                        Container conatiner = ((AvailableContainerEvent) containerEvent).getPayload();
                         QueryContainer queryContainer = QueryContainer.newFromContainer(conatiner);
                         containerDAO.add(queryContainer);
-                    }
-                    break;
-                case ContainerEvent.TYPE_ASSIGNED:
-                    synchronized (containerDAO) {
-                    	ContainerAssignment container = ((ContainerAllocationEvent) containerEvent).getPayload();
-                        containerID = container.getContainerID();
-                        qc = containerDAO.getById(containerID);
-                        if (qc.isPresent()) {
-                            QueryContainer queyContainer = qc.get();
-                            queyContainer.assignedToOrder(container);
-                            containerDAO.update(queyContainer);
-                        } else {
-                            throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                        }
                     }
                     break;
                 default:

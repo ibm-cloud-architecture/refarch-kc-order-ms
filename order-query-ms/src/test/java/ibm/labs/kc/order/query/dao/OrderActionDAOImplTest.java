@@ -42,9 +42,9 @@ public class OrderActionDAOImplTest {
         OrderAction expectedOrderAction1 = OrderAction.newFromOrder(orderAction1, event1.getTimestampMillis(), event1.getType());
         OrderAction expectedQueryAction2 = OrderAction.newFromOrder(orderAction2, event2.getTimestampMillis(), event2.getType());
               
-        orderActionDAO.add(expectedOrderAction1);
+        orderActionDAO.addOrder(expectedOrderAction1);
         orderActionDAO.orderHistory(expectedOrderAction1);
-        orderActionDAO.add(expectedQueryAction2);
+        orderActionDAO.addOrder(expectedQueryAction2);
         orderActionDAO.orderHistory(expectedQueryAction2);
 
         Collection<OrderAction> expectedwithID = new ArrayList<>();

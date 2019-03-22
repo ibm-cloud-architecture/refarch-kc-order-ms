@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Cancellation;
+import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.Rejection;
@@ -24,6 +25,11 @@ public class OrderActionInfo {
     private String voyageID;
     private String containerID;
     private String reason;
+	private String brand;
+	private String type;
+	private int capacity;
+	private double latitude;
+	private double longitude;
 
     public OrderActionInfo(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status) {
@@ -66,6 +72,16 @@ public class OrderActionInfo {
         this.voyageID = voyageID;
         this.containerID = containerID;
     }
+    
+    public OrderActionInfo(String containerID, String brand, String type, int capacity, double latitude, double longitude, String status) {
+    	this.containerID = containerID;
+		this.brand = brand;
+		this.type = type;
+		this.capacity = capacity;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.status = status;
+    }
 
     public static OrderActionInfo newFromOrder(Order order) {
         return new OrderActionInfo(order.getOrderID(),
@@ -73,6 +89,13 @@ public class OrderActionInfo {
                 order.getPickupAddress(), order.getPickupDate(),
                 order.getDestinationAddress(), order.getExpectedDeliveryDate(),
                 order.getStatus());
+    }
+    
+    public static OrderActionInfo newFromContainer(Container container) {
+        return new OrderActionInfo(container.getContainerID(),
+                container.getBrand(), container.getType(), container.getCapacity(),
+                container.getLatitude(), container.getLongitude(),
+                container.getStatus());
     }
 
     public void update(Order order) {

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 public class ContainerEvent extends AbstractEvent {
 	
-	public static final String TYPE_CREATED = "ContainerCreated";
+	public static final String TYPE_AVAILABLE = "ContainerAvailable, AssignedToOrder";
     public static final String TYPE_ASSIGNED = "ContainerAssigned";
     
     private static final Gson gson = new Gson();
@@ -20,10 +20,8 @@ public class ContainerEvent extends AbstractEvent {
         // We could do a "normal" JSON deserialization instead
     	ContainerEvent containerEvent = gson.fromJson(json, ContainerEvent.class);
         switch (containerEvent.type) {
-        case TYPE_CREATED:
-            return gson.fromJson(json, CreateContainerEvent.class);
-        case TYPE_ASSIGNED:
-            return gson.fromJson(json, ContainerAllocationEvent.class);
+        case TYPE_AVAILABLE:
+            return gson.fromJson(json, AvailableContainerEvent.class);
         default:
             //TODO handle
             return null;

@@ -25,7 +25,7 @@ import ibm.labs.kc.order.query.dao.QueryContainer;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.events.ContainerEvent;
-import ibm.labs.kc.order.query.model.events.CreateContainerEvent;
+import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 
 public class ContainerServiceIT {
 	
@@ -38,7 +38,7 @@ public class ContainerServiceIT {
         String containerID = UUID.randomUUID().toString();
 
         Container container = new Container(containerID, "brand", "type", 1, 1, 1, "available");
-        ContainerEvent event = new CreateContainerEvent(System.currentTimeMillis(), "1", container);
+        ContainerEvent event = new AvailableContainerEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testGetByIdContainer", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(event));
 
         QueryContainer expectedContainer = QueryContainer.newFromContainer(container);

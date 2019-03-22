@@ -2,7 +2,7 @@ package ibm.labs.kc.order.query.action;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-public class OrderAction {
+public class OrderAction { // implements Comparable<OrderAction>{
 	
 	private OrderActionInfo orderActionItem;
 	private long timestampMillis;
@@ -28,6 +28,14 @@ public class OrderAction {
 	
 	public static OrderAction newFromOrder(OrderActionInfo orderActionItem, long timestampMillis, String action) {
 		return new OrderAction(orderActionItem, timestampMillis, action, "order");
+    }
+	
+	public static OrderAction newFromHistoryContainer(OrderActionInfo orderActionItem, long timestampMillis, String action) {
+		return new OrderAction(timestampMillis, action, "container");
+    }
+	
+	public static OrderAction newFromContainer(OrderActionInfo orderActionItem, long timestampMillis, String action) {
+		return new OrderAction(orderActionItem, timestampMillis, action, "container");
     }
 	
 	public OrderActionInfo getOrderActionItem() {
@@ -66,5 +74,10 @@ public class OrderAction {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+
+//	@Override
+//	public int compareTo(OrderAction o) {
+//		return Long.compare(this.getTimestampMillis(), o.getTimestampMillis()); 
+//	}
 
 }

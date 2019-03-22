@@ -97,7 +97,7 @@ public class QueryService implements EventListener {
     }
 
     @Override
-    public void handle(Event event) {
+    public void handle(Event event, String event_type) {
         String orderID;
         Optional<QueryOrder> oqo;
         try {
