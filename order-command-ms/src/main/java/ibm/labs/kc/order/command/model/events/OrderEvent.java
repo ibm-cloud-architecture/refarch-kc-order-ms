@@ -1,7 +1,5 @@
 package ibm.labs.kc.order.command.model.events;
 
-import java.awt.event.ContainerAdapter;
-
 import com.google.gson.Gson;
 
 public class OrderEvent extends AbstractEvent {
