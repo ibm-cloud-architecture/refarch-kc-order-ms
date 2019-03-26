@@ -28,7 +28,7 @@ public class ApplicationConfig {
     public static final long TERMINATION_TIMEOUT_SEC = 10;
 
 
-    public static Properties getConsumerProperties() {
+    public static Properties getOrderConsumerProperties() {
         Properties properties = buildCommonProperties();
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
 
@@ -43,7 +43,7 @@ public class ApplicationConfig {
         return properties;
     }
 
-    public static Properties getConsumerReloadProperties() {
+    public static Properties getOrderConsumerReloadProperties() {
         Properties properties = buildCommonProperties();
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
@@ -53,6 +53,34 @@ public class ApplicationConfig {
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID + "-reload");
         properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-query-reload");
+        return properties;
+    }
+    
+    public static Properties getContainerConsumerProperties() {
+        Properties properties = buildCommonProperties();
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,"true");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+//        properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,"1000");
+//        properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
+
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "container-query");
+        return properties;
+    }
+
+    public static Properties getContainerConsumerReloadProperties() {
+        Properties properties = buildCommonProperties();
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID + "-reload");
+        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "container-query-reload");
         return properties;
     }
     /**

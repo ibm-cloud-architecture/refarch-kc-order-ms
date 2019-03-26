@@ -26,6 +26,7 @@ import ibm.labs.kc.order.query.action.OrderAction;
 import ibm.labs.kc.order.query.action.OrderActionInfo;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
+import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.Rejection;
@@ -33,12 +34,20 @@ import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
+import ibm.labs.kc.order.query.model.events.ContainerDoorClosedEvent;
+import ibm.labs.kc.order.query.model.events.ContainerDoorOpenEvent;
+import ibm.labs.kc.order.query.model.events.ContainerEvent;
+import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
+import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
+import ibm.labs.kc.order.query.model.events.ContainerAtDockEvent;
+import ibm.labs.kc.order.query.model.events.ContainerAtPickUpSiteEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
 import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
+import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 
 public class OrderActionServiceIT {
 	
@@ -66,7 +75,7 @@ public class OrderActionServiceIT {
     	expectedOrder.reject(rejection);
     	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event2.getTimestampMillis(), event2.getType());
         
-        Thread.sleep(5000L);
+        Thread.sleep(7000L);
         
         int maxattempts = 10;
      
@@ -84,6 +93,7 @@ public class OrderActionServiceIT {
     public void testOrderStatus() throws Exception {
     	
     	String orderID = UUID.randomUUID().toString();
+    	String containerID = UUID.randomUUID().toString();
     	
     	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         Order order = new Order(orderID, "productId", "custId", 2,
@@ -100,11 +110,47 @@ public class OrderActionServiceIT {
         
         expectedOrder.assign(va);
         
-        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
+        ContainerAssignment container = new ContainerAssignment(orderID, containerID);
         OrderEvent event3 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event3));
         
         expectedOrder.assignContainer(container);
+        
+        Container cont = new Container(containerID, "brand", "type", 1, 1, 1, "available");
+        ContainerEvent cont_event = new AvailableContainerEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event));
+        
+        OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
+        
+        cont.setStatus("atPickUpSite");
+        ContainerEvent cont_event2 = new ContainerAtPickUpSiteEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event2));
+        
+        expectedContainer.containerAtPickUpSite(cont);
+        
+        cont.setStatus("doorOpen");
+        ContainerEvent cont_event3 = new ContainerDoorOpenEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event3));
+        
+        expectedContainer.containerDoorOpen(cont);
+        
+        cont.setStatus("goodsLoaded");
+        ContainerEvent cont_event4 = new ContainerGoodsLoadedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event4));
+        
+        expectedContainer.containerGoodsLoaded(cont);
+        
+        cont.setStatus("doorClosed");
+        ContainerEvent cont_event5 = new ContainerDoorClosedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event5));
+        
+        expectedContainer.containerDoorClosed(cont);
+        
+        cont.setStatus("atDock");
+        ContainerEvent cont_event6 = new ContainerAtDockEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event6));
+        
+        expectedContainer.containerAtDock(cont);
         
         OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));

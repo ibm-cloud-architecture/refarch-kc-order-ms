@@ -15,10 +15,11 @@ import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ibm.labs.kc.order.query.model.events.OrderEvent;
+import ibm.labs.kc.order.query.model.events.ContainerEvent;
 
-public class OrderConsumer {
-	private static final Logger logger = LoggerFactory.getLogger(OrderConsumer.class.getName());
+public class ContainerConsumer {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ContainerConsumer.class.getName());
     private final KafkaConsumer<String, String> kafkaConsumer;
     private final KafkaConsumer<String, String> reloadConsumer;
 
@@ -26,18 +27,18 @@ public class OrderConsumer {
     private OffsetAndMetadata reloadLimit;
     private boolean reloadCompleted = false;
 
-    public OrderConsumer() {
-        Properties properties = ApplicationConfig.getOrderConsumerProperties();
+    public ContainerConsumer() {
+        Properties properties = ApplicationConfig.getContainerConsumerProperties();
         kafkaConsumer = new KafkaConsumer<>(properties);
 
-        Properties reloadProperties = ApplicationConfig.getOrderConsumerReloadProperties();
+        Properties reloadProperties = ApplicationConfig.getContainerConsumerReloadProperties();
         reloadConsumer = new KafkaConsumer<String, String>(reloadProperties);
     }
 
-    public List<OrderEvent> pollForReload() {
+    public List<ContainerEvent> pollForReload() {
         if (!initDone) {
             reloadConsumer.subscribe(
-                    Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
+                    Collections.singletonList(ApplicationConfig.CONTAINER_TOPIC),
                     new ConsumerRebalanceListener() {
 
                         @Override
@@ -52,7 +53,7 @@ public class OrderConsumer {
                     });
 
             kafkaConsumer.subscribe(
-                    Collections.singletonList(ApplicationConfig.ORDER_TOPIC),
+                    Collections.singletonList(ApplicationConfig.CONTAINER_TOPIC),
                     new ConsumerRebalanceListener() {
 
                         @Override
@@ -68,12 +69,12 @@ public class OrderConsumer {
 
             // blocking call !
             // TODO - need to handle multiple partitions
-            reloadLimit = kafkaConsumer.committed(new TopicPartition(ApplicationConfig.ORDER_TOPIC, 0));
+            reloadLimit = kafkaConsumer.committed(new TopicPartition(ApplicationConfig.CONTAINER_TOPIC, 0));
             logger.info("Reload limit " + reloadLimit);
             initDone = true;
         }
 
-        List<OrderEvent> result = new ArrayList<>();
+        List<ContainerEvent> result = new ArrayList<>();
 
         if (reloadLimit==null) {
             // no prior commits found
@@ -82,7 +83,7 @@ public class OrderConsumer {
             ConsumerRecords<String, String> recs = reloadConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
             for (ConsumerRecord<String, String> rec : recs) {
                 if (rec.offset() <= reloadLimit.offset()) {
-                    OrderEvent event = OrderEvent.deserialize(rec.value());
+                    ContainerEvent event = ContainerEvent.deserialize(rec.value());
                     result.add(event);
                 } else {
                     logger.info("Reload Completed");
@@ -98,11 +99,11 @@ public class OrderConsumer {
         return reloadCompleted;
     }
 
-    public List<OrderEvent> poll() {
+    public List<ContainerEvent> poll() {
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
-        List<OrderEvent> result = new ArrayList<>();
+        List<ContainerEvent> result = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {
-            OrderEvent event = OrderEvent.deserialize(rec.value());
+            ContainerEvent event = ContainerEvent.deserialize(rec.value());
             result.add(event);
         }
         return result;
@@ -124,6 +125,7 @@ public class OrderConsumer {
             logger.warn("Failed closing Consumer",e);
         }
     }
+
 
 
 }

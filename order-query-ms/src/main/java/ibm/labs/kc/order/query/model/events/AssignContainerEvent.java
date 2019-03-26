@@ -2,7 +2,7 @@ package ibm.labs.kc.order.query.model.events;
 
 import ibm.labs.kc.order.query.model.ContainerAssignment;
 
-public class AssignContainerEvent extends OrderEvent {
+public class AssignContainerEvent extends OrderEvent{
 
 	private ContainerAssignment payload;
 

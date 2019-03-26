@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Cancellation;
+import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.ContainerAssignment;
 import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.Rejection;
@@ -24,6 +25,11 @@ public class OrderActionInfo {
     private String voyageID;
     private String containerID;
     private String reason;
+	private String brand;
+	private String type;
+	private int capacity;
+	private double latitude;
+	private double longitude;
 
     public OrderActionInfo(String orderID, String productID, String customerID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status) {
@@ -66,6 +72,16 @@ public class OrderActionInfo {
         this.voyageID = voyageID;
         this.containerID = containerID;
     }
+    
+    public OrderActionInfo(String containerID, String brand, String type, int capacity, double latitude, double longitude, String status) {
+    	this.containerID = containerID;
+		this.setBrand(brand);
+		this.setType(type);
+		this.setCapacity(capacity);
+		this.setLatitude(latitude);
+		this.setLongitude(longitude);
+		this.status = status;
+    }
 
     public static OrderActionInfo newFromOrder(Order order) {
         return new OrderActionInfo(order.getOrderID(),
@@ -73,6 +89,13 @@ public class OrderActionInfo {
                 order.getPickupAddress(), order.getPickupDate(),
                 order.getDestinationAddress(), order.getExpectedDeliveryDate(),
                 order.getStatus());
+    }
+    
+    public static OrderActionInfo newFromContainer(Container container) {
+        return new OrderActionInfo(container.getContainerID(),
+                container.getBrand(), container.getType(), container.getCapacity(),
+                container.getLatitude(), container.getLongitude(),
+                container.getStatus());
     }
 
     public void update(Order order) {
@@ -126,6 +149,26 @@ public class OrderActionInfo {
     
     public void reject(Rejection rejection){
     	this.status = Order.REJECTED_STATUS;
+    }
+    
+    public void containerAtPickUpSite(Container container){
+    	this.status = Container.PICK_UP_SITE_STATUS;
+    }
+    
+    public void containerDoorOpen(Container container){
+    	this.status = Container.DOOR_OPEN_STATUS;
+    }
+    
+    public void containerGoodsLoaded(Container container){
+    	this.status = Container.GOODS_LOADED_STATUS;
+    }
+    
+    public void containerDoorClosed(Container container){
+    	this.status = Container.DOOR_CLOSED_STATUS;
+    }
+    
+    public void containerAtDock(Container container){
+    	this.status = Container.AT_DOCK_STATUS;
     }
     
     public void containerOnShip(ContainerAssignment container){
@@ -208,6 +251,46 @@ public class OrderActionInfo {
 
 	public void setVoyageID(String voyageID) {
 		this.voyageID = voyageID;
+	}
+
+	public String getBrand() {
+		return brand;
+	}
+
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 
 }
