@@ -24,7 +24,6 @@ import com.google.gson.reflect.TypeToken;
 
 import ibm.labs.kc.order.query.action.OrderAction;
 import ibm.labs.kc.order.query.action.OrderActionInfo;
-import ibm.labs.kc.order.query.dao.QueryContainer;
 import ibm.labs.kc.order.query.kafka.ApplicationConfig;
 import ibm.labs.kc.order.query.model.Address;
 import ibm.labs.kc.order.query.model.Container;
