@@ -56,10 +56,6 @@ public class QueryContainer {
         }
 		
 	}
-	
-	public void assignedToOrder(ContainerAssignment ca) {
-    	this.status = Container.ALLOCATED_TO_ORDER_STATUS;
-    }
 
 	public String getContainerID() {
 		return containerID;
