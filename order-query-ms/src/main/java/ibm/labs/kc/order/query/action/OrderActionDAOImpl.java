@@ -146,9 +146,9 @@ public class OrderActionDAOImpl implements OrderActionDAO{
                 }
             }
         }
-        Comparator<OrderAction> compareByTimeStamp = (OrderAction oa1, OrderAction oa2) ->
-        Long.compare(oa1.getTimestampMillis(), oa2.getTimestampMillis());
-        Collections.sort(result, compareByTimeStamp);
+//        Comparator<OrderAction> compareByTimeStamp = (OrderAction oa1, OrderAction oa2) ->
+//        Long.compare(oa1.getTimestampMillis(), oa2.getTimestampMillis());
+//        Collections.sort(result, compareByTimeStamp);
         return Collections.unmodifiableCollection(result);
 	}
 	
