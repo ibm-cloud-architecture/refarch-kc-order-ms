@@ -39,6 +39,7 @@ import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
 import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
+import ibm.labs.kc.order.query.model.events.ContainerAtPickUpSiteEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
@@ -115,8 +116,14 @@ public class OrderActionServiceIT {
         Container cont = new Container(containerID, "brand", "type", 1, 1, 1, "available");
         ContainerEvent cont_event = new AvailableContainerEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event));
-//        
-//        OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
+        
+        OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
+        
+        cont.setStatus("atPickUpSite");
+        ContainerEvent cont_event2 = new ContainerAtPickUpSiteEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event2));
+        
+        expectedContainer.containerAtPickUpSite(cont);
         
         OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));

@@ -75,11 +75,11 @@ public class OrderActionInfo {
     
     public OrderActionInfo(String containerID, String brand, String type, int capacity, double latitude, double longitude, String status) {
     	this.containerID = containerID;
-		this.brand = brand;
-		this.type = type;
-		this.capacity = capacity;
-		this.latitude = latitude;
-		this.longitude = longitude;
+		this.setBrand(brand);
+		this.setType(type);
+		this.setCapacity(capacity);
+		this.setLatitude(latitude);
+		this.setLongitude(longitude);
 		this.status = status;
     }
 
@@ -149,6 +149,10 @@ public class OrderActionInfo {
     
     public void reject(Rejection rejection){
     	this.status = Order.REJECTED_STATUS;
+    }
+    
+    public void containerAtPickUpSite(Container container){
+    	this.status = Container.PICK_UP_SITE_STATUS;
     }
     
     public void containerOnShip(ContainerAssignment container){
@@ -231,6 +235,46 @@ public class OrderActionInfo {
 
 	public void setVoyageID(String voyageID) {
 		this.voyageID = voyageID;
+	}
+
+	public String getBrand() {
+		return brand;
+	}
+
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 
 }
