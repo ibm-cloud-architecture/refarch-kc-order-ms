@@ -35,6 +35,7 @@ import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
+import ibm.labs.kc.order.query.model.events.ContainerDoorOpenEvent;
 import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
@@ -124,6 +125,12 @@ public class OrderActionServiceIT {
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event2));
         
         expectedContainer.containerAtPickUpSite(cont);
+        
+        cont.setStatus("doorOpen");
+        ContainerEvent cont_event3 = new ContainerDoorOpenEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event3));
+        
+        expectedContainer.containerDoorOpen(cont);
         
         OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));

@@ -6,6 +6,7 @@ public class ContainerEvent extends AbstractEvent {
 	
 	public static final String TYPE_AVAILABLE = "ContainerAvailable, AssignedToOrder";
 	public static final String TYPE_PICK_UP_SITE = "ContainerAtPickUpSite";
+	public static final String TYPE_DOOR_OPEN = "ContainerDoorOpen";
     public static final String TYPE_ASSIGNED = "ContainerAssigned";
     
     private static final Gson gson = new Gson();
@@ -25,6 +26,8 @@ public class ContainerEvent extends AbstractEvent {
             return gson.fromJson(json, AvailableContainerEvent.class);
         case TYPE_PICK_UP_SITE:
             return gson.fromJson(json, ContainerAtPickUpSiteEvent.class);
+        case TYPE_DOOR_OPEN:
+            return gson.fromJson(json, ContainerDoorOpenEvent.class);
         default:
             //TODO handle
             return null;

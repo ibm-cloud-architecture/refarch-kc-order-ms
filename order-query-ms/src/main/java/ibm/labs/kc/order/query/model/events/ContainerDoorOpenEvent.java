@@ -2,16 +2,16 @@ package ibm.labs.kc.order.query.model.events;
 
 import ibm.labs.kc.order.query.model.Container;
 
-public class ContainerAtPickUpSiteEvent extends ContainerEvent {
+public class ContainerDoorOpenEvent extends ContainerEvent{
 	
     private Container payload;
 	
-	public ContainerAtPickUpSiteEvent(long timestampMillis, String version, Container payload) {
-        super(timestampMillis, ContainerEvent.TYPE_PICK_UP_SITE, version);
+	public ContainerDoorOpenEvent(long timestampMillis, String version, Container payload) {
+        super(timestampMillis, ContainerEvent.TYPE_DOOR_OPEN, version);
         this.payload = payload;
     }
 
-    public ContainerAtPickUpSiteEvent() {
+    public ContainerDoorOpenEvent() {
     }
 
 	public Container getPayload() {

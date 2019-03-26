@@ -155,6 +155,10 @@ public class OrderActionInfo {
     	this.status = Container.PICK_UP_SITE_STATUS;
     }
     
+    public void containerDoorOpen(Container container){
+    	this.status = Container.DOOR_OPEN_STATUS;
+    }
+    
     public void containerOnShip(ContainerAssignment container){
     	this.status = Order.CONTAINER_ON_SHIP_STATUS;
     }

@@ -7,6 +7,7 @@ public class Container {
 	
 	public static final String AVAILABLE_STATUS = "available";
 	public static final String PICK_UP_SITE_STATUS = "atPickUpSite";
+	public static final String DOOR_OPEN_STATUS = "doorOpen";
 	public static final String ALLOCATED_TO_ORDER_STATUS = "container-allocated";
 	
 	private String containerID;
