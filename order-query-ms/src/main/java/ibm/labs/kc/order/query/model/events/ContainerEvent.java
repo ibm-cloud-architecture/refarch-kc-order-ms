@@ -9,7 +9,7 @@ public class ContainerEvent extends AbstractEvent {
 	public static final String TYPE_DOOR_OPEN = "ContainerDoorOpen";
 	public static final String TYPE_GOODS_LOADED = "ContainerGoodsLoaded";
 	public static final String TYPE_DOOR_CLOSED = "ContainerDoorClosed";
-    public static final String TYPE_ASSIGNED = "ContainerAssigned";
+    public static final String TYPE_AT_DOCK = "ContainerAtDock";
     
     private static final Gson gson = new Gson();
     
@@ -34,6 +34,8 @@ public class ContainerEvent extends AbstractEvent {
             return gson.fromJson(json, ContainerGoodsLoadedEvent.class);
         case TYPE_DOOR_CLOSED:
             return gson.fromJson(json, ContainerDoorClosedEvent.class);
+        case TYPE_AT_DOCK:
+            return gson.fromJson(json, ContainerAtDockEvent.class);
         default:
             //TODO handle
             return null;

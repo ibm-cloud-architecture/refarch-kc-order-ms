@@ -167,6 +167,10 @@ public class OrderActionInfo {
     	this.status = Container.DOOR_CLOSED_STATUS;
     }
     
+    public void containerAtDock(Container container){
+    	this.status = Container.AT_DOCK_STATUS;
+    }
+    
     public void containerOnShip(ContainerAssignment container){
     	this.status = Order.CONTAINER_ON_SHIP_STATUS;
     }

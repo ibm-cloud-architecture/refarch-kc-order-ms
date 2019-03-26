@@ -10,7 +10,7 @@ public class Container {
 	public static final String DOOR_OPEN_STATUS = "doorOpen";
 	public static final String GOODS_LOADED_STATUS = "goodsLoaded";
 	public static final String DOOR_CLOSED_STATUS = "doorClosed";
-	public static final String ALLOCATED_TO_ORDER_STATUS = "container-allocated";
+	public static final String AT_DOCK_STATUS = "atDock";
 	
 	private String containerID;
 	private String brand;

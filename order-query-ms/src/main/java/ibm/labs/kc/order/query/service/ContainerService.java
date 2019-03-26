@@ -23,8 +23,6 @@ import ibm.labs.kc.order.query.dao.ContainerDAO;
 import ibm.labs.kc.order.query.dao.ContainerDAOMock;
 import ibm.labs.kc.order.query.dao.QueryContainer;
 import ibm.labs.kc.order.query.model.Container;
-import ibm.labs.kc.order.query.model.ContainerAssignment;
-import ibm.labs.kc.order.query.model.events.ContainerAllocationEvent;
 import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 import ibm.labs.kc.order.query.model.events.Event;

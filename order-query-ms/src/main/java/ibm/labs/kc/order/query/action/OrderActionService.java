@@ -24,7 +24,6 @@ import ibm.labs.kc.order.query.model.Order;
 import ibm.labs.kc.order.query.model.events.Event;
 import ibm.labs.kc.order.query.model.events.EventListener;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
-import ibm.labs.kc.order.query.dao.QueryContainer;
 import ibm.labs.kc.order.query.model.Cancellation;
 import ibm.labs.kc.order.query.model.Container;
 import ibm.labs.kc.order.query.model.ContainerAssignment;
@@ -33,7 +32,7 @@ import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
-import ibm.labs.kc.order.query.model.events.ContainerAllocationEvent;
+import ibm.labs.kc.order.query.model.events.ContainerAtDockEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtPickUpSiteEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDoorClosedEvent;
@@ -343,6 +342,24 @@ public class OrderActionService implements EventListener{
                             if (oqc.isPresent()) {
                             	OrderActionInfo orderActionItem = oqc.get();
                             	orderActionItem.containerDoorClosed(container);
+                            	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
+                            	orderActionDAO.updateContainer(orderAction);
+                            	orderActionDAO.containerHistory(orderAction);
+                            } else {
+                                throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
+                            }
+                        }
+                        break;
+                    case ContainerEvent.TYPE_AT_DOCK:
+                        synchronized (orderActionDAO) {
+                        	Container container = ((ContainerAtDockEvent) containerEvent).getPayload();
+                        	long timestampMillis = ((ContainerAtDockEvent) containerEvent).getTimestampMillis();
+                        	String action = ((ContainerAtDockEvent) containerEvent).getType();
+                            containerID = container.getContainerID();
+                            oqc = orderActionDAO.getByContainerId(containerID);
+                            if (oqc.isPresent()) {
+                            	OrderActionInfo orderActionItem = oqc.get();
+                            	orderActionItem.containerAtDock(container);
                             	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
                             	orderActionDAO.updateContainer(orderAction);
                             	orderActionDAO.containerHistory(orderAction);
