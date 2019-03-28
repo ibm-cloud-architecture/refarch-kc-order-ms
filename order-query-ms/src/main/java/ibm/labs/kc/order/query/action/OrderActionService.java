@@ -43,7 +43,6 @@ import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
-import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
 import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
@@ -269,17 +268,6 @@ public class OrderActionService implements EventListener{
                 if(containerEvent!=null){
                 	System.out.println("@@@@ in handle container" + new Gson().toJson(containerEvent));
                     switch (containerEvent.getType()) {
-                    case ContainerEvent.TYPE_AVAILABLE:
-                        synchronized (orderActionDAO) {
-                        	Container container = ((AvailableContainerEvent) containerEvent).getPayload();
-                            long timestampMillis = ((AvailableContainerEvent) containerEvent).getTimestampMillis();
-                            String action = ((AvailableContainerEvent) containerEvent).getType();
-                            OrderActionInfo orderActionItem = OrderActionInfo.newFromContainer(container);
-                            OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
-                            orderActionDAO.addContainer(orderAction);
-                            orderActionDAO.containerHistory(orderAction);
-                        }
-                        break;
                     case ContainerEvent.TYPE_CONTAINER_ADDED:
                         synchronized (orderActionDAO) {
                         	Container container = ((ContainerAddedEvent) containerEvent).getPayload();

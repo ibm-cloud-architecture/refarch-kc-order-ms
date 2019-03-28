@@ -7,7 +7,6 @@ public class Container {
 	
 	public static final String ADDED_STATUS = "ContainerAdded";
 	public static final String REMOVED_STATUS = "ContainerRemoved";
-	public static final String AVAILABLE_STATUS = "available";
 	public static final String PICK_UP_SITE_STATUS = "atPickUpSite";
 	public static final String DOOR_OPEN_STATUS = "doorOpen";
 	public static final String GOODS_LOADED_STATUS = "goodsLoaded";

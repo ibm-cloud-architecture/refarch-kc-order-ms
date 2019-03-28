@@ -41,7 +41,6 @@ import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
-import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAddedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtDockEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtPickUpSiteEvent;
@@ -49,7 +48,6 @@ import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
 import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
-import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 
 public class OrderActionServiceIT {
 
@@ -193,6 +191,12 @@ public class OrderActionServiceIT {
 
     	String orderID = UUID.randomUUID().toString();
     	String containerID = UUID.randomUUID().toString();
+    	
+    	Container cont = new Container(containerID, "brand", "type", 1, 1, 1, "ContainerAdded");
+        ContainerEvent cont_event = new ContainerAddedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event));
+
+        OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
 
     	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         Order order = new Order(orderID, "productId", "custId", 2,
@@ -214,12 +218,6 @@ public class OrderActionServiceIT {
         sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event3));
 
         expectedOrder.assignContainer(container);
-
-        Container cont = new Container(containerID, "brand", "type", 1, 1, 1, "ContainerAdded");
-        ContainerEvent cont_event = new ContainerAddedEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event));
-
-        OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
 
         cont.setStatus("atPickUpSite");
         ContainerEvent cont_event2 = new ContainerAtPickUpSiteEvent(System.currentTimeMillis(), "1", cont);

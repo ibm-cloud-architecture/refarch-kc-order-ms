@@ -6,7 +6,6 @@ public class ContainerEvent extends AbstractEvent {
 	
 	public static final String TYPE_CONTAINER_ADDED = "ContainerAdded";
 	public static final String TYPE_CONTAINER_REMOVED = "ContainerRemoved";
-	public static final String TYPE_AVAILABLE = "ContainerAvailable, AssignedToOrder";
 	public static final String TYPE_PICK_UP_SITE = "ContainerAtPickUpSite";
 	public static final String TYPE_DOOR_OPEN = "ContainerDoorOpen";
 	public static final String TYPE_GOODS_LOADED = "ContainerGoodsLoaded";
@@ -26,8 +25,6 @@ public class ContainerEvent extends AbstractEvent {
         // We could do a "normal" JSON deserialization instead
     	ContainerEvent containerEvent = gson.fromJson(json, ContainerEvent.class);
         switch (containerEvent.type) {
-        case TYPE_AVAILABLE:
-            return gson.fromJson(json, AvailableContainerEvent.class);
         case TYPE_CONTAINER_ADDED:
             return gson.fromJson(json, ContainerAddedEvent.class);
         case TYPE_CONTAINER_REMOVED:
