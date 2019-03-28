@@ -32,6 +32,7 @@ import ibm.labs.kc.order.query.model.VoyageAssignment;
 import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
+import ibm.labs.kc.order.query.model.events.ContainerAddedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtDockEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtPickUpSiteEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
@@ -272,6 +273,17 @@ public class OrderActionService implements EventListener{
                         	Container container = ((AvailableContainerEvent) containerEvent).getPayload();
                             long timestampMillis = ((AvailableContainerEvent) containerEvent).getTimestampMillis();
                             String action = ((AvailableContainerEvent) containerEvent).getType();
+                            OrderActionInfo orderActionItem = OrderActionInfo.newFromContainer(container);
+                            OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
+                            orderActionDAO.addContainer(orderAction);
+                            orderActionDAO.containerHistory(orderAction);
+                        }
+                        break;
+                    case ContainerEvent.TYPE_CONTAINER_ADDED:
+                        synchronized (orderActionDAO) {
+                        	Container container = ((ContainerAddedEvent) containerEvent).getPayload();
+                            long timestampMillis = ((ContainerAddedEvent) containerEvent).getTimestampMillis();
+                            String action = ((ContainerAddedEvent) containerEvent).getType();
                             OrderActionInfo orderActionItem = OrderActionInfo.newFromContainer(container);
                             OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
                             orderActionDAO.addContainer(orderAction);

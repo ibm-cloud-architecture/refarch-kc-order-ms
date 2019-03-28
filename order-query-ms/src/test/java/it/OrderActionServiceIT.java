@@ -41,6 +41,7 @@ import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
 import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
+import ibm.labs.kc.order.query.model.events.ContainerAddedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtDockEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtPickUpSiteEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
@@ -50,35 +51,35 @@ import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
 import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 
 public class OrderActionServiceIT {
-	
+
 	private String port = System.getProperty("liberty.test.port");
     private String endpoint = "/orders/";
     private String url = "http://localhost:" + port + endpoint;
-    
+
     @Test
     public void testOrderStatusNoAvailability() throws Exception {
-    	
+
     	String orderID = UUID.randomUUID().toString();
-    	
+
     	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
     	Order order = new Order(orderID, "productId", "custId", 2,
     	                addr, "2019-02-10T13:30Z",
     	                addr, "2019-02-10T13:30Z", Order.PENDING_STATUS);
     	OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
     	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
-    	
+
     	Rejection rejection = new Rejection(orderID, "custId");
     	OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
     	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
-    	
+
     	OrderActionInfo expectedOrder = OrderActionInfo.newFromOrder(order);
     	expectedOrder.reject(rejection);
     	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event2.getTimestampMillis(), event2.getType());
-        
-        Thread.sleep(7000L);
-        
+
+        Thread.sleep(10000L);
+
         int maxattempts = 10;
-     
+
         for(int i=0; i<maxattempts; i++) {
           Response response = makeGetRequest(url + "orderHistory/"+orderID);
           Assert.assertEquals(response.getStatus(), 200);
@@ -88,96 +89,96 @@ public class OrderActionServiceIT {
         }
 
     }
-    
+
     @Test
     public void testOrderStatus() throws Exception {
-    	
+
     	String orderID = UUID.randomUUID().toString();
     	String containerID = UUID.randomUUID().toString();
-    	
+
     	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         Order order = new Order(orderID, "productId", "custId", 2,
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
-        
+
         OrderActionInfo expectedOrder = OrderActionInfo.newFromOrder(order);
-        
+
         VoyageAssignment va = new VoyageAssignment(orderID, "myVoyage");
         OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
-        
+
         expectedOrder.assign(va);
-        
+
         ContainerAssignment container = new ContainerAssignment(orderID, containerID);
         OrderEvent event3 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event3));
-        
+
         expectedOrder.assignContainer(container);
-        
-        Container cont = new Container(containerID, "brand", "type", 1, 1, 1, "available");
-        ContainerEvent cont_event = new AvailableContainerEvent(System.currentTimeMillis(), "1", cont);
+
+        Container cont = new Container(containerID, "brand", "type", 1, 1, 1, "ContainerAdded");
+        ContainerEvent cont_event = new ContainerAddedEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event));
-        
+
         OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
-        
+
         cont.setStatus("atPickUpSite");
         ContainerEvent cont_event2 = new ContainerAtPickUpSiteEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event2));
-        
+
         expectedContainer.containerAtPickUpSite(cont);
-        
+
         cont.setStatus("doorOpen");
         ContainerEvent cont_event3 = new ContainerDoorOpenEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event3));
-        
+
         expectedContainer.containerDoorOpen(cont);
-        
+
         cont.setStatus("goodsLoaded");
         ContainerEvent cont_event4 = new ContainerGoodsLoadedEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event4));
-        
+
         expectedContainer.containerGoodsLoaded(cont);
-        
+
         cont.setStatus("doorClosed");
         ContainerEvent cont_event5 = new ContainerDoorClosedEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event5));
-        
+
         expectedContainer.containerDoorClosed(cont);
-        
+
         cont.setStatus("atDock");
         ContainerEvent cont_event6 = new ContainerAtDockEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event6));
-        
+
         expectedContainer.containerAtDock(cont);
-        
+
         OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));
-        
+
         expectedOrder.containerOnShip(container);
-        
+
         OrderEvent event5 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event5));
-        
+
         expectedOrder.containerOffShip(container);
-        
+
         OrderEvent event6 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event6));
-        
+
         expectedOrder.containerDelivered(container);
-        
+
         Order order1 = new Order(orderID);
         OrderEvent event7 = new OrderCompletedEvent(System.currentTimeMillis(), "1", order1);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event7));
-        
+
         expectedOrder.orderCompleted(order1);
-        
+
     	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event7.getTimestampMillis(), event7.getType());
-        
+
         int maxattempts = 10;
-        
-        for(int i=0; i<maxattempts; i++) { 
+
+        for(int i=0; i<maxattempts; i++) {
           Response response = makeGetRequest(url + "orderHistory/"+orderID);
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
@@ -185,7 +186,7 @@ public class OrderActionServiceIT {
           Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
         }
     }
-    
+
     protected Response makeGetRequest(String url) {
         Client client = ClientBuilder.newClient();
         Invocation.Builder invoBuild = client.target(url).request();
