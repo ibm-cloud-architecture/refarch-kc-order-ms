@@ -151,6 +151,10 @@ public class OrderActionInfo {
     	this.status = Order.REJECTED_STATUS;
     }
     
+    public void containerRemoved(Container container){
+    	this.status = Container.REMOVED_STATUS;
+    }
+    
     public void containerAtPickUpSite(Container container){
     	this.status = Container.PICK_UP_SITE_STATUS;
     }

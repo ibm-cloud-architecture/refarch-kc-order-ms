@@ -40,6 +40,7 @@ import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
+import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
 import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAddedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtDockEvent;
@@ -175,8 +176,102 @@ public class OrderActionServiceIT {
         expectedOrder.orderCompleted(order1);
 
     	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event7.getTimestampMillis(), event7.getType());
+        
+    	int maxattempts = 10;
+
+        for(int i=0; i<maxattempts; i++) {
+          Response response = makeGetRequest(url + "orderHistory/"+orderID);
+          Assert.assertEquals(response.getStatus(), 200);
+          String responseString = response.readEntity(String.class);
+          ArrayList<OrderAction> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderAction>>(){}.getType());
+          Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
+        }
+    }
+    
+    @Test
+    public void testOrderRemovedContainerStatus() throws Exception {
+
+    	String orderID = UUID.randomUUID().toString();
+    	String containerID = UUID.randomUUID().toString();
+
+    	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
+        Order order = new Order(orderID, "productId", "custId", 2,
+                addr, "2019-01-10T13:30Z",
+                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
+        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+
+        OrderActionInfo expectedOrder = OrderActionInfo.newFromOrder(order);
+
+        VoyageAssignment va = new VoyageAssignment(orderID, "myVoyage");
+        OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+
+        expectedOrder.assign(va);
+
+        ContainerAssignment container = new ContainerAssignment(orderID, containerID);
+        OrderEvent event3 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event3));
+
+        expectedOrder.assignContainer(container);
+
+        Container cont = new Container(containerID, "brand", "type", 1, 1, 1, "ContainerAdded");
+        ContainerEvent cont_event = new ContainerAddedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event));
+
+        OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
+
+        cont.setStatus("atPickUpSite");
+        ContainerEvent cont_event2 = new ContainerAtPickUpSiteEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event2));
+
+        expectedContainer.containerAtPickUpSite(cont);
+
+        cont.setStatus("doorOpen");
+        ContainerEvent cont_event3 = new ContainerDoorOpenEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event3));
+
+        expectedContainer.containerDoorOpen(cont);
+
+        cont.setStatus("goodsLoaded");
+        ContainerEvent cont_event4 = new ContainerGoodsLoadedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event4));
+
+        expectedContainer.containerGoodsLoaded(cont);
+
+        cont.setStatus("doorClosed");
+        ContainerEvent cont_event5 = new ContainerDoorClosedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event5));
+
+        expectedContainer.containerDoorClosed(cont);
+
+        cont.setStatus("atDock");
+        ContainerEvent cont_event6 = new ContainerAtDockEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event6));
+
+        expectedContainer.containerAtDock(cont);
+
+        OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));
+
+        expectedOrder.containerOnShip(container);
+
+        OrderEvent event5 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event5));
+
+        expectedOrder.containerOffShip(container);
+        
+        cont.setStatus("ContainerRemoved");
+        ContainerEvent cont_event7 = new ContainerRemovedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event7));
+
+        expectedContainer.containerRemoved(cont);
+
+    	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryContainer(expectedContainer, cont_event7.getTimestampMillis(), cont_event7.getType());
 
         int maxattempts = 10;
+        
+        Thread.sleep(5000L);
 
         for(int i=0; i<maxattempts; i++) {
           Response response = makeGetRequest(url + "orderHistory/"+orderID);

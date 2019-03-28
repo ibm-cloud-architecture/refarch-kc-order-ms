@@ -42,6 +42,7 @@ import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
+import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
 import ibm.labs.kc.order.query.model.events.AvailableContainerEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
@@ -288,6 +289,24 @@ public class OrderActionService implements EventListener{
                             OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
                             orderActionDAO.addContainer(orderAction);
                             orderActionDAO.containerHistory(orderAction);
+                        }
+                        break;
+                    case ContainerEvent.TYPE_CONTAINER_REMOVED:
+                        synchronized (orderActionDAO) {
+                        	Container container = ((ContainerRemovedEvent) containerEvent).getPayload();
+                        	long timestampMillis = ((ContainerRemovedEvent) containerEvent).getTimestampMillis();
+                        	String action = ((ContainerRemovedEvent) containerEvent).getType();
+                            containerID = container.getContainerID();
+                            oqc = orderActionDAO.getByContainerId(containerID);
+                            if (oqc.isPresent()) {
+                            	OrderActionInfo orderActionItem = oqc.get();
+                            	orderActionItem.containerRemoved(container);
+                            	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
+                            	orderActionDAO.updateContainer(orderAction);
+                            	orderActionDAO.containerHistory(orderAction);
+                            } else {
+                                throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
+                            }
                         }
                         break;
                     case ContainerEvent.TYPE_PICK_UP_SITE:
