@@ -6,6 +6,7 @@ public class ContainerEvent extends AbstractEvent {
 	
 	public static final String TYPE_CONTAINER_ADDED = "ContainerAdded";
 	public static final String TYPE_CONTAINER_REMOVED = "ContainerRemoved";
+	public static final String TYPE_CONTAINER_AT_LOCATION = "ContainerAtLocation";
 	public static final String TYPE_PICK_UP_SITE = "ContainerAtPickUpSite";
 	public static final String TYPE_DOOR_OPEN = "ContainerDoorOpen";
 	public static final String TYPE_GOODS_LOADED = "ContainerGoodsLoaded";
@@ -29,6 +30,8 @@ public class ContainerEvent extends AbstractEvent {
             return gson.fromJson(json, ContainerAddedEvent.class);
         case TYPE_CONTAINER_REMOVED:
             return gson.fromJson(json, ContainerRemovedEvent.class);
+        case TYPE_CONTAINER_AT_LOCATION:
+            return gson.fromJson(json, ContainerAtLocationEvent.class);
         case TYPE_PICK_UP_SITE:
             return gson.fromJson(json, ContainerAtPickUpSiteEvent.class);
         case TYPE_DOOR_OPEN:

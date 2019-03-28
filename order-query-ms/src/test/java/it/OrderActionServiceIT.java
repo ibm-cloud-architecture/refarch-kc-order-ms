@@ -43,7 +43,7 @@ import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAddedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtDockEvent;
-import ibm.labs.kc.order.query.model.events.ContainerAtPickUpSiteEvent;
+import ibm.labs.kc.order.query.model.events.ContainerAtLocationEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
 import ibm.labs.kc.order.query.model.events.OrderEvent;
@@ -75,7 +75,7 @@ public class OrderActionServiceIT {
     	expectedOrder.reject(rejection);
     	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event2.getTimestampMillis(), event2.getType());
 
-        Thread.sleep(10000L);
+        Thread.sleep(15000L);
 
         int maxattempts = 10;
 
@@ -122,11 +122,11 @@ public class OrderActionServiceIT {
 
         OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
 
-        cont.setStatus("atPickUpSite");
-        ContainerEvent cont_event2 = new ContainerAtPickUpSiteEvent(System.currentTimeMillis(), "1", cont);
+        cont.setStatus("ContainerAtLocation");
+        ContainerEvent cont_event2 = new ContainerAtLocationEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event2));
 
-        expectedContainer.containerAtPickUpSite(cont);
+        expectedContainer.containerAtLocation(cont);
 
         cont.setStatus("doorOpen");
         ContainerEvent cont_event3 = new ContainerDoorOpenEvent(System.currentTimeMillis(), "1", cont);
@@ -219,11 +219,11 @@ public class OrderActionServiceIT {
 
         expectedOrder.assignContainer(container);
 
-        cont.setStatus("atPickUpSite");
-        ContainerEvent cont_event2 = new ContainerAtPickUpSiteEvent(System.currentTimeMillis(), "1", cont);
+        cont.setStatus("ContainerAtLocation");
+        ContainerEvent cont_event2 = new ContainerAtLocationEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event2));
 
-        expectedContainer.containerAtPickUpSite(cont);
+        expectedContainer.containerAtLocation(cont);
 
         cont.setStatus("doorOpen");
         ContainerEvent cont_event3 = new ContainerDoorOpenEvent(System.currentTimeMillis(), "1", cont);

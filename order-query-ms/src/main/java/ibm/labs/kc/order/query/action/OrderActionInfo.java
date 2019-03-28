@@ -155,6 +155,10 @@ public class OrderActionInfo {
     	this.status = Container.REMOVED_STATUS;
     }
     
+    public void containerAtLocation(Container container){
+    	this.status = Container.AT_LOCATION;
+    }
+    
     public void containerAtPickUpSite(Container container){
     	this.status = Container.PICK_UP_SITE_STATUS;
     }
