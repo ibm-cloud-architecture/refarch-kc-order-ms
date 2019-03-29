@@ -168,34 +168,6 @@ public class QueryService implements EventListener {
                         }
                     }
                     break;
-                case OrderEvent.TYPE_CONTAINER_ON_SHIP:
-                    synchronized (orderDAO) {
-                    	ContainerAssignment container = ((ContainerOnShipEvent) orderEvent).getPayload();
-                        orderID = container.getOrderID();
-                        oqo = orderDAO.getById(orderID);
-                        if (oqo.isPresent()) {
-                            QueryOrder qo = oqo.get();
-                            qo.containerOnShip(container);
-                            orderDAO.update(qo);
-                        } else {
-                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-                        }
-                    }
-                    break;
-                case OrderEvent.TYPE_CONTAINER_OFF_SHIP:
-                    synchronized (orderDAO) {
-                    	ContainerAssignment container = ((ContainerOffShipEvent) orderEvent).getPayload();
-                        orderID = container.getOrderID();
-                        oqo = orderDAO.getById(orderID);
-                        if (oqo.isPresent()) {
-                            QueryOrder qo = oqo.get();
-                            qo.containerOffShip(container);
-                            orderDAO.update(qo);
-                        } else {
-                            throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-                        }
-                    }
-                    break;
                 case OrderEvent.TYPE_CONTAINER_DELIVERED:
                     synchronized (orderDAO) {
                     	ContainerAssignment container = ((ContainerDeliveredEvent) orderEvent).getPayload();

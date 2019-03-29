@@ -13,8 +13,6 @@ public class Order {
     public static final String COMPLETED_STATUS = "completed";
     public static final String CONTAINER_ALLOCATED_STATUS = "container-allocated";
     public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
-    public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
-    public static final String CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
     public static final String CONTAINER_DELIVERED_STATUS = "container-delivered";
     
     public static final String ORDER_COMPLETED_STATUS = "order-completed";

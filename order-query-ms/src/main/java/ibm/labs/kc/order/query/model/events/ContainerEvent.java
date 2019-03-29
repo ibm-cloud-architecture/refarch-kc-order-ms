@@ -49,6 +49,10 @@ public class ContainerEvent extends AbstractEvent {
             return gson.fromJson(json, ContainerGoodsLoadedEvent.class);
         case TYPE_CONTAINER_GOOD_UNLOADED:
         	return gson.fromJson(json, ContainerGoodsUnLoadedEvent.class);
+        case TYPE_CONTAINER_ON_SHIP:
+        	return gson.fromJson(json, ContainerOnShipEvent.class);
+        case TYPE_CONTAINER_OFF_SHIP:
+        	return gson.fromJson(json, ContainerOffShipEvent.class);
         default:
             //TODO handle
             return null;

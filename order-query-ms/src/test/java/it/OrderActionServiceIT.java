@@ -165,16 +165,18 @@ public class OrderActionServiceIT {
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event8));
 
         expectedContainer.containerGoodsUnloaded(cont);
+        
+        cont.setStatus("ContainerOnShip");
+        ContainerEvent cont_event9 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event9));
 
-        OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
-        sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));
+        expectedContainer.containerOnShip(cont);
+        
+        cont.setStatus("ContainerOffShip");
+        ContainerEvent cont_event10 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event10));
 
-        expectedOrder.containerOnShip(container);
-
-        OrderEvent event5 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
-        sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event5));
-
-        expectedOrder.containerOffShip(container);
+        expectedContainer.containerOnShip(cont);
 
         OrderEvent event6 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event6));
