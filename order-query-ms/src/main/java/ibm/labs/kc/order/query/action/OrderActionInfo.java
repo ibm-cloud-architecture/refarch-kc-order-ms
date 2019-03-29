@@ -191,6 +191,14 @@ public class OrderActionInfo {
     	this.status = Container.OFF_SHIP_STATUS;
     }
     
+    public void containerOnTruck(Container container){
+    	this.status = Container.ON_TRUCK_STATUS;
+    }
+    
+    public void containerOffTruck(Container container){
+    	this.status = Container.OFF_TRUCK_STATUS;
+    }
+    
     public void containerDelivered(ContainerAssignment container){
     	this.status = Order.CONTAINER_DELIVERED_STATUS;
     }

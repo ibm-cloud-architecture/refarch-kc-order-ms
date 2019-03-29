@@ -39,8 +39,10 @@ import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerGoodsUnLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
+import ibm.labs.kc.order.query.model.events.ContainerOffTruckEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
+import ibm.labs.kc.order.query.model.events.ContainerOnTruckEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOrderAssignedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOrderReleasedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
@@ -176,7 +178,19 @@ public class OrderActionServiceIT {
         ContainerEvent cont_event10 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event10));
 
-        expectedContainer.containerOnShip(cont);
+        expectedContainer.containerOffShip(cont);
+        
+        cont.setStatus("ContainerOnTruck");
+        ContainerEvent cont_event11 = new ContainerOnTruckEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event11));
+
+        expectedContainer.containerOnTruck(cont);
+        
+        cont.setStatus("ContainerOffTruck");
+        ContainerEvent cont_event12 = new ContainerOffTruckEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event12));
+
+        expectedContainer.containerOffTruck(cont);
 
         OrderEvent event6 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event6));
