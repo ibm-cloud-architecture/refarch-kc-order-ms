@@ -167,6 +167,14 @@ public class OrderActionInfo {
     	this.status = Container.OFF_MAINTENANCE_STATUS;
     }
     
+    public void containerOrderAssignment(Container container){
+    	this.status = Container.ORDER_ASSIGNED_STATUS;
+    }
+    
+    public void containerOrderReleased(Container container){
+    	this.status = Container.ORDER_RELEASED_STATUS;
+    }
+    
     public void containerAtPickUpSite(Container container){
     	this.status = Container.PICK_UP_SITE_STATUS;
     }

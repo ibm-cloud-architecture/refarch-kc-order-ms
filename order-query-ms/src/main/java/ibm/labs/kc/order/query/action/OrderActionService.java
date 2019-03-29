@@ -45,6 +45,8 @@ import ibm.labs.kc.order.query.model.events.ContainerOffMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
+import ibm.labs.kc.order.query.model.events.ContainerOrderAssignedEvent;
+import ibm.labs.kc.order.query.model.events.ContainerOrderReleasedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
 import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
 import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
@@ -346,6 +348,42 @@ public class OrderActionService implements EventListener{
                             if (oqc.isPresent()) {
                             	OrderActionInfo orderActionItem = oqc.get();
                             	orderActionItem.containerOffMaintainance(container);
+                            	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
+                            	orderActionDAO.updateContainer(orderAction);
+                            	orderActionDAO.containerHistory(orderAction);
+                            } else {
+                                throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
+                            }
+                        }
+                        break;
+                    case ContainerEvent.TYPE_CONTAINER_ORDER_ASSIGNED:
+                        synchronized (orderActionDAO) {
+                        	Container container = ((ContainerOrderAssignedEvent) containerEvent).getPayload();
+                        	long timestampMillis = ((ContainerOrderAssignedEvent) containerEvent).getTimestampMillis();
+                        	String action = ((ContainerOrderAssignedEvent) containerEvent).getType();
+                            containerID = container.getContainerID();
+                            oqc = orderActionDAO.getByContainerId(containerID);
+                            if (oqc.isPresent()) {
+                            	OrderActionInfo orderActionItem = oqc.get();
+                            	orderActionItem.containerOrderAssignment(container);
+                            	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
+                            	orderActionDAO.updateContainer(orderAction);
+                            	orderActionDAO.containerHistory(orderAction);
+                            } else {
+                                throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
+                            }
+                        }
+                        break;
+                    case ContainerEvent.TYPE_CONTAINER_ORDER_RELEASED:
+                        synchronized (orderActionDAO) {
+                        	Container container = ((ContainerOrderReleasedEvent) containerEvent).getPayload();
+                        	long timestampMillis = ((ContainerOrderReleasedEvent) containerEvent).getTimestampMillis();
+                        	String action = ((ContainerOrderReleasedEvent) containerEvent).getType();
+                            containerID = container.getContainerID();
+                            oqc = orderActionDAO.getByContainerId(containerID);
+                            if (oqc.isPresent()) {
+                            	OrderActionInfo orderActionItem = oqc.get();
+                            	orderActionItem.containerOrderReleased(container);
                             	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
                             	orderActionDAO.updateContainer(orderAction);
                             	orderActionDAO.containerHistory(orderAction);
