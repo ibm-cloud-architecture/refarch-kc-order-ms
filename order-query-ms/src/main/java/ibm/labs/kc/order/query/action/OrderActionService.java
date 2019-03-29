@@ -33,14 +33,11 @@ import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.CancelOrderEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAddedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerAtDockEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAtLocationEvent;
-import ibm.labs.kc.order.query.model.events.ContainerAtPickUpSiteEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
-import ibm.labs.kc.order.query.model.events.ContainerDoorClosedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerDoorOpenEvent;
 import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
+import ibm.labs.kc.order.query.model.events.ContainerGoodsUnLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnMaintainanceEvent;
@@ -392,42 +389,6 @@ public class OrderActionService implements EventListener{
                             }
                         }
                         break;
-                    case ContainerEvent.TYPE_PICK_UP_SITE:
-                        synchronized (orderActionDAO) {
-                        	Container container = ((ContainerAtPickUpSiteEvent) containerEvent).getPayload();
-                        	long timestampMillis = ((ContainerAtPickUpSiteEvent) containerEvent).getTimestampMillis();
-                        	String action = ((ContainerAtPickUpSiteEvent) containerEvent).getType();
-                            containerID = container.getContainerID();
-                            oqc = orderActionDAO.getByContainerId(containerID);
-                            if (oqc.isPresent()) {
-                            	OrderActionInfo orderActionItem = oqc.get();
-                            	orderActionItem.containerAtPickUpSite(container);
-                            	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
-                            	orderActionDAO.updateContainer(orderAction);
-                            	orderActionDAO.containerHistory(orderAction);
-                            } else {
-                                throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                            }
-                        }
-                        break;
-                    case ContainerEvent.TYPE_DOOR_OPEN:
-                        synchronized (orderActionDAO) {
-                        	Container container = ((ContainerDoorOpenEvent) containerEvent).getPayload();
-                        	long timestampMillis = ((ContainerDoorOpenEvent) containerEvent).getTimestampMillis();
-                        	String action = ((ContainerDoorOpenEvent) containerEvent).getType();
-                            containerID = container.getContainerID();
-                            oqc = orderActionDAO.getByContainerId(containerID);
-                            if (oqc.isPresent()) {
-                            	OrderActionInfo orderActionItem = oqc.get();
-                            	orderActionItem.containerDoorOpen(container);
-                            	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
-                            	orderActionDAO.updateContainer(orderAction);
-                            	orderActionDAO.containerHistory(orderAction);
-                            } else {
-                                throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                            }
-                        }
-                        break;
                     case ContainerEvent.TYPE_GOODS_LOADED:
                         synchronized (orderActionDAO) {
                         	Container container = ((ContainerGoodsLoadedEvent) containerEvent).getPayload();
@@ -446,34 +407,16 @@ public class OrderActionService implements EventListener{
                             }
                         }
                         break;
-                    case ContainerEvent.TYPE_DOOR_CLOSED:
+                    case ContainerEvent.TYPE_CONTAINER_GOOD_UNLOADED:
                         synchronized (orderActionDAO) {
-                        	Container container = ((ContainerDoorClosedEvent) containerEvent).getPayload();
-                        	long timestampMillis = ((ContainerDoorClosedEvent) containerEvent).getTimestampMillis();
-                        	String action = ((ContainerDoorClosedEvent) containerEvent).getType();
+                        	Container container = ((ContainerGoodsUnLoadedEvent) containerEvent).getPayload();
+                        	long timestampMillis = ((ContainerGoodsUnLoadedEvent) containerEvent).getTimestampMillis();
+                        	String action = ((ContainerGoodsUnLoadedEvent) containerEvent).getType();
                             containerID = container.getContainerID();
                             oqc = orderActionDAO.getByContainerId(containerID);
                             if (oqc.isPresent()) {
                             	OrderActionInfo orderActionItem = oqc.get();
-                            	orderActionItem.containerDoorClosed(container);
-                            	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
-                            	orderActionDAO.updateContainer(orderAction);
-                            	orderActionDAO.containerHistory(orderAction);
-                            } else {
-                                throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                            }
-                        }
-                        break;
-                    case ContainerEvent.TYPE_AT_DOCK:
-                        synchronized (orderActionDAO) {
-                        	Container container = ((ContainerAtDockEvent) containerEvent).getPayload();
-                        	long timestampMillis = ((ContainerAtDockEvent) containerEvent).getTimestampMillis();
-                        	String action = ((ContainerAtDockEvent) containerEvent).getType();
-                            containerID = container.getContainerID();
-                            oqc = orderActionDAO.getByContainerId(containerID);
-                            if (oqc.isPresent()) {
-                            	OrderActionInfo orderActionItem = oqc.get();
-                            	orderActionItem.containerAtDock(container);
+                            	orderActionItem.containerGoodsUnloaded(container);
                             	OrderAction orderAction = OrderAction.newFromContainer(orderActionItem, timestampMillis, action);
                             	orderActionDAO.updateContainer(orderAction);
                             	orderActionDAO.containerHistory(orderAction);

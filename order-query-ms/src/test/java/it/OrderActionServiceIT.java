@@ -36,6 +36,7 @@ import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
 import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
+import ibm.labs.kc.order.query.model.events.ContainerGoodsUnLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnMaintainanceEvent;
@@ -76,7 +77,7 @@ public class OrderActionServiceIT {
     	expectedOrder.reject(rejection);
     	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event2.getTimestampMillis(), event2.getType());
 
-        Thread.sleep(16000L);
+        Thread.sleep(10000L);
 
         int maxattempts = 10;
 
@@ -153,11 +154,17 @@ public class OrderActionServiceIT {
 
         expectedContainer.containerOrderAssignment(cont);
 
-        cont.setStatus("goodsLoaded");
+        cont.setStatus("ContainerGoodLoaded");
         ContainerEvent cont_event7 = new ContainerGoodsLoadedEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event7));
 
         expectedContainer.containerGoodsLoaded(cont);
+        
+        cont.setStatus("ContainerGoodUnLoaded");
+        ContainerEvent cont_event8 = new ContainerGoodsUnLoadedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event8));
+
+        expectedContainer.containerGoodsUnloaded(cont);
 
         OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));

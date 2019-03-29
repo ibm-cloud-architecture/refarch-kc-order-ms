@@ -19,11 +19,6 @@ public class Container {
 	public static final String ON_TRUCK_STATUS = "ContainerOnTruck";
 	public static final String OFF_TRUCK_STATUS = "ContainerOffTruck";
 	
-	public static final String PICK_UP_SITE_STATUS = "atPickUpSite";
-	public static final String DOOR_OPEN_STATUS = "doorOpen";
-	public static final String DOOR_CLOSED_STATUS = "doorClosed";
-	public static final String AT_DOCK_STATUS = "atDock";
-	
 	private String containerID;
 	private String brand;
 	private String type;

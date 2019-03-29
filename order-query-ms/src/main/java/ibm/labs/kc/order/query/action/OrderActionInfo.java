@@ -175,24 +175,12 @@ public class OrderActionInfo {
     	this.status = Container.ORDER_RELEASED_STATUS;
     }
     
-    public void containerAtPickUpSite(Container container){
-    	this.status = Container.PICK_UP_SITE_STATUS;
-    }
-    
-    public void containerDoorOpen(Container container){
-    	this.status = Container.DOOR_OPEN_STATUS;
-    }
-    
     public void containerGoodsLoaded(Container container){
     	this.status = Container.GOODS_LOADED_STATUS;
     }
     
-    public void containerDoorClosed(Container container){
-    	this.status = Container.DOOR_CLOSED_STATUS;
-    }
-    
-    public void containerAtDock(Container container){
-    	this.status = Container.AT_DOCK_STATUS;
+    public void containerGoodsUnloaded(Container container){
+    	this.status = Container.GOOD_UNLOADED_STATUS;
     }
     
     public void containerOnShip(ContainerAssignment container){

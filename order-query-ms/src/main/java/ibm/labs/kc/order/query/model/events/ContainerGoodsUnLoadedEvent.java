@@ -2,16 +2,16 @@ package ibm.labs.kc.order.query.model.events;
 
 import ibm.labs.kc.order.query.model.Container;
 
-public class ContainerAtDockEvent extends ContainerEvent{
+public class ContainerGoodsUnLoadedEvent extends ContainerEvent {
 	
     private Container payload;
 	
-	public ContainerAtDockEvent(long timestampMillis, String version, Container payload) {
-        super(timestampMillis, ContainerEvent.TYPE_AT_DOCK, version);
+	public ContainerGoodsUnLoadedEvent(long timestampMillis, String version, Container payload) {
+        super(timestampMillis, ContainerEvent.TYPE_CONTAINER_GOOD_UNLOADED, version);
         this.payload = payload;
     }
 
-    public ContainerAtDockEvent() {
+    public ContainerGoodsUnLoadedEvent() {
     }
 
 	public Container getPayload() {
@@ -21,5 +21,6 @@ public class ContainerAtDockEvent extends ContainerEvent{
 	public void setPayload(Container payload) {
 		this.payload = payload;
 	}
+
 
 }
