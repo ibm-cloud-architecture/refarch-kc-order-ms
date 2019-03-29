@@ -39,6 +39,7 @@ import ibm.labs.kc.order.query.model.events.ContainerDoorOpenEvent;
 import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
+import ibm.labs.kc.order.query.model.events.ContainerOnMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
 import ibm.labs.kc.order.query.model.events.ContainerAddedEvent;
@@ -128,8 +129,8 @@ public class OrderActionServiceIT {
 
         expectedContainer.containerAtLocation(cont);
 
-        cont.setStatus("doorOpen");
-        ContainerEvent cont_event3 = new ContainerDoorOpenEvent(System.currentTimeMillis(), "1", cont);
+        cont.setStatus("ContainerOnMaintenance");
+        ContainerEvent cont_event3 = new ContainerOnMaintainanceEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event3));
 
         expectedContainer.containerDoorOpen(cont);
@@ -225,11 +226,11 @@ public class OrderActionServiceIT {
 
         expectedContainer.containerAtLocation(cont);
 
-        cont.setStatus("doorOpen");
-        ContainerEvent cont_event3 = new ContainerDoorOpenEvent(System.currentTimeMillis(), "1", cont);
+        cont.setStatus("ContainerOnMaintenance");
+        ContainerEvent cont_event3 = new ContainerOnMaintainanceEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event3));
 
-        expectedContainer.containerDoorOpen(cont);
+        expectedContainer.containerOnMaintainance(cont);
 
         cont.setStatus("goodsLoaded");
         ContainerEvent cont_event4 = new ContainerGoodsLoadedEvent(System.currentTimeMillis(), "1", cont);

@@ -156,7 +156,11 @@ public class OrderActionInfo {
     }
     
     public void containerAtLocation(Container container){
-    	this.status = Container.AT_LOCATION;
+    	this.status = Container.AT_LOCATION_STATUS;
+    }
+    
+    public void containerOnMaintainance(Container container){
+    	this.status = Container.ON_MAINTENANCE_STATUS;
     }
     
     public void containerAtPickUpSite(Container container){
