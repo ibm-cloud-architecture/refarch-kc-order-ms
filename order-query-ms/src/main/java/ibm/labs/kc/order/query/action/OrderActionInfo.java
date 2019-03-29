@@ -163,6 +163,10 @@ public class OrderActionInfo {
     	this.status = Container.ON_MAINTENANCE_STATUS;
     }
     
+    public void containerOffMaintainance(Container container){
+    	this.status = Container.OFF_MAINTENANCE_STATUS;
+    }
+    
     public void containerAtPickUpSite(Container container){
     	this.status = Container.PICK_UP_SITE_STATUS;
     }

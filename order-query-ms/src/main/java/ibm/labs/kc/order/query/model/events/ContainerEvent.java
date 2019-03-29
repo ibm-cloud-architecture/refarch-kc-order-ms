@@ -45,6 +45,8 @@ public class ContainerEvent extends AbstractEvent {
             return gson.fromJson(json, ContainerAtLocationEvent.class);
         case TYPE_CONTAINER_ON_MAINTENANCE:
             return gson.fromJson(json, ContainerOnMaintainanceEvent.class);
+        case TYPE_CONTAINER_OFF_MAINTENANCE:
+            return gson.fromJson(json, ContainerOffMaintainanceEvent.class);
         case TYPE_PICK_UP_SITE:
             return gson.fromJson(json, ContainerAtPickUpSiteEvent.class);
         case TYPE_DOOR_OPEN:

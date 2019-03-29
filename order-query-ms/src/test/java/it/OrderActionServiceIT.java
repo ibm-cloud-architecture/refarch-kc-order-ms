@@ -35,9 +35,9 @@ import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
 import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
 import ibm.labs.kc.order.query.model.events.ContainerDoorClosedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerDoorOpenEvent;
 import ibm.labs.kc.order.query.model.events.ContainerEvent;
 import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
+import ibm.labs.kc.order.query.model.events.ContainerOffMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnMaintainanceEvent;
 import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
@@ -76,7 +76,7 @@ public class OrderActionServiceIT {
     	expectedOrder.reject(rejection);
     	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, event2.getTimestampMillis(), event2.getType());
 
-        Thread.sleep(15000L);
+        Thread.sleep(16000L);
 
         int maxattempts = 10;
 
@@ -134,22 +134,28 @@ public class OrderActionServiceIT {
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event3));
 
         expectedContainer.containerDoorOpen(cont);
+        
+        cont.setStatus("ContainerOffMaintenance");
+        ContainerEvent cont_event4 = new ContainerOffMaintainanceEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event4));
+
+        expectedContainer.containerOnMaintainance(cont);
 
         cont.setStatus("goodsLoaded");
-        ContainerEvent cont_event4 = new ContainerGoodsLoadedEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event4));
+        ContainerEvent cont_event5 = new ContainerGoodsLoadedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event5));
 
         expectedContainer.containerGoodsLoaded(cont);
 
         cont.setStatus("doorClosed");
-        ContainerEvent cont_event5 = new ContainerDoorClosedEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event5));
+        ContainerEvent cont_event6 = new ContainerDoorClosedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event6));
 
         expectedContainer.containerDoorClosed(cont);
 
         cont.setStatus("atDock");
-        ContainerEvent cont_event6 = new ContainerAtDockEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event6));
+        ContainerEvent cont_event7 = new ContainerAtDockEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event7));
 
         expectedContainer.containerAtDock(cont);
 
@@ -231,42 +237,14 @@ public class OrderActionServiceIT {
         sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event3));
 
         expectedContainer.containerOnMaintainance(cont);
-
-        cont.setStatus("goodsLoaded");
-        ContainerEvent cont_event4 = new ContainerGoodsLoadedEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event4));
-
-        expectedContainer.containerGoodsLoaded(cont);
-
-        cont.setStatus("doorClosed");
-        ContainerEvent cont_event5 = new ContainerDoorClosedEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event5));
-
-        expectedContainer.containerDoorClosed(cont);
-
-        cont.setStatus("atDock");
-        ContainerEvent cont_event6 = new ContainerAtDockEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event6));
-
-        expectedContainer.containerAtDock(cont);
-
-        OrderEvent event4 = new ContainerOnShipEvent(System.currentTimeMillis(), "1", container);
-        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event4));
-
-        expectedOrder.containerOnShip(container);
-
-        OrderEvent event5 = new ContainerOffShipEvent(System.currentTimeMillis(), "1", container);
-        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event5));
-
-        expectedOrder.containerOffShip(container);
         
         cont.setStatus("ContainerRemoved");
-        ContainerEvent cont_event7 = new ContainerRemovedEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event7));
+        ContainerEvent cont_event4 = new ContainerRemovedEvent(System.currentTimeMillis(), "1", cont);
+        sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event4));
 
         expectedContainer.containerRemoved(cont);
 
-    	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryContainer(expectedContainer, cont_event7.getTimestampMillis(), cont_event7.getType());
+    	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryContainer(expectedContainer, cont_event4.getTimestampMillis(), cont_event4.getType());
 
         int maxattempts = 10;
         
