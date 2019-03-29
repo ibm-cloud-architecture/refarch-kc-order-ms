@@ -2,16 +2,16 @@ package ibm.labs.kc.order.query.model.events;
 
 import ibm.labs.kc.order.query.model.Container;
 
-public class ContainerOffShipEvent extends ContainerEvent {
+public class ContainerOnMaintainanceEvent extends ContainerEvent {
 	
     private Container payload;
 	
-	public ContainerOffShipEvent(long timestampMillis, String version, Container payload) {
-        super(timestampMillis, ContainerEvent.TYPE_CONTAINER_OFF_SHIP, version);
+	public ContainerOnMaintainanceEvent(long timestampMillis, String version, Container payload) {
+        super(timestampMillis, ContainerEvent.TYPE_CONTAINER_ON_MAINTENANCE, version);
         this.payload = payload;
     }
 
-    public ContainerOffShipEvent() {
+    public ContainerOnMaintainanceEvent() {
     }
 
 	public Container getPayload() {

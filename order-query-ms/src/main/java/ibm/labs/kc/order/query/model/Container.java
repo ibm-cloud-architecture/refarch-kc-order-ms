@@ -5,12 +5,19 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Container {
 	
-	public static final String AVAILABLE_STATUS = "available";
-	public static final String PICK_UP_SITE_STATUS = "atPickUpSite";
-	public static final String DOOR_OPEN_STATUS = "doorOpen";
-	public static final String GOODS_LOADED_STATUS = "goodsLoaded";
-	public static final String DOOR_CLOSED_STATUS = "doorClosed";
-	public static final String AT_DOCK_STATUS = "atDock";
+	public static final String ADDED_STATUS = "ContainerAdded";
+	public static final String REMOVED_STATUS = "ContainerRemoved";
+	public static final String AT_LOCATION_STATUS = "ContainerAtLocation";
+	public static final String ON_MAINTENANCE_STATUS = "ContainerOnMaintenance";
+	public static final String OFF_MAINTENANCE_STATUS =  "ContainerOffMaintenance";
+	public static final String ORDER_ASSIGNED_STATUS = "ContainerAssignedToOrder";
+	public static final String ORDER_RELEASED_STATUS = "ContainerReleasedFromOrder";
+	public static final String GOODS_LOADED_STATUS = "ContainerGoodLoaded";
+	public static final String GOOD_UNLOADED_STATUS = "ContainerGoodUnLoaded";
+	public static final String ON_SHIP_STATUS = "ContainerOnShip";
+	public static final String OFF_SHIP_STATUS = "ContainerOffShip";
+	public static final String ON_TRUCK_STATUS = "ContainerOnTruck";
+	public static final String OFF_TRUCK_STATUS = "ContainerOffTruck";
 	
 	private String containerID;
 	private String brand;

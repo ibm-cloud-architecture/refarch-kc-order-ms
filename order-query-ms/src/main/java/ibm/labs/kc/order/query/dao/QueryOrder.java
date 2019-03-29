@@ -128,14 +128,6 @@ public class QueryOrder {
     	this.status = Order.REJECTED_STATUS;
     }
     
-    public void containerOnShip(ContainerAssignment container){
-    	this.status = Order.CONTAINER_ON_SHIP_STATUS;
-    }
-    
-    public void containerOffShip(ContainerAssignment container){
-    	this.status = Order.CONTAINER_OFF_SHIP_STATUS;
-    }
-    
     public void containerDelivered(ContainerAssignment container){
     	this.status = Order.CONTAINER_DELIVERED_STATUS;
     }

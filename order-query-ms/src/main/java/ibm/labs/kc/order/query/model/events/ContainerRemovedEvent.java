@@ -2,16 +2,16 @@ package ibm.labs.kc.order.query.model.events;
 
 import ibm.labs.kc.order.query.model.Container;
 
-public class AvailableContainerEvent extends ContainerEvent {
+public class ContainerRemovedEvent extends ContainerEvent {
 	
 	private Container payload;
 	
-	public AvailableContainerEvent(long timestampMillis, String version, Container payload) {
-        super(timestampMillis, ContainerEvent.TYPE_AVAILABLE, version);
+	public ContainerRemovedEvent(long timestampMillis, String version, Container payload) {
+        super(timestampMillis, ContainerEvent.TYPE_CONTAINER_REMOVED, version);
         this.payload = payload;
     }
 
-    public AvailableContainerEvent() {
+    public ContainerRemovedEvent() {
     }
 
 	public Container getPayload() {

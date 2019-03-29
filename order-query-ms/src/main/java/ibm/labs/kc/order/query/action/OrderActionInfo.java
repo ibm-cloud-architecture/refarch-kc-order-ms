@@ -151,32 +151,52 @@ public class OrderActionInfo {
     	this.status = Order.REJECTED_STATUS;
     }
     
-    public void containerAtPickUpSite(Container container){
-    	this.status = Container.PICK_UP_SITE_STATUS;
+    public void containerRemoved(Container container){
+    	this.status = Container.REMOVED_STATUS;
     }
     
-    public void containerDoorOpen(Container container){
-    	this.status = Container.DOOR_OPEN_STATUS;
+    public void containerAtLocation(Container container){
+    	this.status = Container.AT_LOCATION_STATUS;
+    }
+    
+    public void containerOnMaintainance(Container container){
+    	this.status = Container.ON_MAINTENANCE_STATUS;
+    }
+    
+    public void containerOffMaintainance(Container container){
+    	this.status = Container.OFF_MAINTENANCE_STATUS;
+    }
+    
+    public void containerOrderAssignment(Container container){
+    	this.status = Container.ORDER_ASSIGNED_STATUS;
+    }
+    
+    public void containerOrderReleased(Container container){
+    	this.status = Container.ORDER_RELEASED_STATUS;
     }
     
     public void containerGoodsLoaded(Container container){
     	this.status = Container.GOODS_LOADED_STATUS;
     }
     
-    public void containerDoorClosed(Container container){
-    	this.status = Container.DOOR_CLOSED_STATUS;
+    public void containerGoodsUnloaded(Container container){
+    	this.status = Container.GOOD_UNLOADED_STATUS;
     }
     
-    public void containerAtDock(Container container){
-    	this.status = Container.AT_DOCK_STATUS;
+    public void containerOnShip(Container container){
+    	this.status = Container.ON_SHIP_STATUS;
     }
     
-    public void containerOnShip(ContainerAssignment container){
-    	this.status = Order.CONTAINER_ON_SHIP_STATUS;
+    public void containerOffShip(Container container){
+    	this.status = Container.OFF_SHIP_STATUS;
     }
     
-    public void containerOffShip(ContainerAssignment container){
-    	this.status = Order.CONTAINER_OFF_SHIP_STATUS;
+    public void containerOnTruck(Container container){
+    	this.status = Container.ON_TRUCK_STATUS;
+    }
+    
+    public void containerOffTruck(Container container){
+    	this.status = Container.OFF_TRUCK_STATUS;
     }
     
     public void containerDelivered(ContainerAssignment container){

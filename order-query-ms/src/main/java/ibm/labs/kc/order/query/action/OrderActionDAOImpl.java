@@ -126,9 +126,14 @@ public class OrderActionDAOImpl implements OrderActionDAO{
 		logger.info("Adding to container events history " + modifiedOrderAction.getOrderActionItem().getContainerID() + modifiedOrderAction.getTimestampMillis()+
 				modifiedOrderAction.getAction(),modifiedOrderAction.getType());
 		
-		containerHistory.add(modifiedOrderAction);
-		contHistory.add(modifiedOrderAction);
+		if(!containerHistory.contains(modifiedOrderAction)){
+			containerHistory.add(modifiedOrderAction);
+		}
 		
+		if(!contHistory.contains(modifiedOrderAction)){
+			contHistory.add(modifiedOrderAction);
+		}
+			
 	}
 
 	// Getting the history based on the orderID
@@ -142,18 +147,20 @@ public class OrderActionDAOImpl implements OrderActionDAO{
                 result.add(reqOrder);
                 if(orderAction.getAction().equals("ContainerAllocated")){
                 	String containerID = orderAction.getOrderActionItem().getContainerID();
-                	result.addAll(getContainerforOrder(containerID));
+                	System.out.println("I am geting called here");
+                	result.addAll(getContainerStatusforOrder(containerID));
                 }
             }
         }
-//        Comparator<OrderAction> compareByTimeStamp = (OrderAction oa1, OrderAction oa2) ->
-//        Long.compare(oa1.getTimestampMillis(), oa2.getTimestampMillis());
-//        Collections.sort(result, compareByTimeStamp);
+        Comparator<OrderAction> compareByTimeStamp = (OrderAction oa1, OrderAction oa2) ->
+        Long.compare(oa1.getTimestampMillis(), oa2.getTimestampMillis());
+        Collections.sort(result, compareByTimeStamp);
         return Collections.unmodifiableCollection(result);
 	}
 	
 	// Getting the container details based on the containerID
-	public ArrayList<OrderAction> getContainerforOrder(String containerID){
+	public ArrayList<OrderAction> getContainerStatusforOrder(String containerID){
+		System.out.println("Entered the getcontstatus");
 		ArrayList<OrderAction> result = new ArrayList<>();
 		for(OrderAction oa: containerHistory){
 			if (containerID.equals(oa.getOrderActionItem().getContainerID())) {
