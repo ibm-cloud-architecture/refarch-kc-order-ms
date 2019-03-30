@@ -61,4 +61,4 @@ This project was generated using:
 * generator-ibm-java v5.13.7
 * generator-ibm-service-enablement v3.1.2
 * generator-ibm-cloud-enablement v1.5.4
-* generator-ibm-java-liberty v
+* generator-ibm-java-liberty 

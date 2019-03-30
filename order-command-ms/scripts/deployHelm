@@ -1,5 +1,9 @@
 #!/bin/bash
-. ./setenv.sh
+if [[ $(pwd) = */scripts ]]; then
+ cd ..
+fi
+. ./scripts/setenv.sh
+
 
 echo "Deploy helm chart for $chart project to $ns"
 
@@ -18,6 +22,8 @@ then
   sleep 4
 else
     echo "$kname release deployed, here is the pod logs"
+    helm upgrade $msname $chart/
+    helm history $msname
 fi
 podId=$(kubectl get pods -n $ns | grep $msname | awk '{print $1}')
 verifyPod $podId
