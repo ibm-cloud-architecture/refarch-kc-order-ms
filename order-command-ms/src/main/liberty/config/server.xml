@@ -1,7 +1,7 @@
 <server description="Sample Liberty server">
 
   <featureManager>
-      <feature>microprofile-1.2</feature>
+      <feature>microprofile-2.2</feature>
       <feature>jndi-1.0</feature>
       <feature>jsp-2.3</feature>
       <feature>servlet-3.1</feature>
