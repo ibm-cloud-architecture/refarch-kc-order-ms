@@ -1,6 +1,6 @@
 # K Container Shipment Order Management Service
 
-This project is demonstrating, one of the possible implementation of the Command Query Responsibility Segregation and event sourcing patterns applied to container shipment management service. It is part of the [Event Driven Architecture](https://ibm-cloud-architecture.github.io/refarch-eda) reference architecture. From a use case point of view, it implements the order management for the order from the manufacturer to the shipping company of the [K Container shipment process](https://ibm-cloud-architecture.github.io/refarch-kc) microservices. The business process is defined [here](https://ibm-cloud-architecture.github.io/refarch-kc/introduction/).
+This project is demonstrating, one of the possible implementation of the Command Query Responsibility Segregation and event sourcing patterns applied to container shipment management service. It is part of the [Event Driven Architecture](https://ibm-cloud-architecture.github.io/refarch-eda) reference architecture. From a use case point of view, it implements the order management component, responsible to manage the full life cycle of an order issued by a manufacturer who want to ship fresh goods overseas. The business process is defined [here](https://ibm-cloud-architecture.github.io/refarch-kc/introduction/).
 
 One of the business requirements for adopting event sourcing and CQRS patterns is to be able to get visibility to the history of orders and track the good shipment progress over time. This would include the ability to determine: 
 
@@ -10,7 +10,11 @@ One of the business requirements for adopting event sourcing and CQRS patterns i
 1. Has the cold chain been protected on this particular order?
 1. How long it takes to deliver a container to pick up location?
 
-To answer the first question we need events like OrderPlaced(orderId), OrderCancelled(orderID) and in the read model the OrdersStatuses(orderId, status, timestamp); OrderStatusTransition(orderId, oldStatus, new Status timestamp) and then OrdersCancelledAfterPlaced(orderId, timestamp). We will detail how to implement those functions in later section.
+To answer those questions we need to keep historical information of each orders and its events. Event sourcing is to pattern of choice for that. 
+
+We are detailing how to go from event storming to implementation in a [separate note](ddd-applied.md) by apply the domain-driven design approach.
+
+ first question we need events like OrderPlaced(orderId), OrderCancelled(orderID) and a read model with OrdersStatuses(orderId, status, timestamp); OrderStatusTransition(orderId, oldStatus, new Status timestamp) and then OrdersCancelledAfterPlaced(orderId, timestamp). We will detail how to implement those functions in later section.
 
 ## User stories
 

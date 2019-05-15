@@ -1,6 +1,7 @@
 site_name: Order Microservice CQRS and Event Sourcing
 repo_url: https://github.com/ibm-cloud-architecture/refarch-kc-order-ms
 nav:
+  - From analysis to implementation: ddd-applied.md
   - Implementation considerations, build, run: index.md
   - Event sourcing pattern: https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns/#event-sourcing
   - CQRS pattern: https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns/#command-query-responsibility-segregation-cqrs-pattern.md
