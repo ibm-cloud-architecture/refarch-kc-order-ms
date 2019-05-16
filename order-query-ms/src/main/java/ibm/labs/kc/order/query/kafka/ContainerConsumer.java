@@ -28,10 +28,10 @@ public class ContainerConsumer {
     private boolean reloadCompleted = false;
 
     public ContainerConsumer() {
-        Properties properties = ApplicationConfig.getContainerConsumerProperties();
+        Properties properties = ApplicationConfig.getContainerConsumerProperties("orderquery-container-consumer");
         kafkaConsumer = new KafkaConsumer<>(properties);
 
-        Properties reloadProperties = ApplicationConfig.getContainerConsumerReloadProperties();
+        Properties reloadProperties = ApplicationConfig.getContainerConsumerReloadProperties("orderquery-container-reload-consumer\"");
         reloadConsumer = new KafkaConsumer<String, String>(reloadProperties);
     }
 

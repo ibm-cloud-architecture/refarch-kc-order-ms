@@ -3,6 +3,11 @@ echo "##########################################"
 echo " Build ORDER Query war and docker image  "
 echo "##########################################"
 
+msname="orderqueryms"
+kname="kc-orderqueryms"
+ns="greencompute"
+
+
 if [[ $PWD = */scripts ]]; then
  cd ..
 fi
@@ -12,7 +17,7 @@ else
   kcenv=$1
 fi
 
-. ./scripts/setenv.sh $kcenv
+source ../../refarch-kc/scripts/setenv.sh $kcenv
 
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
@@ -30,7 +35,7 @@ if [[ "$kcenv" = "LOCAL" ]]
 then
    # image for public docker hub or local repo - no CA certificate
    echo "Build docker image for $kname local run"
-   docker build -f Dockerfile-local -t ibmcase/$kname .
+   docker build --build-arg envkc=$kcenv -t ibmcase/$kname .
 else
 
       # image for private registry in IBM Cloud

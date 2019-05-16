@@ -3,6 +3,12 @@ echo "##########################################"
 echo " Build ORDER command war and docker image  "
 echo "##########################################"
 
+msname="ordercommandms"
+ns="greencompute"
+chart=$(ls ./chart/| grep $msname)
+kname="kc-"$chart
+
+
 if [[ $PWD = */scripts ]]; then
  cd ..
 fi
@@ -12,7 +18,9 @@ else
   kcenv=$1
 fi
 
-. ./scripts/setenv.sh $kcenv
+. ../../refarch-kc/scripts/setenv.sh $kcenv
+
+
 
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
 rm -rf target/liberty/wlp/usr/servers/defaultServer/apps/expanded
@@ -29,9 +37,9 @@ if [[ "$kcenv" = "LOCAL" ]]
 then
      # image for public docker hub or local repo - no CA certificate
    echo "Build docker image for $kname local run"
-   docker build -f Dockerfile-local -t ibmcase/$kname .
+   docker build --build-arg  KAFKA_ENV=$kcenv -t ibmcase/$kname .
 else
     # image for private registry in IBM Cloud
    echo "Build docker image for $kname to deploy on $kcenv"
-   docker build --build-arg envkc=$kcenv -t us.icr.io/ibmcaseeda/$kname .
+   docker build --build-arg  KAFKA_ENV=$kcenv -t us.icr.io/ibmcaseeda/$kname .
 fi

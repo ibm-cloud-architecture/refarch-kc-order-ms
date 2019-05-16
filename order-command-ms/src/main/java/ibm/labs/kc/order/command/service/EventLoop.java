@@ -31,7 +31,7 @@ public class EventLoop implements ServletContextListener{
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("ConsumerLoop contextInitialized");
+        logger.info("@@@ Order Consumer Loop contextInitialized v0.0.4");
 
         consumer = new OrderConsumer();
         executor = Executors.newFixedThreadPool(1);
@@ -43,7 +43,7 @@ public class EventLoop implements ServletContextListener{
         return new Runnable() {
             @Override
             public void run() {
-                logger.info("ReloadState started");
+                logger.info("Reload Order State started");
                 EventListener listener = new OrderAdminService();
 
                 while (!consumer.reloadCompleted()) {
@@ -106,7 +106,7 @@ public class EventLoop implements ServletContextListener{
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        logger.info("ConsumerLoop contextDestroyed");
+        logger.info("Order ConsumerLoop contextDestroyed");
         running = false;
         executor.shutdownNow();
         try {

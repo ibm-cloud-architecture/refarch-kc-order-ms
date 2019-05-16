@@ -1,5 +1,20 @@
-FROM us.icr.io/ibmcaseeda/kc-base-liberty
-LABEL maintainer="IBM Java Engineering at IBM Cloud"
+FROM websphere-liberty:19.0.0.3-microProfile2
+LABEL maintainer="IBM Cloud Architecture Solution Engineering at IBM Cloud"
+# This is the common image for websphere liberty to run only local
+
+USER root
+
+RUN apt-get update -q -y && apt-get dist-upgrade -q -y 
+
+
+ARG LICENSE_JAR_URL
+ENV KAFKA_BROKERS=""
+ENV KAFKA_ENV=""
+ENV KAFKA_APIKEY=""
+ENV POSTGRESQL_URL=""
+ENV POSTGRESQL_USER=""
+ENV POSTGRESQL_PWD=""
+
 # 3 next lines need to be there to avoid NPE on javametrics-rest, javametrics-dash,
 COPY /target/liberty/wlp/usr/servers/defaultServer /config/
 COPY /target/liberty/wlp/usr/shared/resources /config/resources/

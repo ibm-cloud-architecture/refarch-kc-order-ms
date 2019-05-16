@@ -21,7 +21,6 @@ public class ApplicationConfig {
     public static final String ERROR_TOPIC = "errors";
     public static final long PRODUCER_TIMEOUT_SECS = 10;
     public static final long PRODUCER_CLOSE_TIMEOUT_SEC = 10;
-    public static final String CONSUMER_GROUP_ID = "order-command-grp";
     public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
     public static final Duration CONSUMER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
     public static final long TERMINATION_TIMEOUT_SEC = 10;
@@ -35,9 +34,9 @@ public class ApplicationConfig {
         return properties;
     }
 
-    public static Properties getConsumerProperties() {
+    public static Properties getConsumerProperties(String groupid) {
         Properties properties = buildCommonProperties();
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG,  groupid);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,"true");
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -46,15 +45,14 @@ public class ApplicationConfig {
         return properties;
     }
 
-    public static Properties getConsumerReloadProperties() {
+    public static Properties getConsumerReloadProperties(String groupid) {
         Properties properties = buildCommonProperties();
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG,  groupid);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP_ID + "-reload");
         properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-command-reload");
         return properties;
     }

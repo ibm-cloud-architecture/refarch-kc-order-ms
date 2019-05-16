@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ $PWD = */scripts ]]; then
+ cd ..
+fi
+
 if [ $# -eq 2 ]
 then
   hostn=$1
@@ -11,11 +15,10 @@ else
   else
     hostn="localhost:10080"
   fi
-  fname='orderCreate.json'
+  fname='./scripts/orderCreate.json'
 fi
+
 url="http://$hostn/orders"
-fn="@./$fname"
-echo $fn
 
 # curl -v -H "accept: */*" -H "Content-Type: application/json" -d @./orderCreate.json $url
-curl -v -H "accept: */*" -H "Content-Type: application/json" -d $fn $url
+curl -v -H "accept: */*" -H "Content-Type: application/json" -d $fname $url
