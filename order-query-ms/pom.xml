@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>projects</groupId>
+    <groupId>k-container</groupId>
     <artifactId>orderqueryms</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -9,7 +9,7 @@
     <parent>
         <groupId>net.wasdev.wlp.maven.parent</groupId>
         <artifactId>liberty-maven-app-parent</artifactId>
-        <version>2.1</version>
+        <version>RELEASE</version>
     </parent>
 
     <repositories>
@@ -29,26 +29,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-
-        <app.name>orderqueryms</app.name>
+        <kafka.version>2.2.0</kafka.version>
+        <app.name>${project.artifactId}</app.name>
         <testServerHttpPort>9080</testServerHttpPort>
         <testServerHttpsPort>9443</testServerHttpsPort>
         <warContext>${app.name}</warContext>
         <package.file>${project.build.directory}/${project.artifactId}-${project.version}.zip</package.file>
         <packaging.type>usr</packaging.type>
-        <!-- Cloud Foundry/IBM Cloud properties -->
-        <cf.context>mybluemix.net</cf.context>
-        <cf.target>https://api.ng.bluemix.net</cf.target>
-        <cf.space>dev</cf.space>
-        <cf.context.root>${cf.host}.${cf.context}/${warContext}</cf.context.root>
-
-        <!-- The Cloud Foundry or IBM Cloud organization, username and password can be
-            entered here. -->
-        <!-- <cf.org></cf.org> -->
-        <!-- <cf.username></cf.username> -->
-        <!-- <cf.password></cf.password> -->
-        <!-- This is the host for your app in IBM Cloud and what it will be called in the dashboard. -->
-        <cf.host>${app.name}</cf.host>
     </properties>
 
     <dependencies>
@@ -146,6 +133,11 @@
             <version>4.0.1</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.9.8</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
@@ -157,7 +149,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.2.2</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <packagingExcludes>pom.xml</packagingExcludes>
@@ -282,75 +274,7 @@
                 <packaging.type>runnable</packaging.type>
             </properties>
         </profile>
-        <profile>
-          <id>bluemix</id>
-          <build>
-              <plugins>
-                  <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-enforcer-plugin</artifactId>
-                      <version>1.4.1</version>
-                      <executions>
-                          <execution>
-                              <id>enforce-bluemix-credentials</id>
-                              <phase>initialize</phase>
-                              <goals>
-                                  <goal>enforce</goal>
-                              </goals>
-                              <configuration>
-                                  <rules>
-                                      <requireProperty>
-                                          <property>cf.org</property>
-                                          <message>The cf.org property must be
-                                              provided with the bluemix
-                                              profile.</message>
-                                      </requireProperty>
-                                      <requireProperty>
-                                          <property>cf.username</property>
-                                          <message>The cf.username property
-                                              must be provided with the
-                                              bluemix profile.</message>
-                                      </requireProperty>
-                                      <requireProperty>
-                                          <property>cf.password</property>
-                                          <message>The cf.password property
-                                              must be provided with the
-                                              bluemix profile.</message>
-                                      </requireProperty>
-                                  </rules>
-                              </configuration>
-                          </execution>
-                      </executions>
-                  </plugin>
-                  <plugin>
-                      <groupId>org.cloudfoundry</groupId>
-                      <artifactId>cf-maven-plugin</artifactId>
-                      <version>1.1.3</version>
-                      <configuration>
-                          <target>${cf.target}</target>
-                          <org>${cf.org}</org>
-                          <space>${cf.space}</space>
-                          <username>${cf.username}</username>
-                          <password>${cf.password}</password>
-                          <appname>${cf.host}</appname>
-                          <memory>512</memory>
-                      </configuration>
-                      <executions>
-                          <execution>
-                              <id>push</id>
-                              <phase>package</phase>
-                              <goals>
-                                  <goal>push</goal>
-                              </goals>
-                              <configuration>
-                                  <path>${package.file}</path>
-                              </configuration>
-                          </execution>
-                      </executions>
-                  </plugin>
-              </plugins>
-          </build>
-      </profile>
+        
         <profile>
             <id>liberty</id>
             <activation>
@@ -372,8 +296,8 @@
                             <!--appsDirectory>apps</appsDirectory-->
                             <assemblyArtifact>
                                 <groupId>com.ibm.websphere.appserver.runtime</groupId>
-                                <artifactId>wlp-webProfile7</artifactId>
-                                <version>17.0.0.4</version>
+                                <artifactId>wlp-webProfile8</artifactId>
+                                <version>19.0.0.4</version>
                                 <type>zip</type>
                             </assemblyArtifact>
                             <configFile>${basedir}/src/main/liberty/config/server.xml</configFile>

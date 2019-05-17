@@ -15,10 +15,10 @@ else
   else
     hostn="localhost:10080"
   fi
-  fname='./scripts/orderCreate.json'
+  fname=$PWD/scripts/orderCreate.json
 fi
 
 url="http://$hostn/orders"
 
-# curl -v -H "accept: */*" -H "Content-Type: application/json" -d @./orderCreate.json $url
-curl -v -H "accept: */*" -H "Content-Type: application/json" -d $fname $url
+echo "Send $fname to $url"
+curl -v  -H "accept: */*" -H "Content-Type: application/json" -d @$fname $url
