@@ -42,11 +42,13 @@ spec:
             value: "{{ .Values.eventstreams.brokers }}"
           - name: TRUSTSTORE_PWD
             value: "{{ .Values.java.truststore.pwd }}"
+          {{if or (eq .Values.eventstreams.env "IBMCLOUD") (eq .Values.eventstreams.env "ICP")}}
           - name: KAFKA_APIKEY
-            valueFrom: 
+            valueFrom:
               secretKeyRef:
                 name: eventstreams-apikey
                 key: binding
+          {{end}}
 {{- if .Values.generatedBindings.enabled }}
 {{.Files.Get "bindings.yaml" | indent 10 }}
 {{- end }}
