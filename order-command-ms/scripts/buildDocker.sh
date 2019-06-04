@@ -18,7 +18,7 @@ else
   kcenv=$1
 fi
 
-. ../../refarch-kc/scripts/setenv.sh $kcenv
+source ../../refarch-kc/scripts/setenv.sh $kcenv
 
 
 
@@ -41,5 +41,11 @@ then
 else
     # image for private registry in IBM Cloud
    echo "Build docker image for $kname to deploy on $kcenv"
-   docker build --build-arg  KAFKA_ENV=$kcenv -t us.icr.io/ibmcaseeda/$kname .
+   docker build \
+         --build-arg KAFKA_ENV=$kcenv \
+         --build-arg KAFKA_BROKERS=${KAFKA_BROKERS} \
+         --build-arg KAFKA_APIKEY=${KAFKA_APIKEY} \
+         --build-arg JKS_LOCATION=${JKS_LOCATION} \
+         --build-arg TRUSTSTORE_PWD=${TRUSTSTORE_PWD} \
+    -t us.icr.io/ibmcaseeda/$kname .
 fi

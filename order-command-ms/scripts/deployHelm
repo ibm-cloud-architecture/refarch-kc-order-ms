@@ -2,7 +2,19 @@
 if [[ $(pwd) = */scripts ]]; then
  cd ..
 fi
-. ./scripts/setenv.sh
+
+if [[ $# -eq 0 ]];then
+  kcenv="LOCAL"
+else
+  kcenv=$1
+fi
+
+msname="ordercommandms"
+ns="browncompute"
+chart=$(ls ./chart/| grep $msname)
+kname="kc-"$chart
+source ../../refarch-kc/scripts/setenv.sh $kcenv
+
 
 
 echo "Deploy helm chart for $chart project to $ns"
@@ -17,7 +29,7 @@ oq=$(helm list | grep $kname | awk '{print $1}')
 if [[ -z "$oq" ]]
 then
   echo "$chart release not deployed... which is expected so deploy it"
-  cd ../chart
+  cd ./chart
   helm install $chart/ --name $kname --namespace $ns
   sleep 4
 else

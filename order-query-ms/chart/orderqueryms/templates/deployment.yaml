@@ -36,6 +36,8 @@ spec:
             value: "{{ .Values.service.servicePort }}"
           - name: APPLICATION_NAME
             value: "{{ .Release.Name }}"
+          - name: TRUSTSTORE_PWD
+            value: "{{ .Values.java.truststore.pwd }}"
           - name: KAFKA_ENV
             value: "{{ .Values.eventstreams.env }}"
           - name: KAFKA_BROKERS

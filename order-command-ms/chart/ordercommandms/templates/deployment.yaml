@@ -40,6 +40,8 @@ spec:
             value: "{{ .Values.eventstreams.env }}"
           - name: KAFKA_BROKERS
             value: "{{ .Values.eventstreams.brokers }}"
+          - name: TRUSTSTORE_PWD
+            value: "{{ .Values.java.truststore.pwd }}"
           - name: KAFKA_APIKEY
             valueFrom: 
               secretKeyRef:
