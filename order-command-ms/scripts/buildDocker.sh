@@ -21,7 +21,6 @@ fi
 source ../../refarch-kc/scripts/setenv.sh $kcenv
 
 
-
 find target -iname "*SNAPSHOT*" -print | xargs rm -rf
 rm -rf target/liberty/wlp/usr/servers/defaultServer/apps/expanded
 tools=$(docker images | grep javatools)
