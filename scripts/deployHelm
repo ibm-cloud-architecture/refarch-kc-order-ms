@@ -1,27 +1,18 @@
 #!/bin/bash
-if [[ $(pwd) = */scripts ]]; then
- cd ..
+
+if [[ $# -ne 4 ]];then
+  echo "deployHelm <servicename> <namespace> <env> <tag> "
+  exit
 fi
 
-kctag="latest"
-if [[ $# -eq 0 ]];then
-  kcenv="LOCAL"
-fi
-
-if [[ $# -eq 2 ]]
-then
-  kcenv=$1
-  kctag=$2
-else
-  kcenv=$1
-fi
-
-msname="ordercommandms"
-ns="greencompute"
+msname=$1
+ns=$2
 chart=$(ls ./chart/| grep $msname)
 kname="kc-"$chart
+kcenv=$3
+kctag=$4
 
-source ../../refarch-kc/scripts/setenv.sh $kcenv
+source ../refarch-kc/scripts/setenv.sh $kcenv
 
 echo "Deploy helm chart for $chart project to $ns"
 

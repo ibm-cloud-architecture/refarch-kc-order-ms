@@ -1,43 +1,8 @@
 #!/bin/bash
 
+
 if [[ $(pwd) = */scripts ]]; then
  cd ..
 fi
 
-if [[ $# -eq 0 ]];then
-  kcenv="LOCAL"
-else
-  kcenv=$1
-fi
-
-msname="orderqueryms"
-ns="browncompute"
-chart=$(ls ./chart/| grep $msname)
-kname="kc-"$chart
-source ../../refarch-kc/scripts/setenv.sh $kcenv
-
-
-
-echo "Deploy helm chart for $chart project to $ns"
-
-
-verifyPod(){
-  kubectl logs $1 -n $ns
-}
-
-echo "############################"
-oq=$(helm list | grep $kname | awk '{print $1}')
-if [[ -z "$oq" ]]
-then
-  echo "$chart release not deployed... which is expected so deploy it"
-  cd ./chart
-  helm install $chart/ --name $kname --namespace $ns
-  sleep 4
-else
-    echo "$kname release deployed, here is the pod logs"
-    helm upgrade $msname $chart/
-    helm history $msname
-fi
-podId=$(kubectl get pods -n $ns | grep $msname | awk '{print $1}')
-verifyPod $podId
-
+../scripts/deployHelm "orderqueryms" "greencompute" MINIKUBE latest

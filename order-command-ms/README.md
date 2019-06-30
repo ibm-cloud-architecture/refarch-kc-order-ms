@@ -11,6 +11,7 @@ See the [book format](http://ibm-cloud-architecture.github.io/refarch-kc-order-m
 
 
 ### Configuration
+
 The application is configured to provide JAX-RS REST capabilities, JNDI, JSON parsing and Contexts and Dependency Injection (CDI).
 
 These capabilities are provided through dependencies in the pom.xml file and Liberty features enabled in the server config file found in `src/main/liberty/config/server.xml`.

@@ -13,42 +13,43 @@ One of the business requirements for adopting event sourcing and CQRS patterns i
 
 To answer those questions we need to keep historical information of each orders and its events. Event sourcing is to pattern of choice for that. 
 
-We are detailing how to go from event storming to implementation in a [separate note](ddd-applied.md) by apply the domain-driven design approach.
+We are detailing, in a [separate note](ddd-applied.md), how to go from the event storming produced elements to the microservice implementation by applying the domain-driven design approach.
 
 ## Implementation approach
 
-As introduced in the [high level design note](https://ibm-cloud-architecture.github.io/refarch-kc/design/readme/) the order entity life cycle looks like in the following diagram:
+As introduced in the [solution high level design note](https://ibm-cloud-architecture.github.io/refarch-kc/design/readme/) the order entity life cycle looks like in the following diagram:
 
 ![](order-life-cycle.png)
 
-The order microservice supports the implementations of this life cycle, using event sourcing and CQRS patter.
+The order microservice supports the implementations of this life cycle, using event sourcing and CQRS pattern.
 
-With [CQRS](https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns/#command-query-responsibility-segregation-cqrs-pattern) we separate the 'write model' from the read. The Command microservice implements the write model and exposes a set of REST end points for Creating Order, Updating Order and getting Order per ID. The query service will address complex queries to support adhoc business requirements and joining data between different entities like the order, the containers and the voyages. So we have two Java projects to support each service implementation. Each service is packaged as container and deployable to Kubernetes. 
+With [CQRS](https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns/#command-query-responsibility-segregation-cqrs-pattern), we separate the 'write model' from the 'read model'. The Command microservice implements the 'write model' and exposes a set of REST end points for Creating Order, Updating, Deleting Order and getting Order per ID. The query service will address more complex queries to support adhoc business requirements and most likely will need to join data between different entities like the order, the containers and the voyages. So we have two Java projects to support each service implementation. Each service is packaged as container and deployable to Kubernetes. 
 
 * [Order command microservice](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/tree/master/order-command-ms)
 * [Order query microservice](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/tree/master/order-query-ms)
 
-As some requirements are related to historical query, using an event approach we need to keep all the events related to what happens to the order. Instead of implementing a complex logic with the query and command services the event sourcing is supported by using Kafka topics. The following diagram illustrates the CQRS and event sourcing applied to the order management service. Client to the REST api, like a back end for front end app, performs a HTTP POST operation with the order data. The command generates events and persists order on its own data source. The query part is an event consumer and defines its own data projections to support the different queries:
+As some requirements are related to historical query, using an event approach, we need to keep all the events related to what happens to the order. Instead of implementing a complex logic with the query and command services the event sourcing is supported by using Kafka topics. The following diagram illustrates the CQRS and event sourcing applied to the order management service. Client to the REST api, like a back end for front end app, performs a HTTP POST operation with the order data. The command generates events and persists order on its own data source. The query part is an event consumer and defines its own data projections to support the different queries:
 
 ![](order-ms-cqrs-es.png) 
 
 The datasource at the command level, may not be necessary, but we want to illustrate here the fact that it is possible to have a SQL based database or a document oriented database to keep the order last state: a call to get /orders/{id} will return the current order state. 
 
-For the query part the projection can be kept in memory or persisted on its own data store. The decision to go for in memory ro database depends upon the amount of data to join, and the time horizon set at the Kafka topic level. A service may always rebuild its view by re-reading the topic from the beginning. 
+For the query part the projection can be kept in memory or persisted on its own data store. The decision, to go for in memory or to use a database, depends upon the amount of data to join, and the persitence time horizon set at the Kafka topic level. In case of problem or while starting, an event driven service may always rebuild its view by re-reading the topic from the beginning. 
 
-An alternate solution is to have the BFF pushing events to the event source and then having the order service consuming event to persist them, as illustrated in the following diagram:
+!!! note
+    An alternate solution is to have the BFF pushing events to the event source and then having the order service consuming event to persist them, as illustrated in the following diagram:
 
-![](bff-es-cqrs.png)
+    ![](bff-es-cqrs.png)
 
-As the BFF still needs to get order by ID or perform complex query it has to access the order service using HTTP, we could imagine the BFF developers prefer to use one communication protocol and adding kafka producer was not their cup of tea.  
+As the BFF still needs to get order by ID or perform complex queries, it has to access the order service using HTTP, therefore we have prefered to use one communication protocol.  
 
-The following sequence diagram illustrates the relationships between the components.
+The following sequence diagram illustrates the relationships between the components over time:
 
 ![](order-cmd-query-flow.png)
 
-To avoid transaction between the database update and the event published, the choice is to publish the event as soon as it is received and use a consumer inside the command service to load the data and save to the database. The kafka topic act as a source of trust for this service. This is illustrated in [this article.](https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns/#the-consistency-challenge)
+To avoid transaction between the database update and the event published, the choice is to publish the event as early as it is received and use a consumer inside the command service to load the data and save to the database. The kafka topic act as a source of trust for this service. This is illustrated in [this article.](https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns/#the-consistency-challenge)
 
-The /order POST REST end point source code is [here](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/6de424c443c05262ae013620f5f11b4a1b2e6f90/order-command-ms/src/main/java/ibm/labs/kc/order/command/service/OrderCRUDService.java#L51-L74)
+The /orders POST REST end point source code is [here](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/6de424c443c05262ae013620f5f11b4a1b2e6f90/order-command-ms/src/main/java/ibm/labs/kc/order/command/service/OrderCRUDService.java#L51-L74)
 
 and the [order events consumer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/6de424c443c05262ae013620f5f11b4a1b2e6f90/order-command-ms/src/main/java/ibm/labs/kc/order/command/service/OrderAdminService.java#L35) in the command pattern.
 
@@ -56,7 +57,7 @@ See the class [OrderCRUDService.java](https://github.com/ibm-cloud-architecture/
 * Produce order events to the `orders` topic. 
 * Consume events to update the state of the order or enrich it with new elements.
 
-When the application starts there is a [ServletContextListener](https://docs.oracle.com/javaee/6/api/javax/servlet/ServletContextListener.html) class started to create a consumer to subscribe to order events (different types) from `orders` topic. When consumer reaches an issue to get event it creates an error to the `errors` topic, so administrator user could replay the event source from the last committed offset. Any kafka broker communication issue is shutting down the consumer loop.
+When the application starts there is a [ServletContextListener](https://docs.oracle.com/javaee/6/api/javax/servlet/ServletContextListener.html) implementation class started to create a kafka consumer and to subscribe to order events (different types). When consumer reaches an issue to get event it creates an error to the `errors` topic, so administrator user could replay the events from the last committed offset. Any kafka broker communication issue is shutting down the consumer loop.
 
 ## Data and Event Model
 
@@ -114,7 +115,10 @@ class OrderContainers {
 }
 ```
 
-On the event side we may generate OrderCreated, OrderCancelled,... But what is in the event payload? We can propose the following structure where type will help to specify the event type and getting a generic payload we can have anything in it.
+On the event side we may generate OrderCreated, OrderCancelled,... But what is in the event payload? 
+
+We can propose the following structure where type will help to specify the event type and by getting a generic payload we can have anything in it.
+
 ```
 class OrderEvent {
     orderId: string;
@@ -125,7 +129,12 @@ class OrderEvent {
 }
 ```
 
-Also do we need to ensure consistency between those data views? Where is the source of truth? 
+`version` attribute will be used when we will use a schema registry.
 
-In traditional SOA service with application maintaining all the tables and beans to support all the business requirements, ACID transactions support the consistency and integrity of the data, and the database is one source of truth. With microservices responsible to manage its own business entity, clearly separated from other business entities, data eventual consistency is the standard. If you want to read more about the Event Sourcing and CQRS patterns [see this article.](https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns)
+There are other questions we need to address is real project:
+
+* do we need to ensure consistency between those data views? 
+* Can we consider the event, which are immutable data elements, as the source of truth? 
+
+In traditional SOA service with application maintaining all the tables and beans to support all the business requirements, ACID transactions support the consistency and integrity of the data, and the database is one source of truth. With microservices responsible to manage its own aggregate, clearly separated from other business entities, data eventual consistency is the standard. If you want to read more about the Event Sourcing and CQRS patterns [see this article.](https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns)
 

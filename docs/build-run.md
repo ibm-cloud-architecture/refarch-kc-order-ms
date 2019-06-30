@@ -1,19 +1,17 @@
-# Build and run the solution locally
+# Build and run the order microsercives locally
 
-You have different deployment models: local with docker-compose, minikube, kubernetes on IBM Cloud (IKS), or IBM Cloud private.
-
-Each script accepts an argument:
+We support different deployment models: local with docker-compose, local with minikube, and remote using kubernetes on IBM Cloud (IKS), or on IBM Cloud private. To build and run we are proposing some scripts. Each script accepts an argument:
 
 * LOCAL (default is argument is omitted)
 * MINIKUBE
 * IBM_CLOUD
 * ICP
 
-This variable is really used in a set environment script under the `refarch-kc` project and the `scripts` folder, as it defines different values for the target environment.
+This argument is really used to set environment variables used in the code in a separate script under the `refarch-kc` project and the `scripts` folder.
 
 ## Pre-requisites
 
-You can have the following software already installed on your computer or use [our docker image](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/docker/docker-java-tools) to get those dependencies integrated in a docker image, which you can use to build, test and package the java programs.
+You can have the following software already installed on your computer or use [our docker images](https://github.com/ibm-cloud-architecture/refarch-kc/blob/master/docker/docker-java-tools) to get those dependencies integrated in docker images, which you can use to build, test and package the java programs.
 
 * [Maven](https://maven.apache.org/install.html)
 * Java 8: Any compliant JVM should work.
@@ -24,9 +22,9 @@ You can have the following software already installed on your computer or use [o
 
 ## Build
 
-You need to build each microservices independently using maven
+You need to build each microservices independently using maven.
 
-Each microservice has its build script to perform the maven package and build the docker image. See `scripts` folder under each project.
+Each microservice has its ownbuild script to perform the maven package and build the docker image. See `scripts` folder under each project.
 
 * For order-command-ms
 
@@ -41,7 +39,7 @@ Each microservice has its build script to perform the maven package and build th
  ```
 
 !!! note
-        The build scripts test if the javatool docker image exist and they use it, if it found. If not they use maven.
+        The build scripts test if the javatool docker image exists and they use it, if found, otherwie they use maven.
         If you want to use docker compose use LOCAL as parameter.
 
 * Verify the docker images are created
@@ -55,6 +53,14 @@ ibmcase/kc-ordercommandms latest
 
 ## Run 
 
+You can always use the maven command to compile and run liberty server for each project.
+```
+mvn install
+mvn liberty:run-server
+```
+
+But as soon as you need to run integration tests with kafka you need all services up and running.
+
 ### On Minikube
 
 For the order command microservice:
@@ -64,12 +70,15 @@ cd order-command-ms
 
 helm install chart/ordercommandms/ --name ordercmd --set image.repository=ibmcase/kc-ordercommandms --set image.pullSecret= --set image.pullPolicy=Never --set eventstreams.brokers=kafkabitmani:9092 --set eventstreams.env=MINIKUBE --namespace greencompute
 ```
+
 or use the command: `./scripts/deployHelm MINIKUBE`
 
 Without any previously tests done, the call below should return an empty array: `[]`
 ```
 curl http://localhost:31200/orders
 ```
+
+We will present some integration tests in a section below.
 
 ### With docker compose
 

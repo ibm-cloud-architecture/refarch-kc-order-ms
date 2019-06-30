@@ -7,6 +7,7 @@ nav:
   - Event sourcing pattern: https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns/#event-sourcing
   - CQRS pattern: https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns/#command-query-responsibility-segregation-cqrs-pattern.md
   - Kubernetes Deployments: deployments.md
+  - Integration tests: https://ibm-cloud-architecture.github.io/refarch-kc/itg-tests/
 
 theme: 
   name: material
