@@ -1,20 +1,22 @@
 #!/bin/bash
 
-if [[ $# -ne 4 ]];then
-  echo "deployHelm <servicename> <namespace> <env> <tag> "
+if [[ $# -ne 3 ]];then
+  echo "ERROR Usage deployHelm <servicename> <tag> "
   exit
 fi
 
 msname=$1
-ns=$2
+kcenv=$2
+
 chart=$(ls ./chart/| grep $msname)
 kname="kc-"$chart
-kcenv=$3
-kctag=$4
+kctag=$3
 
-source ../refarch-kc/scripts/setenv.sh $kcenv
-
+source ../../refarch-kc/scripts/setenv.sh $kcenv
+ns=$KC_NAMESPACE 
 echo "Deploy helm chart for $chart project to $ns"
+export KUBECONFIG=$HOME/.bluemix/plugins/container-service/clusters/$IKS_CLUSTER_NAME/kube-config-$IKS_ZONES-$IKS_CLUSTER_NAME.yml 
+
 
 verifyPod(){
   kubectl logs $1 -n $ns

@@ -5,4 +5,11 @@ if [[ $(pwd) = */scripts ]]; then
  cd ..
 fi
 
-../scripts/deployHelm "orderqueryms" "greencompute" MINIKUBE latest
+
+if [[ $# -ne 2 ]];then
+ echo "ERROR Usage deployHelm [LOCAL | MINIKUBE | IBMCLOUD | ICP] tag"
+ exit 1
+fi
+
+
+../scripts/deployHelm "orderqueryms" $1 $2

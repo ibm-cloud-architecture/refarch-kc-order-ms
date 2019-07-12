@@ -20,5 +20,6 @@ fi
 
 url="http://$hostn/orders"
 
+echo ""
 echo "Send $fname to $url"
 curl -v  -H "accept: */*" -H "Content-Type: application/json" -d @$fname $url

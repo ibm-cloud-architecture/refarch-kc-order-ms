@@ -7,4 +7,4 @@ else
 fi
 url="http://$hostn/orders"
 
-curl  $url
+echo $(curl  $url)
