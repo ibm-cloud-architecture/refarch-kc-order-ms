@@ -44,6 +44,11 @@ public class OrderCRUDService {
         emitter = OrderProducer.instance();
         orderDAO = OrderDAOMock.instance();
     }
+    
+    public OrderCRUDService(EventEmitter eventEmitter, OrderDAO dao) {
+    	emitter = eventEmitter;
+    	orderDAO = dao;
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
