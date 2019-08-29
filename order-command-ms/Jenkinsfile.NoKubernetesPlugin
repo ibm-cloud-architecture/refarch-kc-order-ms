@@ -14,6 +14,7 @@ pipeline {
         string(name: 'REGISTRY', defaultValue: 'docker.io', description: 'Container Registry URL')
         string(name: 'REGISTRY_NAMESPACE', defaultValue: 'ibmcase', description: 'registry namespace to push image to')
         string(name: 'IMAGE_NAME', defaultValue: 'bluecompute-web', description: 'name of image')
+        string(name: 'DOCKERFILE', defaultValue: 'Dockerfile', description: 'name of Dockerfile for build to use')
         credentials(name: 'REGISTRY_CREDENTIALS', defaultValue: 'registry-credentials-id', description: 'Credentials for registry', credentialType: 'Username with password')
     }
 
@@ -24,10 +25,10 @@ pipeline {
               #!/bin/bash
               if [ "${env.REGISTRY}" = "docker.io" ]; then
                 echo 'Building Docker Hub Image'
-                docker build -t ${env.IMAGE_NAME}:${env.BUILD_NUMBER} .
+                docker build -t ${env.IMAGE_NAME}:${env.BUILD_NUMBER} -f ${env.DOCKERFILE} .
               else
                 echo 'Building Private Registry Image'
-                docker build -t ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER} .
+                docker build -t ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER} -f ${env.DOCKERFILE} .
               fi
             """
             }
