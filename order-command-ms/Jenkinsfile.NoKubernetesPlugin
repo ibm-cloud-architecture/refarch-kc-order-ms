@@ -1,0 +1,59 @@
+/*
+    To learn how to use this sample pipeline, follow the guide below and enter the
+    corresponding values for your environment and for this repository:
+    - https://github.com/ibm-cloud-architecture/refarch-cloudnative-devops-kubernetes
+*/
+
+pipeline {
+    
+    agent {
+        label "docker"
+    }
+
+    parameters {
+        string(name: 'REGISTRY', defaultValue: 'docker.io', description: 'Container Registry URL')
+        string(name: 'REGISTRY_NAMESPACE', defaultValue: 'ibmcase', description: 'registry namespace to push image to')
+        string(name: 'IMAGE_NAME', defaultValue: 'bluecompute-web', description: 'name of image')
+        credentials(name: 'REGISTRY_CREDENTIALS', defaultValue: 'registry-credentials-id', description: 'Credentials for registry', credentialType: 'Username with password')
+    }
+
+    stages {
+        stage('Build Docker Image') {
+            steps {
+              sh """
+              #!/bin/bash
+              if [ "${env.REGISTRY}" = "docker.io" ]; then
+                echo 'Building Docker Hub Image'
+                docker build -t ${env.IMAGE_NAME}:${env.BUILD_NUMBER} .
+              else
+                echo 'Building Private Registry Image'
+                docker build -t ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER} .
+              fi
+            """
+            }
+        }
+
+        stage('Push Docker Image to Registry') {
+          steps {
+            withCredentials([usernamePassword(credentialsId: env.REGISTRY_CREDENTIALS,
+                                            usernameVariable: 'USERNAME',
+                                            passwordVariable: 'PASSWORD')]) {
+                sh """
+                #!/bin/bash\
+
+                docker login -u ${USERNAME} -p ${PASSWORD} ${env.REGISTRY}
+
+                if [ "${env.REGISTRY}" = "docker.io" ]; then
+                    echo 'Pushing to Docker Hub'
+                    docker push ${env.IMAGE_NAME}:${env.BUILD_NUMBER}
+                else
+                    echo 'Pushing to Private Registry'
+                    docker push ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}
+                fi
+                """
+            }
+          }
+        }
+
+    }
+}
