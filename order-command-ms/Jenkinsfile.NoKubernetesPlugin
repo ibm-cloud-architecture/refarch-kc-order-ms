@@ -50,9 +50,13 @@ pipeline {
                 if [ "${env.REGISTRY}" = "docker.io" ]; then
                     echo 'Pushing to Docker Hub'
                     docker push ${env.IMAGE_NAME}:${env.BUILD_NUMBER}
+                    docker tag ${env.IMAGE_NAME}:${env.BUILD_NUMBER} ${env.IMAGE_NAME}:latest
+                    docker push ${env.IMAGE_NAME}:latest
                 else
                     echo 'Pushing to Private Registry'
                     docker push ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}
+                    docker tag ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER} ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:latest
+                    docker push ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:latest
                 fi
                 """
             }
