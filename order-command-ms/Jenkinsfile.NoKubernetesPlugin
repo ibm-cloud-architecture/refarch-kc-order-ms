@@ -15,6 +15,7 @@ pipeline {
         string(name: 'REGISTRY_NAMESPACE', defaultValue: 'ibmcase', description: 'registry namespace to push image to')
         string(name: 'IMAGE_NAME', defaultValue: 'bluecompute-web', description: 'name of image')
         string(name: 'DOCKERFILE', defaultValue: 'Dockerfile', description: 'name of Dockerfile for build to use')
+        string(name: 'CONTEXT_DIR', defaultValue: '.', description: 'directory to work from inside source code')
         credentials(name: 'REGISTRY_CREDENTIALS', defaultValue: 'registry-credentials-id', description: 'Credentials for registry', credentialType: 'Username with password')
     }
 
@@ -23,6 +24,8 @@ pipeline {
             steps {
               sh """
               #!/bin/bash
+              cd ${env.CONTEXT_DIR}
+              
               if [ "${env.REGISTRY}" = "docker.io" ]; then
                 echo 'Building Docker Hub Image'
                 docker build -t ${env.IMAGE_NAME}:${env.BUILD_NUMBER} -f ${env.DOCKERFILE} .
