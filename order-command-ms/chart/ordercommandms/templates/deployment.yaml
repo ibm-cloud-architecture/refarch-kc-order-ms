@@ -13,6 +13,7 @@ spec:
         app: "{{  .Chart.Name }}-selector"
         version: "current"
     spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
       imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}
       containers:

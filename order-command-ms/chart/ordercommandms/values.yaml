@@ -46,3 +46,4 @@ eventstreams:
 java:
   truststore:
     pwd: changeit
+serviceAccountName: default
