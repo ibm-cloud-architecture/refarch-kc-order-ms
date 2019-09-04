@@ -7,9 +7,9 @@ pipeline {
     parameters {
         string(name: 'REGISTRY', defaultValue: 'docker.io', description: 'Container Registry URL')
         string(name: 'REGISTRY_NAMESPACE', defaultValue: 'ibmcase', description: 'registry namespace to push image to')
-        string(name: 'IMAGE_NAME', defaultValue: 'orderqueryms', description: 'name of image')
+        string(name: 'IMAGE_NAME', defaultValue: 'order-query-ms', description: 'name of image')
         string(name: 'DOCKERFILE', defaultValue: 'Dockerfile.multistage', description: 'name of Dockerfile for build to use')
-        string(name: 'CONTEXT_DIR', defaultValue: '.', description: 'directory to work from inside source code')
+        string(name: 'CONTEXT_DIR', defaultValue: 'order-query-ms', description: 'directory to work from inside source code')
         credentials(name: 'REGISTRY_CREDENTIALS', defaultValue: 'registry-credentials-id', description: 'Credentials for registry', credentialType: 'Username with password')
     }
 
