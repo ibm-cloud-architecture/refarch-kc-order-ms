@@ -4,7 +4,7 @@ Be sure to have read the [build and run article before](./build-run.md).
 
 ## Deploy to IKS
 
-Be sure to have [read and done the steps](https://ibm-cloud-architecture.github.io/refarch-kc/analysis/readme/) to prepare the IBM Cloud services and get a kubernetes cluster up and running. 
+Be sure to have [read and done the steps](https://ibm-cloud-architecture.github.io/refarch-kc/analysis/readme/) to prepare the IBM Cloud services and get a kubernetes cluster up and running.
 
 
 Once the two docker images are built, upload them to the IKS private registry
@@ -28,9 +28,9 @@ cd order-command-ms
 
 cd order-query-ms
 ./scripts/deployHelm MINIKUBE
-```   
+```
 
-* Verify the deployments and pods:  
+* Verify the deployments and pods:
 
 ```shell
 kubectl get deployments -n browncompute
@@ -41,7 +41,7 @@ kubectl get deployments -n browncompute
   | kc-ui              |  1  |  1  |  1   |  1  |     18h |
   | ordercommandms-deployment | 1  | 1  | 1  |  1  |   1d |
   | orderqueryms-deployment | 1  |   1 |  1  |  1  |   23h  |
-  | voyagesms-deployment |   1   |  1  |  1  |  1  |   19h |    
+  | voyagesms-deployment |   1   |  1  |  1  |  1  |   19h |
 
 
 ## Deploy to ICP
@@ -69,9 +69,20 @@ N/A
   - Example: `kubectl create secret generic eventstreams-apikey --from-literal=binding='z...12345...notanactualkey...67890...a'`
 
 **Perform the following for both `order-command-ms` and `order-query-ms` microservices:**
-1. Build and push Docker images **TODO**
-  1. Using Jenkfinsfile via pipeline
-  2. Manually
+1. Build and push Docker images
+  1. Create a Jenkins project, pointing to the remote GitHub repository for the Order Microservices, creating the necessary parameters:
+    - Create a String parameter named `REGISTRY` to determine a remote registry that is accessible from your cluster
+    - Create a String parameter named `REGISTRY_NAMESPACE` to describe the registry namespace to push image into
+    - Create a String parameter named `IMAGE_NAME` which should be self-expalantory
+    - Create a String parameter named `CONTEXT_DIR` to determine the correct working directory to work from inside the source code, with respect to the root of the repository
+    - Create a String parameter named `DOCKERFILE` to determine the desired Dockerfile to use to build the Docker image.  This is determined with respect to the `CONTEXT_DIR` parameter.
+    - Create a Credentials parameter named `REGISTRY_CREDENTIALS` and assign the necessary credentials to allow Jenkins to push the image to the remote repository
+  2. Manually build the Docker image and push it to a registry that is accessible from your cluster (Docker Hub, IBM Cloud Container Registry, manually deployed Quay instance):
+    - `docker build -t <private-registry>/<image-namespace>/order-command-ms:latest order-command-ms/`
+    - `docker build -t <private-registry>/<image-namespace>/order-query-ms:latest order-query-ms/`
+    - `docker login <private-registry>`
+    - `docker push <private-registry>/<image-namespace>/order-command-ms:latest`
+    - `docker push <private-registry>/<image-namespace>/order-query-ms:latest`
 3. Generate application YAMLs via `helm template`:
   - Parameters:
     - `--set image.repository=<private-registry>/<image-namespace>/<image-repository>`
