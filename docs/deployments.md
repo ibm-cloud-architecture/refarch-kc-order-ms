@@ -74,11 +74,11 @@ N/A
 
 **Perform the following for both `order-command-ms` and `order-query-ms` microservices:**
 1. Build and push Docker images
-  1. Create a Jenkins project, pointing to the remote GitHub repository for the Order Microservices, creating the necessary parameters:
+  1. Create a Jenkins project, pointing to the remote GitHub repository for the Order Microservices, creating the necessary parameters.  Refer to the individual microservice's `Jenkinsfile.NoKubernetesPlugin` for appropriate parameter values.
     - Create a String parameter named `REGISTRY` to determine a remote registry that is accessible from your cluster
     - Create a String parameter named `REGISTRY_NAMESPACE` to describe the registry namespace to push image into
-    - Create a String parameter named `IMAGE_NAME` which should be self-expalantory
-    - Create a String parameter named `CONTEXT_DIR` to determine the correct working directory to work from inside the source code, with respect to the root of the repository
+    - Create a String parameter named `IMAGE_NAME` which should be self-expalantory.  Default values should be correct.
+    - Create a String parameter named `CONTEXT_DIR` to determine the correct working directory to work from inside the source code, with respect to the root of the repository.
     - Create a String parameter named `DOCKERFILE` to determine the desired Dockerfile to use to build the Docker image.  This is determined with respect to the `CONTEXT_DIR` parameter.
     - Create a Credentials parameter named `REGISTRY_CREDENTIALS` and assign the necessary credentials to allow Jenkins to push the image to the remote repository
   2. Manually build the Docker image and push it to a registry that is accessible from your cluster (Docker Hub, IBM Cloud Container Registry, manually deployed Quay instance):
