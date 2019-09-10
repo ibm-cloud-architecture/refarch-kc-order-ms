@@ -50,7 +50,7 @@ spec:
           - name: KAFKA_APIKEY
             valueFrom:
               secretKeyRef:
-                name: eventstreams-apikey
+                name: "{{ .Values.eventstreams.apikeyConfigMap }}"
                 key: binding
           {{end}}
 {{- if .Values.generatedBindings.enabled }}

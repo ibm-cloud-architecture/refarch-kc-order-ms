@@ -39,6 +39,7 @@ generatedBindings:
   enabled: true
 eventstreams:
   brokersConfigMap: kafka-brokers
+  apikeyConfigMap: eventstreams-apikey
   #brokers:
   #  - kafka01-prod02.messagehub.services.us-south.bluemix.net:9093
   #  - kafka02-prod02.messagehub.services.us-south.bluemix.net:9093
