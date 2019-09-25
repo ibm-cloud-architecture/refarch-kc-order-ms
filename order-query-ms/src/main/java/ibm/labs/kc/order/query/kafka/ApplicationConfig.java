@@ -53,7 +53,7 @@ public class ApplicationConfig {
         properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-query-reload");
         return properties;
     }
-    
+
     public static Properties getContainerConsumerProperties(String groupid) {
         Properties properties = buildCommonProperties();
         properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupid);
@@ -105,6 +105,12 @@ public class ApplicationConfig {
             properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
             properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
             properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
+
+            if ("true".equals(env.get("TRUSTSTORE_ENABLED"))){
+              properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("TRUSTSTORE_PATH"));
+              properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
+            }
+            
         } else {
             if (env.get("KAFKA_BROKERS") == null) {
                 properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
