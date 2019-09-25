@@ -59,7 +59,7 @@ public class ApplicationConfig {
 
     /**
      * Take into account the environment variables if set
-     * 
+     *
      * @return common kafka properties
      */
     private static Properties buildCommonProperties() {
@@ -82,6 +82,12 @@ public class ApplicationConfig {
             properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
             properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
             properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
+
+            if ("true".equals(env.get("TRUSTSTORE_ENABLED"))){
+              properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("TRUSTSTORE_PATH"));
+              properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
+            }
+
         } else {
             if (env.get("KAFKA_BROKERS") == null) {
                 properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
