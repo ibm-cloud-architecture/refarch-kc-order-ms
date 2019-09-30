@@ -39,20 +39,6 @@ generatedBindings:
   enabled: true
 kafka:
   brokersConfigMap: kafka-brokers
-
-eventstreams:
-  brokersConfigMap: kafka-brokers
-  apikeyConfigMap: eventstreams-apikey
-  env: IBMCLOUD
-java:
-  truststore:
-    enabled: false
-    pathName: /opt/ibm/wlp/usr/shared/resources/es-ssl
-    fileName: es-cert.jks
-    secretName: es-truststore-jks
-    pwd: changeit
-
-
 eventstreams:
   enabled: true
   apikeyConfigMap: eventstreams-apikey
