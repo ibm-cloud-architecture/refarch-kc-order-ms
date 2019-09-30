@@ -37,8 +37,6 @@ spec:
             value: "{{ .Values.service.servicePort }}"
           - name: APPLICATION_NAME
             value: "{{ .Release.Name }}"
-          #- name: KAFKA_ENV
-          #  value: "{{ .Values.eventstreams.env }}"
           - name: KAFKA_BROKERS
             valueFrom:
               configMapKeyRef:
