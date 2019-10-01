@@ -37,22 +37,38 @@ spec:
             value: "{{ .Values.service.servicePort }}"
           - name: APPLICATION_NAME
             value: "{{ .Release.Name }}"
-          - name: KAFKA_ENV
-            value: "{{ .Values.eventstreams.env }}"
           - name: KAFKA_BROKERS
             valueFrom:
               configMapKeyRef:
-                name: "{{ .Values.eventstreams.brokersConfigMap }}"
+                name: "{{ .Values.kafka.brokersConfigMap }}"
                 key: brokers
-          - name: TRUSTSTORE_PWD
-            value: "{{ .Values.java.truststore.pwd }}"
-          {{if or (eq .Values.eventstreams.env "IBMCLOUD") (eq .Values.eventstreams.env "ICP")}}
+          {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:
               secretKeyRef:
                 name: "{{ .Values.eventstreams.apikeyConfigMap }}"
                 key: binding
-          {{end}}
+          {{- end }}
+          {{- if .Values.eventstreams.truststoreRequired }}
+          - name: TRUSTSTORE_ENABLED
+            value: "{{ .Values.eventstreams.truststoreRequired }}"
+          - name: TRUSTSTORE_PWD
+            value: "{{ .Values.eventstreams.truststorePassword }}"
+          - name: TRUSTSTORE_PATH
+            value: "{{ .Values.eventstreams.truststorePath }}/{{ .Values.eventstreams.truststoreFile }}"
+          {{- end }}
 {{- if .Values.generatedBindings.enabled }}
 {{.Files.Get "bindings.yaml" | indent 10 }}
 {{- end }}
+        {{- if .Values.eventstreams.truststoreRequired }}
+        volumeMounts:
+          - mountPath: "{{ .Values.eventstreams.truststorePath }}"
+            name: eventstreams-truststore
+            readOnly: true
+        {{- end }}
+      {{- if .Values.eventstreams.truststoreRequired }}
+      volumes:
+        - name: eventstreams-truststore
+          secret:
+            secretName: "{{ .Values.eventstreams.truststoreSecret }}"
+      {{- end }}

@@ -37,14 +37,14 @@ istio:
   weight: 100
 generatedBindings:
   enabled: true
-eventstreams:
+kafka:
   brokersConfigMap: kafka-brokers
+eventstreams:
+  enabled: true
   apikeyConfigMap: eventstreams-apikey
-  #brokers:
-  #  - kafka01-prod02.messagehub.services.us-south.bluemix.net:9093
-  #  - kafka02-prod02.messagehub.services.us-south.bluemix.net:9093
-  env: IBMCLOUD
-java:
-  truststore:
-    pwd: changeit
+  truststoreRequired: false
+  truststorePath: /config/resources/security/es-ssl
+  truststoreFile: es-cert.jks
+  truststoreSecret: es-truststore-jks
+  truststorePassword: changeit
 serviceAccountName: default

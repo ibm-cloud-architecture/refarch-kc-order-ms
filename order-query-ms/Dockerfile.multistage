@@ -15,7 +15,7 @@ WORKDIR /local/gitrepo
 COPY src/ /local/gitrepo/src
 COPY pom.xml /local/gitrepo/pom.xml
 
-RUN mvn install -DskipITs
+RUN mvn install -DskipTests=true
 
 ### Stage 2 - Docker Build
 FROM websphere-liberty:19.0.0.3-microProfile2
