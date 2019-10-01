@@ -23,14 +23,14 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.AssignContainerEvent;
 import ibm.gse.orderms.infrastructure.command.events.AssignOrderEvent;
 import ibm.gse.orderms.infrastructure.command.events.CancelOrderEvent;
+import ibm.gse.orderms.infrastructure.events.Cancellation;
+import ibm.gse.orderms.infrastructure.events.ContainerAssignment;
 import ibm.gse.orderms.infrastructure.events.Event;
 import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.VoyageAssignment;
 import ibm.gse.orderms.infrastructure.repository.OrderRepository;
 import ibm.gse.orderms.infrastructure.repository.OrderRepositoryMock;
-import ibm.labs.kc.order.command.model.Cancellation;
-import ibm.labs.kc.order.command.model.ContainerAssignment;
-import ibm.labs.kc.order.command.model.VoyageAssignment;
 
 
 public class OrderEventAgent implements EventListener {

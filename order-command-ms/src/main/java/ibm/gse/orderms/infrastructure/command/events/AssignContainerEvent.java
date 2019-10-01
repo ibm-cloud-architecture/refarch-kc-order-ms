@@ -1,7 +1,7 @@
 package ibm.gse.orderms.infrastructure.command.events;
 
+import ibm.gse.orderms.infrastructure.events.ContainerAssignment;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.labs.kc.order.command.model.ContainerAssignment;
 
 public class AssignContainerEvent extends OrderEvent {
 

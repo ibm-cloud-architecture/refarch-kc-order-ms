@@ -3,9 +3,9 @@ package ibm.gse.orderms.domain.model.order;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ibm.labs.kc.order.command.model.Cancellation;
-import ibm.labs.kc.order.command.model.ContainerAssignment;
-import ibm.labs.kc.order.command.model.VoyageAssignment;
+import ibm.gse.orderms.infrastructure.events.Cancellation;
+import ibm.gse.orderms.infrastructure.events.ContainerAssignment;
+import ibm.gse.orderms.infrastructure.events.VoyageAssignment;
 
 public class ShippingOrder {
 

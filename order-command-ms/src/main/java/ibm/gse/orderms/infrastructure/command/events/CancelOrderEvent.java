@@ -1,7 +1,7 @@
 package ibm.gse.orderms.infrastructure.command.events;
 
+import ibm.gse.orderms.infrastructure.events.Cancellation;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.labs.kc.order.command.model.Cancellation;
 
 public class CancelOrderEvent extends OrderEvent {
 

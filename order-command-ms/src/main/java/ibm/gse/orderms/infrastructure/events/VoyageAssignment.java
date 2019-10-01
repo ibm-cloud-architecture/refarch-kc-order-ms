@@ -1,4 +1,4 @@
-package ibm.labs.kc.order.command.model;
+package ibm.gse.orderms.infrastructure.events;
 
 public class VoyageAssignment {
 

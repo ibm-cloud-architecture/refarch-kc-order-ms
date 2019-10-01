@@ -73,7 +73,7 @@ public class ApplicationConfig {
         }
         properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, env.get("KAFKA_BROKERS"));
 
-    		if (env.get("KAFKA_APIKEY") != null) {
+    	if (env.get("KAFKA_APIKEY") != null) {
           properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
           properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
           properties.put(SaslConfigs.SASL_JAAS_CONFIG,
