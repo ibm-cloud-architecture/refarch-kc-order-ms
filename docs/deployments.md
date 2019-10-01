@@ -104,7 +104,7 @@ N/A
     - `--output-dir <local-template-directory>`
   - Example using Event Streams via ICP4I:
    ```shell
-   helm template --set image.repository=rhos-quay.internal-network.local/browncompute/order-command-ms --set image.pullSecret= --set kafka.brokersConfigMap=es-kafka-brokers --set eventstreams.enabled=true --set eventstreams.apikeyConfigMap=es-eventstreams-apikey --set serviceAccountName=kcontainer-runtime --set eventstreams.truststoreRequired=true --set eventstreams.truststoreSecret=es-ca-pemfile --set eventstreams.truststorePassword=password --output-dir templates --namespace eda-pipelines-sandbox chart/ordercommandms
+   helm template --set image.repository=rhos-quay.internal-network.local/browncompute/order-command-ms --set image.pullSecret= --set kafka.brokersConfigMap=es-kafka-brokers --set eventstreams.enabled=true --set eventstreams.apikeyConfigMap=es-eventstreams-apikey --set serviceAccountName=kcontainer-runtime --set eventstreams.truststoreRequired=true --set eventstreams.truststoreSecret=es-truststore-jks --set eventstreams.truststorePassword=password --output-dir templates --namespace eda-pipelines-sandbox chart/ordercommandms
    ```
   - Example using Event Streams hosted on IBM Cloud:
    ```shell
