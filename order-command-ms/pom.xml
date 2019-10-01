@@ -152,7 +152,7 @@
         <dependency>
 		    <groupId>org.mockito</groupId>
 		    <artifactId>mockito-core</artifactId>
-		    <version>2.23.4</version>
+		    <version>3.0.0</version>
 		    <scope>test</scope>
 		</dependency>
         
@@ -261,8 +261,12 @@
                             </includes>
                             <systemPropertyVariables>
                                 <liberty.test.port>${testServerHttpPort}</liberty.test.port>
-                                <war.context>${warContext}</war.context>
+                                <war.context>${warContext}</war.context>                     
                             </systemPropertyVariables>
+                            <environmentVariables>
+                                <KAFKA_BROKERS>${KAFKA_BROKERS}</KAFKA_BROKERS>
+                                <KAFKA_APIKEY>${KAFKA_APIKEY}</KAFKA_APIKEY>
+                           </environmentVariables>
                         </configuration>
                     </execution>
                     <execution>

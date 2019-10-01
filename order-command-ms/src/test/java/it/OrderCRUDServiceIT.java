@@ -23,13 +23,13 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.command.dto.OrderCreate;
-import ibm.labs.kc.order.command.dto.OrderUpdate;
-import ibm.labs.kc.order.command.kafka.ApplicationConfig;
-import ibm.labs.kc.order.command.model.Address;
-import ibm.labs.kc.order.command.model.Order;
-import ibm.labs.kc.order.command.model.events.CreateOrderEvent;
-import ibm.labs.kc.order.command.model.events.OrderEvent;
+import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
+import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
+import ibm.gse.orderms.domain.model.order.Address;
+import ibm.gse.orderms.domain.model.order.ShippingOrder;
+import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.kafka.ApplicationConfig;
 
 public class OrderCRUDServiceIT extends CommonITTest {
 
@@ -39,7 +39,7 @@ public class OrderCRUDServiceIT extends CommonITTest {
         System.out.println("Testing create order " + url);
 
         Address address = new Address("street", "city", "county", "state", "zipcode");
-        OrderCreate cor = new OrderCreate();
+        ShippingOrderCreateParameters cor = new ShippingOrderCreateParameters();
         cor.setProductID("myProductID");
         cor.setCustomerID("GoodManuf");
         cor.setQuantity(100);
@@ -56,7 +56,7 @@ public class OrderCRUDServiceIT extends CommonITTest {
             assertTrue(response.hasEntity());
             String responseString = response.readEntity(String.class);
 
-            Order o = new Gson().fromJson(responseString, Order.class);
+            ShippingOrder o = new Gson().fromJson(responseString, ShippingOrder.class);
             assertNotNull(o.getOrderID());
             assertEquals(cor.getProductID(), o.getProductID());
             assertEquals(cor.getQuantity(), o.getQuantity());
@@ -80,7 +80,7 @@ public class OrderCRUDServiceIT extends CommonITTest {
 
     @Test
     public void testCreateBadOrderNegativeQuantity() throws Exception {
-        OrderCreate cor = new OrderCreate();
+        ShippingOrderCreateParameters cor = new ShippingOrderCreateParameters();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
         cor.setPickupDate("2019-01-14T17:48Z");
         cor.setProductID("myProductID");
@@ -106,11 +106,11 @@ public class OrderCRUDServiceIT extends CommonITTest {
         Properties properties = ApplicationConfig.getProducerProperties("testUpdateSuccess");
 
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
+        ShippingOrder order = new ShippingOrder(orderID, "productId", "custId", 2,
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z",
-                Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+                ShippingOrder.PENDING_STATUS);
+        OrderEvent event = new OrderCreatedEvent(System.currentTimeMillis(), "1", order);
 
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
             String value = new Gson().toJson(event);
@@ -121,7 +121,7 @@ public class OrderCRUDServiceIT extends CommonITTest {
             future.get(10000, TimeUnit.MILLISECONDS);
         }
 
-        OrderUpdate cor = new OrderUpdate();
+        ShippingOrderUpdateParameters cor = new ShippingOrderUpdateParameters();
         cor.setOrderID(orderID);
         cor.setProductID("myProductID");
         cor.setCustomerID("GoodManuf");
@@ -142,7 +142,7 @@ public class OrderCRUDServiceIT extends CommonITTest {
                 String responseString = response.readEntity(String.class);
                 System.out.println(responseString);
 
-                Order o = new Gson().fromJson(responseString, Order.class);
+                ShippingOrder o = new Gson().fromJson(responseString, ShippingOrder.class);
                 assertEquals(orderID, o.getOrderID());
                 assertEquals(cor.getProductID(), o.getProductID());
                 assertEquals(cor.getQuantity(), o.getQuantity());
@@ -167,11 +167,11 @@ public class OrderCRUDServiceIT extends CommonITTest {
         Properties properties = ApplicationConfig.getProducerProperties("testUpdateSuccess");
 
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
+        ShippingOrder order = new ShippingOrder(orderID, "productId", "custId", 2,
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z",
                 "notPendingStatus");
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+        OrderEvent event = new OrderCreatedEvent(System.currentTimeMillis(), "1", order);
 
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
             String value = new Gson().toJson(event);
@@ -182,7 +182,7 @@ public class OrderCRUDServiceIT extends CommonITTest {
             future.get(10000, TimeUnit.MILLISECONDS);
         }
 
-        OrderUpdate cor = new OrderUpdate();
+        ShippingOrderUpdateParameters cor = new ShippingOrderUpdateParameters();
         cor.setOrderID(orderID);
         cor.setProductID("myProductID");
         cor.setCustomerID("GoodManuf");

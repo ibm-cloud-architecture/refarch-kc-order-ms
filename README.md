@@ -1,8 +1,8 @@
 # Reefer Container Shipment Order Management
 
-This project is one reference implementation of the CQRS and event sourcing patterns as part of the [Event Driven Architecture](https://github.com/ibm-cloud-architecture/refarch-eda) reference architecture. From a use case point of view, it implements one of the [K Container shipment process](https://github.com/ibm-cloud-architecture/refarch-kc) microservices. This repository aims to support the order management for the order from the manufacturer to the shipping company. The business process is defined [here](https://ibm-cloud-architecture.github.io/refarch-kc/introduction/).
+This project is one reference implementation of the CQRS and event sourcing patterns as part of the [Event Driven Architecture](https://github.com/ibm-cloud-architecture/refarch-eda) reference architecture. From a use case point of view, it implements the order subdomain of[Reefer Container shipment process](https://github.com/ibm-cloud-architecture/refarch-kc). This repository aims to support the order management to ship fresh cargo from the manufacturer to the final destinatio. The business process is defined [here](https://ibm-cloud-architecture.github.io/refarch-kc/introduction/).
 
-For better reading experience go to [the book view.](http://ibm-cloud-architecture.github.io/refarch-kc-order-ms)
+For better reading experience go to [the book view here.](http://ibm-cloud-architecture.github.io/refarch-kc-order-ms)
 
 ---
 

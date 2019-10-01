@@ -21,11 +21,11 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.command.kafka.ApplicationConfig;
-import ibm.labs.kc.order.command.model.Address;
-import ibm.labs.kc.order.command.model.Order;
-import ibm.labs.kc.order.command.model.events.CreateOrderEvent;
-import ibm.labs.kc.order.command.model.events.OrderEvent;
+import ibm.gse.orderms.domain.model.order.Address;
+import ibm.gse.orderms.domain.model.order.ShippingOrder;
+import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.kafka.ApplicationConfig;
 
 public class OrderServiceAdminIT {
 
@@ -39,11 +39,11 @@ public class OrderServiceAdminIT {
         Properties properties = ApplicationConfig.getProducerProperties("testGetById");
 
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-        Order order = new Order(orderID, "productId", "custId", 2,
+        ShippingOrder order = new ShippingOrder(orderID, "productId", "custId", 2,
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z",
-                Order.PENDING_STATUS);
-        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
+                ShippingOrder.PENDING_STATUS);
+        OrderEvent event = new OrderCreatedEvent(System.currentTimeMillis(), "1", order);
 
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
             String value = new Gson().toJson(event);
@@ -60,8 +60,8 @@ public class OrderServiceAdminIT {
             Response response = makeGetRequest(url);
             if (response.getStatus() == 200) {
                 String responseString = response.readEntity(String.class);
-                Order[] orders = new Gson().fromJson(responseString, Order[].class);
-                for (Order o : orders) {
+                ShippingOrder[] orders = new Gson().fromJson(responseString, ShippingOrder[].class);
+                for (ShippingOrder o : orders) {
                     if (orderID.equals(o.getOrderID())) {
                         assertEquals(order, o);
                         ok = true;

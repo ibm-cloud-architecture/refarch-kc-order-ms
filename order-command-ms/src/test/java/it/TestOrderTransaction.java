@@ -18,10 +18,10 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import ibm.labs.kc.order.command.dto.OrderCreate;
-import ibm.labs.kc.order.command.kafka.ApplicationConfig;
-import ibm.labs.kc.order.command.model.Address;
-import ibm.labs.kc.order.command.model.Order;
+import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
+import ibm.gse.orderms.domain.model.order.Address;
+import ibm.gse.orderms.domain.model.order.ShippingOrder;
+import ibm.gse.orderms.infrastructure.kafka.ApplicationConfig;
 
 /**
  * This test is to validate SAGA pattern among the order, voyage and container services
@@ -45,7 +45,7 @@ public class TestOrderTransaction extends CommonITTest {
         Address addressP = new Address("street", "Oakland", "county", "state", "zipcode");
 	    Address addressD = new Address("street", "Shanghai", "county", "state", "zipcode");
 		      
-	    OrderCreate cor = new OrderCreate();
+	    ShippingOrderCreateParameters cor = new ShippingOrderCreateParameters();
         cor.setProductID("itgTestProduct");
         cor.setCustomerID("TestManuf");
         cor.setQuantity(100);
@@ -61,7 +61,7 @@ public class TestOrderTransaction extends CommonITTest {
 	        assertTrue(response.hasEntity());
 	        String responseString = response.readEntity(String.class);
 
-            Order o = new Gson().fromJson(responseString, Order.class);
+            ShippingOrder o = new Gson().fromJson(responseString, ShippingOrder.class);
             assertNotNull(o.getOrderID());
             orderID=o.getOrderID();
             assertEquals(o.getStatus(), "pending");
@@ -97,7 +97,7 @@ public class TestOrderTransaction extends CommonITTest {
         Thread.sleep(10000);
         // 3 verify the status is now assigned as there is a voyage
         Response res = makeGetRequest(url + "/" + orderID);
-        Order o = new Gson().fromJson(res.readEntity(String.class), Order.class);
+        ShippingOrder o = new Gson().fromJson(res.readEntity(String.class), ShippingOrder.class);
         assertEquals("assigned",o.getStatus());
         // the voyage ID is set on the query side of the order service.
         // 4- now allocate the container: the container service is listening to event that the voyage id is assigned to container id so it search for a container and assiend it.
@@ -120,7 +120,7 @@ public class TestOrderTransaction extends CommonITTest {
         Thread.sleep(10000);
         // 5 verify the status is now assigned as there is a voyage
         res = makeGetRequest(url + "/" + orderID);
-        o = new Gson().fromJson(res.readEntity(String.class), Order.class);
+        o = new Gson().fromJson(res.readEntity(String.class), ShippingOrder.class);
         assertEquals("container-allocated",o.getStatus());
 	}
 

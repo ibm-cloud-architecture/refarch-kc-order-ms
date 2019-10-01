@@ -1,21 +1,27 @@
 # Reefer Container Shipment Order Management Service
 
 !!! abstract
-    This project is demonstrating, one of the possible implementation of the Command Query Responsibility Segregation and event sourcing patterns applied to container shipment order management service. It is part of the Event Driven Architecture [solution implementation](https://ibm-cloud-architecture.github.io/refarch-kc) reference architecture. From a use case point of view, it implements the order management component, responsible to manage the full life cycle of a shipment order issued by a manufacturer who want to ship fresh goods overseas. The business process is defined [here](https://ibm-cloud-architecture.github.io/refarch-kc/introduction/).
+    This project is demonstrating, one of the possible implementation of the Command Query Responsibility Segregation and event sourcing patterns applied to Reefer shipment order subdomain. It is part of the Event Driven Architecture [solution implementation](https://ibm-cloud-architecture.github.io/refarch-kc). From a use case point of view, it implements the order management component, responsible to manage the full life cycle of a shipment order issued by a manufacturer who wants to ship fresh goods overseas. The business process is defined [here](https://ibm-cloud-architecture.github.io/refarch-kc/introduction/). We are also presenting one way of applying Domain Drive Design practice for this subdomain.
 
-One of the business requirements for adopting event sourcing and CQRS patterns is to be able to get visibility to the history of orders and track the good shipment progress over time. This would include the ability to determine: 
+The key business requirements we need to support are:
 
-1. How frequently does an order get cancelled after it is placed but before an empty container is delivered to pick up location or loaded ?
-1. How often does an order get cancelled after the order is confirmed, a container assigned and goods loaded into it?
-1. What are all events for a particular order and associated container shipment?  
-1. Has the cold chain been protected on this particular order?
-1. How long it takes to deliver a container to pick up location?
+* Be able to book a fresh product shipment order, including the allocation of the voyage and the reefer container to the expected cargo.
+* Be able to understand what happen to the order over time: 
+    * How frequently does an order get cancelled after it is placed but before an empty container is delivered to pick up location or loaded ?
+    * Track key issue or step in the reefer shipment process
+    * How often does an order get cancelled after the order is confirmed, a container assigned and goods loaded into it?
+* Be able to support adhoc query on the order that span across subdomains of the shipment domain. 
+    * What are all events for a particular order and associated container shipment?  
+    * Has the cold chain been protected on this particular order?
+    * How long it takes to deliver a fresh food order from california to China?
 
-To answer those questions we need to keep historical information of each orders and its events. Event sourcing is to pattern of choice for that. 
+Those requirements force use to consider event sourcing (understanding facts about the order over time) and CQRS patterns to separate queries from command so our architecture will be more flexible and may address different sclaing requirements.  
+
+## Applying Domain Driven Design
 
 We are detailing, in a [separate note](ddd-applied.md), how to go from the event storming produced elements to the microservice implementation by applying the domain-driven design approach.
 
-## Implementation approach
+## Implementation considerations
 
 As introduced in the [solution high level design note](https://ibm-cloud-architecture.github.io/refarch-kc/design/readme/) the order entity life cycle looks like in the following diagram:
 
