@@ -43,7 +43,7 @@ public class ErrorProducer implements EventEmitter {
     @Override
     public void safeClose() {
         try {
-            kafkaProducer.close(ApplicationConfig.PRODUCER_CLOSE_TIMEOUT_SEC, TimeUnit.SECONDS);
+            kafkaProducer.close();
         } catch (Exception e) {
             logger.warn("Failed to close Producer", e);
         }

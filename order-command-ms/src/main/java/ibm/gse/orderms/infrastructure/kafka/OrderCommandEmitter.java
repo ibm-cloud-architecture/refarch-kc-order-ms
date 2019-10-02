@@ -54,15 +54,16 @@ public class OrderCommandEmitter implements EventEmitter  {
 	@Override
 	public void emit(Event event) throws Exception {
 
-		OrderCommandEvent orderEvent = (OrderCommandEvent)event;
+		OrderCommandEvent orderCommandEvent = (OrderCommandEvent)event;
         String key = null;
         String value = null;
-        switch (orderEvent.getType()) {
+        switch (orderCommandEvent.getType()) {
         case OrderCommandEvent.TYPE_CREATE_ORDER:
-            key = ((CreateOrderCommandEvent)orderEvent).getPayload().getOrderID();
-            value = new Gson().toJson((CreateOrderCommandEvent)orderEvent);
+            key = ((CreateOrderCommandEvent)orderCommandEvent).getPayload().getOrderID();
+            value = new Gson().toJson((CreateOrderCommandEvent)orderCommandEvent);
             break;
         case OrderCommandEvent.TYPE_UPDATE_ORDER:
+        	// TODO
             break;
         default:
             key = null;

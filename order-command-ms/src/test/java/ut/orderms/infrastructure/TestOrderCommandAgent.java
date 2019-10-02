@@ -47,6 +47,7 @@ public class TestOrderCommandAgent {
 
 	@Test
 	public void shouldReceiveACommandEvent() {
+		
 		KafkaConsumerMockup kcm = new KafkaConsumerMockup(ApplicationConfig.getConsumerProperties("tests"));
 		OrderCommandAgent agent = new OrderCommandAgent(new OrderRepositoryMock(),kcm);
 		List<OrderCommandEvent> results = agent.poll();
