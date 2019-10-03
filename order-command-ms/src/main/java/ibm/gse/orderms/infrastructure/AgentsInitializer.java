@@ -35,7 +35,7 @@ public class AgentsInitializer implements ServletContextListener{
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("@@@ Order Command contextInitialized v0.0.5, start agents");
+        logger.info("@@@ Order Command contextInitialized v0.0.6, start agents");
         executor = Executors.newFixedThreadPool(2);
         orderEventRunner = new OrderEventRunner();
         orderCommandRunner = new OrderCommandRunner();  

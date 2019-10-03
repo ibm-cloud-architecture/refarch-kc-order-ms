@@ -13,7 +13,8 @@ import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandEmitter;
-import ibm.gse.orderms.infrastructure.repository.OrderRepositoryMock;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 import ut.ShippingOrderTestDataFactory;
 
 /**
@@ -30,13 +31,13 @@ public class TestOrderResource  {
 	
 	@BeforeClass
 	public static void prepareTests() {
-		serv = new ShippingOrderService(orderCommandProducerMock,OrderRepositoryMock.instance());
+		serv = new ShippingOrderService(orderCommandProducerMock,ShippingOrderRepositoryMock.instance());
 		resource = new ShippingOrderResource(serv);
 	}
 
 	
 	@Test
-	public void testCreateOrderWithoutProductIDUsingResource() {
+	public void shouldRejectOrderCreationForOrderWithoutProductID() {
 		ShippingOrderCreateParameters orderDTO = new ShippingOrderCreateParameters();
 		Response rep = resource.createOrder(orderDTO);
 		Assert.assertNotNull(rep);
@@ -46,7 +47,7 @@ public class TestOrderResource  {
 	
 	
 	@Test
-	public void testCreateOrderWithoutCustomerIDUsingResource() {
+	public void shouldRejectOrderCreationForOrderWithoutCustomerID() {
 		ShippingOrderCreateParameters orderDTO = new ShippingOrderCreateParameters();
 		orderDTO.setProductID("TestProduct");
 		Response rep = resource.createOrder(orderDTO);
@@ -57,11 +58,14 @@ public class TestOrderResource  {
 	}
 	
 	@Test
-	public void testCreateOrderUsingResource() {
+	public void shouldCreateOrder() {
 		ShippingOrderCreateParameters orderDTO = ShippingOrderTestDataFactory.orderCreateFixtureWithoutID();
 		Response rep = resource.createOrder(orderDTO);
 		Assert.assertNotNull(rep);
-		Assert.assertTrue(rep.getStatus() == 200);		
+		Assert.assertTrue(rep.getStatus() == 200);	
+		String orderID=((String)rep.getEntity());
+		ShippingOrderRepository repository = ShippingOrderRepositoryMock.instance();
+		repository.getByID(orderID);
 	}
 
 }

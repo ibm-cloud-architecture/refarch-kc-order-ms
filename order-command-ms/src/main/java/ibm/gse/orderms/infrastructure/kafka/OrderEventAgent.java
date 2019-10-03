@@ -29,15 +29,15 @@ import ibm.gse.orderms.infrastructure.events.Event;
 import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.VoyageAssignment;
-import ibm.gse.orderms.infrastructure.repository.OrderRepository;
-import ibm.gse.orderms.infrastructure.repository.OrderRepositoryMock;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
 
 public class OrderEventAgent implements EventListener {
     private static final Logger logger = LoggerFactory.getLogger(OrderEventAgent.class.getName());
     private final KafkaConsumer<String, String> kafkaConsumer;
     private final KafkaConsumer<String, String> reloadConsumer;
-    private final OrderRepository orderRepository; 
+    private final ShippingOrderRepository orderRepository; 
     
     private boolean initDone = false;
     private OffsetAndMetadata reloadLimit;
@@ -49,7 +49,7 @@ public class OrderEventAgent implements EventListener {
 
         Properties reloadProperties = ApplicationConfig.getConsumerReloadProperties("ordercmd-order-reload-consumer");
         reloadConsumer = new KafkaConsumer<String, String>(reloadProperties);
-        orderRepository = new OrderRepositoryMock();
+        orderRepository = new ShippingOrderRepositoryMock();
     }
     
     

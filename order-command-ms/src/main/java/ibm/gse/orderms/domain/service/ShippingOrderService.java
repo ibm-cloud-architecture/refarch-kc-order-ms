@@ -12,21 +12,21 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.CreateOrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandEmitter;
-import ibm.gse.orderms.infrastructure.repository.OrderRepository;
-import ibm.gse.orderms.infrastructure.repository.OrderRepositoryMock;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
 public class ShippingOrderService {
 	static final Logger logger = LoggerFactory.getLogger(ShippingOrderService.class);
 	   
 	private EventEmitter emitter;
-	private OrderRepository orderRepository = null;
+	private ShippingOrderRepository orderRepository = null;
 	
 	public ShippingOrderService() {
 		this.emitter = OrderCommandEmitter.instance();
-		this.orderRepository = OrderRepositoryMock.instance();
+		this.orderRepository = ShippingOrderRepositoryMock.instance();
 	}
 	
-	public ShippingOrderService(EventEmitter emitter, OrderRepository orderRepository){
+	public ShippingOrderService(EventEmitter emitter, ShippingOrderRepository orderRepository){
 		this.emitter = emitter;
 		this.orderRepository = orderRepository;
 	}

@@ -13,7 +13,7 @@ import ibm.gse.orderms.infrastructure.command.events.CreateOrderCommandEvent;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.Event;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.repository.OrderRepositoryMock;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
 public class TestOrderLifeCycle {
 
@@ -59,9 +59,9 @@ public class TestOrderLifeCycle {
 	 static OrderCommandProducerMock orderProducerMock ;
 	
 	 @Before
-	 public  void setUpBeforeClass() throws Exception {
+	 public  void setUpBeforeTest() throws Exception {
 		 orderProducerMock = this.new OrderCommandProducerMock();
-		 serv = new ShippingOrderService(orderProducerMock, OrderRepositoryMock.instance());
+		 serv = new ShippingOrderService(orderProducerMock, ShippingOrderRepositoryMock.instance());
 	 }
 
 	@Test

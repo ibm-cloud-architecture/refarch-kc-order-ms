@@ -4,6 +4,12 @@ import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 
+/**
+ * A factory to generate test fixtures
+ * 
+ * @author jerome boyer
+ *
+ */
 public class ShippingOrderTestDataFactory {
 
 	

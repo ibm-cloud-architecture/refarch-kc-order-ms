@@ -17,22 +17,22 @@ import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.command.events.UpdateOrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.Event;
 import ibm.gse.orderms.infrastructure.events.EventListener;
-import ibm.gse.orderms.infrastructure.repository.OrderRepository;
-import ibm.gse.orderms.infrastructure.repository.OrderRepositoryMock;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
 public class OrderCommandAgent implements EventListener {
 	  private static final Logger logger = LoggerFactory.getLogger(OrderCommandAgent.class.getName());
 	  
 	  private final KafkaConsumer<String, String> kafkaConsumer;
-	  private final OrderRepository orderRepository; 
+	  private final ShippingOrderRepository orderRepository; 
 	  
 	  public OrderCommandAgent() {
 	      Properties properties = ApplicationConfig.getConsumerProperties("ordercmd-command-consumer");
 	      this.kafkaConsumer = new KafkaConsumer<String, String>(properties);
-	      this.orderRepository = new OrderRepositoryMock();
+	      this.orderRepository = new ShippingOrderRepositoryMock();
 	  }
 	  
-	  public OrderCommandAgent(OrderRepository repo, KafkaConsumer<String, String>  kafka) {
+	  public OrderCommandAgent(ShippingOrderRepository repo, KafkaConsumer<String, String>  kafka) {
 		  this.kafkaConsumer = kafka;
 		  this.orderRepository = repo;
 	  }

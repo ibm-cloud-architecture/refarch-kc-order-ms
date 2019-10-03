@@ -1,8 +1,6 @@
 package ut.orderms.infrastructure;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -11,15 +9,14 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import ibm.gse.orderms.app.dto.ShippingOrderDTO;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.repository.OrderRepository;
-import ibm.gse.orderms.infrastructure.repository.OrderRepositoryMock;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
+import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
 public class TestShippingOrderRepository {
 	
-	public static  OrderRepository repository = OrderRepositoryMock.instance();
+	public static  ShippingOrderRepository repository = ShippingOrderRepositoryMock.instance();
 
 	/**
 	 * At the repository level the ShippingOrder Entity is valid.

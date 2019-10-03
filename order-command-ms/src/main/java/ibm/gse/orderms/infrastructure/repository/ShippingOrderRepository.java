@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 
-public interface OrderRepository {
+public interface ShippingOrderRepository {
 
     public void addNewShippingOrder(ShippingOrder order);
     public void update(ShippingOrder order);

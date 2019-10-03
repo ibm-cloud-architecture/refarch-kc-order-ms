@@ -11,20 +11,20 @@ import org.slf4j.LoggerFactory;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 
-public class OrderRepositoryMock implements OrderRepository {
-    private static final Logger logger = LoggerFactory.getLogger(OrderRepositoryMock.class);
+public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
+    private static final Logger logger = LoggerFactory.getLogger(ShippingOrderRepositoryMock.class);
     private final Map<String, ShippingOrder> orders;
 
-    private static OrderRepositoryMock instance;
+    private static ShippingOrderRepositoryMock instance;
 
-    public synchronized static OrderRepository instance() {
+    public synchronized static ShippingOrderRepository instance() {
         if (instance == null) {
-            instance = new OrderRepositoryMock();
+            instance = new ShippingOrderRepositoryMock();
         }
         return instance;
     }
 
-    public OrderRepositoryMock() {
+    public ShippingOrderRepositoryMock() {
         orders = new ConcurrentHashMap<>();
     }
 

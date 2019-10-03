@@ -1,11 +1,9 @@
 # Build and run the order microsercives locally
 
-We support different deployment models: local with docker-compose, local with minikube, and remote using kubernetes on IBM Cloud (IKS), or on IBM Cloud private. To build and run we are proposing some scripts. Each script accepts an argument:
+We support different deployment models: local with docker-compose, and remote using kubernetes on IBM Cloud (IKS), or on Openshift. To build and run we are proposing some scripts. Each script accepts an argument:
 
 * LOCAL (default is argument is omitted)
-* MINIKUBE
 * IBM_CLOUD
-* ICP
 
 This argument is really used to set environment variables used in the code in a separate script under the `refarch-kc` project and the `scripts` folder.
 
@@ -24,22 +22,22 @@ You can have the following software already installed on your computer or use [o
 
 You need to build each microservices independently using maven.
 
-Each microservice has its ownbuild script to perform the maven package and build the docker image. See `scripts` folder under each project.
+Each microservice has its own build script to perform the maven package and build the docker image. See `scripts` folder under each project.
 
 * For order-command-ms
 
  ```
  cd order-command-ms
- ./scripts/buildDocker.sh MINIKUBE
+ ./scripts/buildDocker.sh IBMCLOUD
  ```
 
 * For order-query-ms
  ```
- ./scripts/buildDocker.sh MINIKUBE
+ ./scripts/buildDocker.sh IBMCLOUD
  ```
 
 !!! note
-        The build scripts test if the javatool docker image exists and they use it, if found, otherwie they use maven.
+        The build scripta test if the javatool docker image exists and if so they use it, otherwie they use maven.
         If you want to use docker compose use LOCAL as parameter.
 
 * Verify the docker images are created
@@ -60,25 +58,6 @@ mvn liberty:run-server
 ```
 
 But as soon as you need to run integration tests with kafka you need all services up and running.
-
-### On Minikube
-
-For the order command microservice:
-
-```
-cd order-command-ms
-
-helm install chart/ordercommandms/ --name ordercmd --set image.repository=ibmcase/kc-ordercommandms --set image.pullSecret= --set image.pullPolicy=Never --set eventstreams.brokers=kafkabitmani:9092 --set eventstreams.env=MINIKUBE --namespace greencompute
-```
-
-or use the command: `./scripts/deployHelm MINIKUBE`
-
-Without any previously tests done, the call below should return an empty array: `[]`
-```
-curl http://localhost:31200/orders
-```
-
-We will present some integration tests in a section below.
 
 ### With docker compose
 
