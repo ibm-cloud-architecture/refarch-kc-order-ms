@@ -24,6 +24,8 @@ You need to build each microservices independently using maven.
 
 Each microservice has its own build script to perform the maven package and build the docker image. See `scripts` folder under each project.
 
+Any microservice in this repository can be compiled, unit tested and packaged as war file using maven: `mvn package`
+
 * For order-command-ms
 
  ```
@@ -51,7 +53,12 @@ ibmcase/kc-ordercommandms latest
 
 ## Run 
 
-You can always use the maven command to compile and run liberty server for each project.
+You can always use the maven command to compile and run liberty server for each project. Before doing so be sure to have set the KAFKA_BROKERS and KAFKA_API_KEY environment variables with the command coming from the `refarch-kc` project, which should be at the same level in folder hierarchy as this repository.
+
+```
+source ../../refarch-kc/scripts/setenv.sh IBMCLOUD
+```
+
 ```
 mvn install
 mvn liberty:run-server

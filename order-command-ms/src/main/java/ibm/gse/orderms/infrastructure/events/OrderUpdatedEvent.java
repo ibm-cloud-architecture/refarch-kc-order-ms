@@ -1,18 +1,17 @@
-package ibm.gse.orderms.infrastructure.command.events;
+package ibm.gse.orderms.infrastructure.events;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
 
-public class UpdateOrderEvent extends OrderEvent {
+public class OrderUpdatedEvent extends OrderEvent {
 
     private ShippingOrder payload;
 
-    public UpdateOrderEvent(long timestampMillis, String version, ShippingOrder payload) {
+    public OrderUpdatedEvent(long timestampMillis, String version, ShippingOrder payload) {
         super(timestampMillis, OrderEvent.TYPE_UPDATED, version);
         this.payload = payload;
     }
 
-    public UpdateOrderEvent() {
+    public OrderUpdatedEvent() {
     }
 
     public ShippingOrder getPayload() {

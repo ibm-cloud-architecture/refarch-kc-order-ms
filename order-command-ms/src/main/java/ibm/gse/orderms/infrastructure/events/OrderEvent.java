@@ -3,11 +3,10 @@ package ibm.gse.orderms.infrastructure.events;
 import com.google.gson.Gson;
 
 import ibm.gse.orderms.infrastructure.command.events.AssignContainerEvent;
-import ibm.gse.orderms.infrastructure.command.events.AssignOrderEvent;
+import ibm.gse.orderms.infrastructure.command.events.OrderAssignedEvent;
 import ibm.gse.orderms.infrastructure.command.events.CancelOrderEvent;
-import ibm.gse.orderms.infrastructure.command.events.UpdateOrderEvent;
 
-public class OrderEvent extends AbstractEvent {
+public class OrderEvent extends OrderEventAbstract {
 
     public static final String TYPE_CREATED = "OrderCreated";
     public static final String TYPE_UPDATED = "OrderUpdated";
@@ -40,9 +39,9 @@ public class OrderEvent extends AbstractEvent {
         case TYPE_CREATED:
             return gson.fromJson(json, OrderCreatedEvent.class);
         case TYPE_UPDATED:
-            return gson.fromJson(json, UpdateOrderEvent.class);
+            return gson.fromJson(json, OrderUpdatedEvent.class);
         case TYPE_ASSIGNED:
-            return gson.fromJson(json, AssignOrderEvent.class);
+            return gson.fromJson(json, OrderAssignedEvent.class);
         case TYPE_CANCELLED:
             return gson.fromJson(json, CancelOrderEvent.class);
         case TYPE_CONTAINER_ALLOCATED:

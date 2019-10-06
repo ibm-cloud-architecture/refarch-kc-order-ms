@@ -26,7 +26,7 @@ public class ShippingOrderUpdateParameters extends ShippingOrderParameters {
     	this.status = status;
     }
 
-    public static void validate(ShippingOrderUpdateParameters co, ShippingOrderDTO existingOrder) {
+    public static void validate(ShippingOrderUpdateParameters co, ShippingOrder existingOrder) {
         if (co.getOrderID() == null) {
             throw new IllegalArgumentException("Order ID is null");
         }

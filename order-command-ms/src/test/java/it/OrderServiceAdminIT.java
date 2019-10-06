@@ -25,7 +25,7 @@ import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.gse.orderms.infrastructure.kafka.ApplicationConfig;
+import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 
 public class OrderServiceAdminIT {
 
@@ -36,7 +36,7 @@ public class OrderServiceAdminIT {
     @Test
     public void testGetAll() throws Exception {
         String orderID = UUID.randomUUID().toString();
-        Properties properties = ApplicationConfig.getProducerProperties("testGetById");
+        Properties properties = KafkaInfrastructureConfig.getProducerProperties("testGetById");
 
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         ShippingOrder order = new ShippingOrder(orderID, "productId", "custId", 2,
@@ -48,7 +48,7 @@ public class OrderServiceAdminIT {
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
             String value = new Gson().toJson(event);
             String key = order.getOrderID();
-            ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value);
+            ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, key, value);
 
             Future<RecordMetadata> future = producer.send(record);
             future.get(10000L, TimeUnit.MILLISECONDS);

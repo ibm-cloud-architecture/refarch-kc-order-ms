@@ -11,7 +11,7 @@ import javax.servlet.annotation.WebListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ibm.gse.orderms.infrastructure.kafka.ApplicationConfig;
+import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 
 /**
  * Servlet contxt listener to start the different messaging consumers of 
@@ -35,7 +35,7 @@ public class AgentsInitializer implements ServletContextListener{
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("@@@ Order Command contextInitialized v0.0.6, start agents");
+        logger.info("@@@ Order Command contextInitialized v0.0.7, start agents");
         executor = Executors.newFixedThreadPool(2);
         orderEventRunner = new OrderEventRunner();
         orderCommandRunner = new OrderCommandRunner();  
@@ -117,7 +117,7 @@ public class AgentsInitializer implements ServletContextListener{
         orderCommandRunner.stop();
         executor.shutdownNow();
         try {
-            executor.awaitTermination(ApplicationConfig.TERMINATION_TIMEOUT_SEC, TimeUnit.SECONDS);
+            executor.awaitTermination(KafkaInfrastructureConfig.TERMINATION_TIMEOUT_SEC, TimeUnit.SECONDS);
         } catch (InterruptedException ie) {
             logger.warn("awaitTermination( interrupted", ie);
         }

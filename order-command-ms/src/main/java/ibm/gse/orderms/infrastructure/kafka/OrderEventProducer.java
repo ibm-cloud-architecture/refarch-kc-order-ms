@@ -14,33 +14,30 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
-import ibm.gse.orderms.infrastructure.command.events.UpdateOrderEvent;
-import ibm.gse.orderms.infrastructure.events.Event;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
+import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
+import ibm.gse.orderms.infrastructure.events.OrderUpdatedEvent;
 
-public class OrderProducer implements EventEmitter {
+/**
+ * Emits order events as fact about the shipping order. 
+ */
+public class OrderEventProducer implements EventEmitter {
 
-    private static final Logger logger = LoggerFactory.getLogger(OrderProducer.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderEventProducer.class);
 
-    private static OrderProducer instance;
+
     private KafkaProducer<String, String> kafkaProducer;
 
-    public synchronized static EventEmitter instance() {
-        if (instance == null) {
-            instance = new OrderProducer();
-        }
-        return instance;
-    }
 
-    public OrderProducer() {
-        Properties properties = ApplicationConfig.getProducerProperties("ordercmd-event-producer");
+    public OrderEventProducer() {
+        Properties properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-event-producer");
         kafkaProducer = new KafkaProducer<String, String>(properties);
     }
 
     @Override
-    public void emit(Event event) throws InterruptedException, ExecutionException, TimeoutException {
+    public void emit(OrderEventAbstract event) throws InterruptedException, ExecutionException, TimeoutException {
         OrderEvent orderEvent = (OrderEvent)event;
         String key;
         switch (orderEvent.getType()) {
@@ -48,16 +45,16 @@ public class OrderProducer implements EventEmitter {
             key = ((OrderCreatedEvent)orderEvent).getPayload().getOrderID();
             break;
         case OrderEvent.TYPE_UPDATED:
-            key = ((UpdateOrderEvent)orderEvent).getPayload().getOrderID();
+            key = ((OrderUpdatedEvent)orderEvent).getPayload().getOrderID();
             break;
         default:
             key = null;
         }
         String value = new Gson().toJson(orderEvent);
-        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_TOPIC, key, value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, key, value);
 
         Future<RecordMetadata> send = kafkaProducer.send(record);
-        send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
+        send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package ibm.gse.orderms.infrastructure.kafka;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -11,36 +13,50 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.command.events.CreateOrderCommandEvent;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.command.events.UpdateOrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.Event;
+import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.EventListener;
+import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
+import ibm.gse.orderms.infrastructure.events.OrderUpdatedEvent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
-import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
 public class OrderCommandAgent implements EventListener {
+	 
 	  private static final Logger logger = LoggerFactory.getLogger(OrderCommandAgent.class.getName());
 	  
-	  private final KafkaConsumer<String, String> kafkaConsumer;
+	  private final KafkaConsumer<String, String> orderCommandsConsumer;
+	  
 	  private final ShippingOrderRepository orderRepository; 
+	  private EventEmitter orderEventProducer;
 	  
 	  public OrderCommandAgent() {
-	      Properties properties = ApplicationConfig.getConsumerProperties("ordercmd-command-consumer");
-	      this.kafkaConsumer = new KafkaConsumer<String, String>(properties);
-	      this.orderRepository = new ShippingOrderRepositoryMock();
+	      Properties properties = KafkaInfrastructureConfig.getConsumerProperties("ordercmd-command-consumer-grp",
+	    		  "ordercmd-command-consumer",false,"earliest");
+	      this.orderCommandsConsumer = new KafkaConsumer<String, String>(properties);
+	      this.orderRepository = AppRegistry.getInstance().shippingOrderRepository();
+	      this.orderCommandsConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.ORDER_COMMAND_TOPIC));
+	      this.orderEventProducer = AppRegistry.getInstance().orderEventProducer();
 	  }
 	  
-	  public OrderCommandAgent(ShippingOrderRepository repo, KafkaConsumer<String, String>  kafka) {
-		  this.kafkaConsumer = kafka;
+	  public OrderCommandAgent(ShippingOrderRepository repo, KafkaConsumer<String, String>  kafka, EventEmitter oee) {
+		  this.orderCommandsConsumer = kafka;
 		  this.orderRepository = repo;
+		  this.orderCommandsConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.ORDER_COMMAND_TOPIC));
+		  this.orderEventProducer = oee;
 	  }
 	  
+	  /** 
+	   * Get n records from the order command topic
+	   * @return
+	   */
 	  public List<OrderCommandEvent> poll() {
-        ConsumerRecords<String, String> recs = this.kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
+        ConsumerRecords<String, String> recs = this.orderCommandsConsumer.poll(KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT);
         List<OrderCommandEvent> result = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {
+        	logger.info("Command event received: " + rec.value());
             OrderCommandEvent event = OrderCommandEvent.deserialize(rec.value());
             result.add(event);
         }
@@ -49,36 +65,80 @@ public class OrderCommandAgent implements EventListener {
 
 	  public void safeClose() {
         try {
-            kafkaConsumer.close(ApplicationConfig.CONSUMER_CLOSE_TIMEOUT);
+            orderCommandsConsumer.close(KafkaInfrastructureConfig.CONSUMER_CLOSE_TIMEOUT);
         } catch (Exception e) {
             logger.warn("Failed closing Consumer", e);
         }
 	    }
 
 	@Override
-	public void handle(Event event) {
+	public void handle(OrderEventAbstract event) {
 		
 		OrderCommandEvent commandEvent = (OrderCommandEvent)event;
+		logger.info("handle command event : " + commandEvent.getType());
 		
 		switch (commandEvent.getType()) {
         case OrderCommandEvent.TYPE_CREATE_ORDER:
-            synchronized (orderRepository) {
-                ShippingOrder shippingOrder = ((CreateOrderCommandEvent) commandEvent).getPayload();
-                orderRepository.addNewShippingOrder(shippingOrder);
-            }
+        	processOrderCreation(commandEvent);
             break;
         case OrderCommandEvent.TYPE_UPDATE_ORDER:
-            synchronized (orderRepository) {
-                ShippingOrder shippingOrder = ((UpdateOrderCommandEvent) commandEvent).getPayload();
-                String orderID = shippingOrder.getOrderID();
-                Optional<ShippingOrder> oco = orderRepository.getByID(orderID);
-                if (oco.isPresent()) {
-                    orderRepository.update(shippingOrder);
-                } else {
-                    throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-                }
-            }
+        	processOrderUpdate(commandEvent);
             break;
 		}
+	}
+	
+	private void processOrderCreation(OrderCommandEvent commandEvent ) {
+		ShippingOrder shippingOrder = (ShippingOrder) commandEvent.getPayload();	
+		try {
+    		synchronized (orderRepository) {
+                orderRepository.addNewShippingOrder(shippingOrder);
+            }	
+    	} catch (Exception e) {
+    		// TODO with remote datasource write to a error log
+    		e.printStackTrace();
+    		return ; 
+    	}
+		
+        OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(new Date().getTime(),
+        		KafkaInfrastructureConfig.SCHEMA_VERSION,
+        		shippingOrder);
+        try {
+        	orderEventProducer.emit(orderCreatedEvent);
+		} catch (Exception e) {
+			// TODO 
+			e.printStackTrace();
+			return ;
+		}
+        this.orderCommandsConsumer.commitSync();
+	}
+	
+	
+	private void processOrderUpdate(OrderCommandEvent commandEvent) {
+	    ShippingOrder shippingOrder = (ShippingOrder) commandEvent.getPayload();
+        String orderID = shippingOrder.getOrderID();
+   
+        Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
+        if (oco.isPresent()) {
+              try {
+            	  orderRepository.updateShippingOrder(shippingOrder);
+              } catch (Exception e ) {
+            	  e.printStackTrace();
+            	  return ;
+              }
+                
+              try {
+            	  OrderUpdatedEvent orderUpdateEvent = new OrderUpdatedEvent(new Date().getTime(),
+            			  	KafkaInfrastructureConfig.SCHEMA_VERSION,
+            			  	shippingOrder);
+            	  orderEventProducer.emit(orderUpdateEvent);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ;
+			}
+            this.orderCommandsConsumer.commitSync();
+        } else {
+                throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+        }
+            
 	}
 }

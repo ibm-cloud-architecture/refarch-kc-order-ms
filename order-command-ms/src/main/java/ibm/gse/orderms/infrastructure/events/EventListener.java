@@ -2,6 +2,6 @@ package ibm.gse.orderms.infrastructure.events;
 
 public interface EventListener {
 
-    public void handle(Event event);
+    public void handle(OrderEventAbstract event);
 
 }

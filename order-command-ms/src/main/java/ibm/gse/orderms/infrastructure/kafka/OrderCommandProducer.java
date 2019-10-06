@@ -14,29 +14,20 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-import ibm.gse.orderms.infrastructure.command.events.CreateOrderCommandEvent;
+import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.Event;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
+import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
 
-public class OrderCommandEmitter implements EventEmitter  {
-	private static final Logger logger = LoggerFactory.getLogger(OrderCommandEmitter.class);
+public class OrderCommandProducer implements EventEmitter  {
+	private static final Logger logger = LoggerFactory.getLogger(OrderCommandProducer.class);
 	
 	private KafkaProducer<String, String> kafkaProducer;
-	private static OrderCommandEmitter instance;
-
-    public static EventEmitter instance() {
-    	synchronized(instance) {
-    		if (instance == null) {
-    			instance = new OrderCommandEmitter();
-    		}
-    	}
-        return instance;
-    }
+	
     
-    private OrderCommandEmitter() {
-    	Properties properties = ApplicationConfig.getProducerProperties("ordercmd-command-producer");
-		properties.put(ProducerConfig.ACKS_CONFIG, "All");
+    public OrderCommandProducer() {
+    	Properties properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-command-producer");
+		properties.put(ProducerConfig.ACKS_CONFIG, "all");
 		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 		properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "order-cmd-1");
 	    kafkaProducer = new KafkaProducer<String, String>(properties);
@@ -52,28 +43,18 @@ public class OrderCommandEmitter implements EventEmitter  {
 	 * 
 	 */
 	@Override
-	public void emit(Event event) throws Exception {
+	public void emit(OrderEventAbstract event) throws Exception {
 
 		OrderCommandEvent orderCommandEvent = (OrderCommandEvent)event;
-        String key = null;
-        String value = null;
-        switch (orderCommandEvent.getType()) {
-        case OrderCommandEvent.TYPE_CREATE_ORDER:
-            key = ((CreateOrderCommandEvent)orderCommandEvent).getPayload().getOrderID();
-            value = new Gson().toJson((CreateOrderCommandEvent)orderCommandEvent);
-            break;
-        case OrderCommandEvent.TYPE_UPDATE_ORDER:
-        	// TODO
-            break;
-        default:
-            key = null;
-            value = null;
-        }
+        String key = ((ShippingOrder)orderCommandEvent.getPayload()).getOrderID();
+        String value = new Gson().toJson(orderCommandEvent);
+        
         try {
 	        kafkaProducer.beginTransaction();
-	        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ORDER_COMMAND_TOPIC, key, value);
+	        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_COMMAND_TOPIC, key, value);
 	        Future<RecordMetadata> send = kafkaProducer.send(record);
-	        send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
+	        logger.info("Command event sent: " + value);
+	        send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
 	        kafkaProducer.commitTransaction();
         } catch (KafkaException e){
         	kafkaProducer.abortTransaction();

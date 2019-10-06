@@ -5,7 +5,7 @@ import org.junit.Test;
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 
-public class CreateOrderRequestTest {
+public class TestCreateOrderRequestValueObjects {
 
 	private Address mockAddress = new Address("Street", "City", "County", "State", "Zipcode");
 

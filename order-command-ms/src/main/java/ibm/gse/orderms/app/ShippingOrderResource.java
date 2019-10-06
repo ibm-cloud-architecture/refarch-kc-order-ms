@@ -24,17 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
-import ibm.gse.orderms.app.dto.ShippingOrderDTO;
 import ibm.gse.orderms.app.dto.ShippingOrderReference;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderFactory;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
-import ibm.gse.orderms.infrastructure.command.events.UpdateOrderEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
 
 /**
- * Expose the commands used by external client as API
+ * Expose the commands and APIs used by external clients
  * 
  * @author jerome boyer
  *
@@ -59,16 +56,18 @@ public class ShippingOrderResource {
     @Operation(summary = "Request to create an order", description = "")
     @APIResponses(value = {
             @APIResponse(responseCode = "400", description = "Bad create order request", content = @Content(mediaType = "text/plain")),
-            @APIResponse(responseCode = "200", description = "Order created", content = @Content(mediaType = "application/json")) })
-	public Response createOrder(ShippingOrderCreateParameters dto) {
-		
+            @APIResponse(responseCode = "200", description = "Order created, return order unique identifier", content = @Content(mediaType = "text/plain")) })
+	public Response createShippingOrder(ShippingOrderCreateParameters orderParameters) {
+		if (orderParameters == null ) {
+			return Response.status(400, "No parameters sent").build();
+		}
 		try {
-		   ShippingOrderCreateParameters.validateInputData(dto);
+		   ShippingOrderCreateParameters.validateInputData(orderParameters);
 		 
 		} catch(IllegalArgumentException iae) {
 			return Response.status(400, iae.getMessage()).build();
 		}
-		ShippingOrder order = ShippingOrderFactory.createNewShippingOrder(dto);
+		ShippingOrder order = ShippingOrderFactory.createNewShippingOrder(orderParameters);
 		try {
 			shippingOrderService.createOrder(order);
 		} catch(Exception e) {
@@ -87,34 +86,51 @@ public class ShippingOrderResource {
     @APIResponses(value = {
             @APIResponse(responseCode = "404", description = "Unknown order ID", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "400", description = "Bad update order request", content = @Content(mediaType = "text/plain")),
-            @APIResponse(responseCode = "200", description = "Order updated", content = @Content(mediaType = "application/json")) })
-    public Response update(@PathParam("Id") String orderID, ShippingOrderUpdateParameters dto) {
+            @APIResponse(responseCode = "200", description = "Order updated", content = @Content(mediaType = "text/plain")) })
+    /**
+     * Update an existing shipping order given an existing identifier and the update parameters
+     * @param orderID
+     * @param orderParameters
+     * @return 
+     */
+    public Response updateExistingOrder(@PathParam("Id") String orderID, ShippingOrderUpdateParameters orderParameters) {
+    	   logger.info("updateExistingOrder: " + orderID);
 
-        if(! Objects.equals(orderID, dto.getOrderID())) {
-            return Response.status(404, "OrderID in body does not match PUT path").build();
+    	if (orderParameters == null ) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+    	
+        if(! Objects.equals(orderID, orderParameters.getOrderID())) {
+        	logger.error(orderID + " does not match " + orderParameters.getOrderID());
+            return Response.status(Status.BAD_REQUEST).build();
         }
 
-        Optional<ShippingOrderDTO> existingOrder = shippingOrderService.getByID(orderID);
+        Optional<ShippingOrder> existingOrder = shippingOrderService.getOrderByOrderID(orderID);
         if (existingOrder.isPresent()) {
-            ShippingOrderUpdateParameters.validate(dto, existingOrder.get());
-
-            ShippingOrder updatedOrder = new ShippingOrder(orderID,
-                    dto.getProductID(),
-                    dto.getCustomerID(),
-                    dto.getQuantity(),
-                    dto.getPickupAddress(), dto.getPickupDate(),
-                    dto.getDestinationAddress(), dto.getExpectedDeliveryDate(),
-                    dto.getStatus());
-            
-            try {
-            	shippingOrderService.updateShippingOrder(updatedOrder);
-            } catch (Exception e) {
-                logger.error("Fail to publish order updated event", e);
-                return Response.serverError().build();
-            }
-
-            return Response.ok().entity(updatedOrder).build();
+        	try {
+	            ShippingOrderUpdateParameters.validate(orderParameters, existingOrder.get());
+	            logger.info("@@@ ");
+	            ShippingOrder updatedOrder = new ShippingOrder(orderID,
+	                    orderParameters.getProductID(),
+	                    orderParameters.getCustomerID(),
+	                    orderParameters.getQuantity(),
+	                    orderParameters.getPickupAddress(), orderParameters.getPickupDate(),
+	                    orderParameters.getDestinationAddress(), orderParameters.getExpectedDeliveryDate(),
+	                    orderParameters.getStatus());
+		            try {
+		            	shippingOrderService.updateShippingOrder(updatedOrder);
+		            	logger.info("@@@@ ");
+		            } catch (Exception e) {
+		                logger.error("Fail to publish order updated event", e);
+		                return Response.serverError().build();
+		            }
+        	 } catch (Exception e) {
+                 logger.error("Error in payload", e);
+                 return Response.serverError().build();
+             }    
+            return Response.ok().build();
         } else {
+        	logger.error(orderID + " not found ");
             return Response.status(Status.NOT_FOUND).build();
         }
     }
@@ -122,15 +138,21 @@ public class ShippingOrderResource {
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Returns all orders", description = "")
+    @Operation(summary = "Returns order references with order_id, customer_id and product_id", description = "")
     @APIResponses(value = {
+            @APIResponse(responseCode = "404", description = "No records found", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json")) })
-    public Response getAll() {
-        logger.info("OrderAdminService.getAll()");
+    public Response getAllOrderReferences() {
+        logger.info("OrderAdminService.getAllOrderReferences()");
 
-        Collection<ShippingOrderReference> orders = shippingOrderService.getOrderReferences();
-        return Response.ok().entity(orders).build();
-    }
+        Collection<ShippingOrderReference> orderList = shippingOrderService.getOrderReferences();
+        if (! orderList.isEmpty()) {
+        	return Response.ok().entity(orderList).build();	
+        } else {
+        	 return Response.status(Status.NOT_FOUND).build();
+             	
+        }
+	}
 
 
     @GET
@@ -140,10 +162,10 @@ public class ShippingOrderResource {
     @APIResponses(value = {
             @APIResponse(responseCode = "404", description = "Order not found", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order found", content = @Content(mediaType = "application/json")) })
-    public Response getById(@PathParam("Id") String orderId) {
-        logger.info("QueryService.getById(" + orderId + ")");
+    public Response getOrderByOrderId(@PathParam("Id") String orderId) {
+        logger.info("QueryService.getOrderByOrderId(" + orderId + ")");
 
-        Optional<ShippingOrderDTO> oo = shippingOrderService.getByID(orderId);
+        Optional<ShippingOrder> oo = shippingOrderService.getOrderByOrderID(orderId);
         if (oo.isPresent()) {
             return Response.ok().entity(oo.get()).build();
         } else {

@@ -11,18 +11,17 @@ import org.slf4j.LoggerFactory;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 
+/**
+ * In memory repository... just to make it simple and for testing 
+ * We will have a SQL based repo in the future
+ *  
+ * @author jerome boyer
+ *
+ */
 public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
     private static final Logger logger = LoggerFactory.getLogger(ShippingOrderRepositoryMock.class);
     private final Map<String, ShippingOrder> orders;
 
-    private static ShippingOrderRepositoryMock instance;
-
-    public synchronized static ShippingOrderRepository instance() {
-        if (instance == null) {
-            instance = new ShippingOrderRepositoryMock();
-        }
-        return instance;
-    }
 
     public ShippingOrderRepositoryMock() {
         orders = new ConcurrentHashMap<>();
@@ -42,7 +41,7 @@ public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
     }
 
     @Override
-    public void update(ShippingOrder order) {
+    public void updateShippingOrder(ShippingOrder order) {
         logger.info("Updating order id " + order.getOrderID());
         if (orders.replace(order.getOrderID(), order) == null) {
             throw new IllegalStateException("order does not already exist " + order.getOrderID());
@@ -50,9 +49,17 @@ public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
     }
 
     @Override
-    public Optional<ShippingOrder> getByID(String orderId) {
+    public Optional<ShippingOrder> getOrderByOrderID(String orderId) {
+    	logger.info("Get order id " + orderId);
     	ShippingOrder o = orders.get(orderId);
+    	if (o != null) logger.info("Get order id retrieve product: " + o.getProductID());
         return Optional.ofNullable(o);
     }
+
+	@Override
+	public void reset() {
+		orders.values().clear();
+		orders.keySet().clear();
+	}
 
 }

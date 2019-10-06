@@ -17,5 +17,5 @@ public class ShippingOrderFactory {
                 ShippingOrder.PENDING_STATUS);
 	   return order;
 	}
-
+	
 }

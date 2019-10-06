@@ -9,14 +9,14 @@ import java.util.UUID;
 
 import org.junit.Test;
 
+import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
-import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
 public class TestShippingOrderRepository {
 	
-	public static  ShippingOrderRepository repository = ShippingOrderRepositoryMock.instance();
+	public static  ShippingOrderRepository repository = AppRegistry.getInstance().shippingOrderRepository();
 
 	/**
 	 * At the repository level the ShippingOrder Entity is valid.
@@ -41,7 +41,7 @@ public class TestShippingOrderRepository {
         // Insert
         repository.addNewShippingOrder(order1);
         assertEquals(1, repository.getAll().size());
-        assertEquals(order1, repository.getByID(order1.getOrderID()).get());
+        assertEquals(order1, repository.getOrderByOrderID(order1.getOrderID()).get());
 
         // Insert existing key
         try {
@@ -53,10 +53,10 @@ public class TestShippingOrderRepository {
 
         // Update
         order1.setPickupDate("2018-01-10T13:30Z");
-        repository.update(order1);
+        repository.updateShippingOrder(order1);
         assertEquals(1, repository.getAll().size());
-        assertEquals(order1, repository.getByID(order1.getOrderID()).get());
-        assertEquals("2018-01-10T13:30Z", repository.getByID(order1.getOrderID()).get().getPickupDate());
+        assertEquals(order1, repository.getOrderByOrderID(order1.getOrderID()).get());
+        assertEquals("2018-01-10T13:30Z", repository.getOrderByOrderID(order1.getOrderID()).get().getPickupDate());
 
         // Update non existing key
         ShippingOrder order2 = new ShippingOrder(UUID.randomUUID().toString(),
@@ -65,7 +65,7 @@ public class TestShippingOrderRepository {
                 address, "2019-01-10T13:30Z",
                 ShippingOrder.PENDING_STATUS);
         try {
-            repository.update(order2);
+            repository.updateShippingOrder(order2);
             fail();
         } catch (IllegalStateException ise) {
         	System.out.println(ise.getMessage());
@@ -74,7 +74,7 @@ public class TestShippingOrderRepository {
         // Insert
         repository.addNewShippingOrder(order2);
         assertEquals(2, repository.getAll().size());
-        ShippingOrder orderOut = repository.getByID(order2.getOrderID()).get();
+        ShippingOrder orderOut = repository.getOrderByOrderID(order2.getOrderID()).get();
         assertEquals(order2, orderOut);
 
         // GetAll

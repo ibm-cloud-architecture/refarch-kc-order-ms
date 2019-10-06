@@ -33,6 +33,8 @@ public class ShippingOrder {
     private String expectedDeliveryDate;
 
     private String status;
+	private String voyageID;
+	private String reeferID;
 
     public ShippingOrder() {
     }
@@ -54,15 +56,19 @@ public class ShippingOrder {
     public void assign(VoyageAssignment voyageAssignment) {
     	// This is to illustrate CQRS. In an integrated microservice the voyage ID will be saved her too
         this.status = ShippingOrder.ASSIGNED_STATUS;
+        this.voyageID = voyageAssignment.getVoyageID();
     }
 
-    public void assignContainer(ContainerAssignment ca) {
+    public void assignContainer(ContainerAssignment reeferAssignment) {
     	// This is to illustrate CQRS. In an integrated microservice the container ID will be saved her too
     	this.status = ShippingOrder.CONTAINER_ALLOCATED_STATUS;
+    	this.reeferID = reeferAssignment.getContainerID();
     }
     
     public void cancel(Cancellation cancellation) {
         this.status = ShippingOrder.CANCELLED_STATUS;
+        this.reeferID = "";
+        this.voyageID = "";
     }
     
     
@@ -131,4 +137,20 @@ public class ShippingOrder {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+
+	public void setOrderID(String oid) {
+		this.orderID = 	oid;
+	}
+
+	public void setQuantity(int value) {
+		this.quantity = value;
+	}
+
+	public String getVoyageID() {
+		return voyageID;
+	}
+
+	public String getReeferID() {
+		return reeferID;
+	}
 }

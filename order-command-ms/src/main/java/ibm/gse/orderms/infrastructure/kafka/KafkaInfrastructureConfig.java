@@ -15,7 +15,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 /**
  *
  */
-public class ApplicationConfig {
+public class KafkaInfrastructureConfig {
 
     public static final String ORDER_TOPIC = "orders";
     public static final String ORDER_COMMAND_TOPIC = "orderCommands";
@@ -25,39 +25,30 @@ public class ApplicationConfig {
     public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
     public static final Duration CONSUMER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
     public static final long TERMINATION_TIMEOUT_SEC = 10;
-
+    // TODO this is temporary once we use schema registry
+    public static final String SCHEMA_VERSION = "1";
+    
     public static Properties getProducerProperties(String clientId) {
         Properties properties = buildCommonProperties();
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
-        properties.put(ProducerConfig.ACKS_CONFIG, "all");
-        properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        properties.put(ProducerConfig.ACKS_CONFIG, "1");
+        properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
         return properties;
     }
 
-    public static Properties getConsumerProperties(String groupid) {
+    public static Properties getConsumerProperties(String groupid,String clientid, boolean commit,String offset) {
         Properties properties = buildCommonProperties();
         properties.put(ConsumerConfig.GROUP_ID_CONFIG,  groupid);
-        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,"true");
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, Boolean.toString(commit));
+        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, offset);
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-command-consumer");
+        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, clientid);
         return properties;
     }
 
-    public static Properties getConsumerReloadProperties(String groupid) {
-        Properties properties = buildCommonProperties();
-        properties.put(ConsumerConfig.GROUP_ID_CONFIG,  groupid);
-        properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
-        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "order-command-reload");
-        return properties;
-    }
 
     /**
      * Take into account the environment variables if set

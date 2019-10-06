@@ -22,7 +22,6 @@ public class OrderCommandRunner implements Runnable {
 	private volatile boolean running = true;
 	
 	public OrderCommandRunner() {
-		
 	}
 	
 	public void stop() {
