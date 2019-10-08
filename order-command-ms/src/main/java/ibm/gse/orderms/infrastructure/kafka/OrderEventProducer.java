@@ -15,10 +15,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
-import ibm.gse.orderms.infrastructure.events.OrderUpdatedEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
 
 /**
  * Emits order events as fact about the shipping order. 
@@ -37,15 +36,13 @@ public class OrderEventProducer implements EventEmitter {
     }
 
     @Override
-    public void emit(OrderEventAbstract event) throws InterruptedException, ExecutionException, TimeoutException {
+    public void emit(OrderEventBase event) throws InterruptedException, ExecutionException, TimeoutException {
         OrderEvent orderEvent = (OrderEvent)event;
         String key;
         switch (orderEvent.getType()) {
-        case OrderEvent.TYPE_CREATED:
-            key = ((OrderCreatedEvent)orderEvent).getPayload().getOrderID();
-            break;
-        case OrderEvent.TYPE_UPDATED:
-            key = ((OrderUpdatedEvent)orderEvent).getPayload().getOrderID();
+        case OrderEvent.TYPE_ORDER_CREATED:
+        case OrderEvent.TYPE_ORDER_UPDATED:
+            key = ((ShippingOrderPayload)orderEvent.getPayload()).getOrderID();
             break;
         default:
             key = null;

@@ -1,17 +1,19 @@
-package ibm.gse.orderms.infrastructure.events;
+package ibm.gse.orderms.infrastructure.kafka;
 
-public class ErrorEvent extends OrderEventAbstract {
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+
+public class ErrorEvent extends OrderEventBase {
 
     public static final String TYPE_ERROR = "Error";
 
     private String errorMessage;
-    private OrderEventAbstract payload;
+    private OrderEventBase payload;
     
     public ErrorEvent() {
         super();
     }
 
-    public ErrorEvent(long timestampMillis, String type, String version, OrderEventAbstract payload, String errorMessage) {
+    public ErrorEvent(long timestampMillis, String type, String version, OrderEventBase payload, String errorMessage) {
         super(timestampMillis, type, version);
         this.payload = payload;
         this.errorMessage = errorMessage;
@@ -27,8 +29,8 @@ public class ErrorEvent extends OrderEventAbstract {
         this.errorMessage = errorMessage;
     }
 
-	@Override
-	public Object getPayload() {
+	
+	public OrderEventBase getPayload() {
 		return this.payload;
 	}
 

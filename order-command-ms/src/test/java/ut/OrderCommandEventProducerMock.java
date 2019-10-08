@@ -1,10 +1,9 @@
 package ut;
 
-import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 
@@ -17,7 +16,7 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 	public OrderCommandEventProducerMock() {}
 	
 	public boolean eventEmitted = false;
-	public OrderEventAbstract emittedEvent = null;
+	public OrderCommandEvent emittedEvent = null;
 	public ShippingOrderRepository repo = null;
 	
 	public OrderCommandEventProducerMock(ShippingOrderRepository repo) {
@@ -25,16 +24,17 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 	}
 	
 	@Override
-	public void emit(OrderEventAbstract event) throws Exception {
+	public void emit(OrderEventBase event) throws Exception {
 		this.eventEmitted = true;
 		this.emittedEvent = (OrderCommandEvent)event;
+		ShippingOrder shippingOrder = emittedEvent.getPayload();
 		// this is the mockup part: use the repo to move the data to consumer
         switch (emittedEvent.getType()) {
         case OrderCommandEvent.TYPE_CREATE_ORDER:
-        	repo.addNewShippingOrder((ShippingOrder)emittedEvent.getPayload());			
+        	repo.addNewShippingOrder(shippingOrder);			
             break;
         case OrderCommandEvent.TYPE_UPDATE_ORDER:
-        	repo.updateShippingOrder((ShippingOrder)emittedEvent.getPayload());			
+        	repo.updateShippingOrder(shippingOrder);			
 	           
         	break;
         }	
@@ -46,7 +46,7 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 		this.emittedEvent = null;	
 	}
 
-	public OrderEventAbstract getEventEmitted() {
+	public OrderEventBase getEventEmitted() {
 		return emittedEvent;
 	}
 	

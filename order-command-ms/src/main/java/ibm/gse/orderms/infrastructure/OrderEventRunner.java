@@ -6,7 +6,7 @@ import org.apache.kafka.common.KafkaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 
 public class OrderEventRunner implements Runnable {
@@ -23,8 +23,8 @@ public class OrderEventRunner implements Runnable {
         try {
             while (running && ok) {
                 try {
-                    List<OrderEvent> events = orderEventAgent.poll();
-                    for (OrderEvent event : events) {
+                    List<OrderEventBase> events = orderEventAgent.poll();
+                    for (OrderEventBase event : events) {
                     	orderEventAgent.handle(event);
                     }
                 } catch (KafkaException ke) {

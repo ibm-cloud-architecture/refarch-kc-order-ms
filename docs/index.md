@@ -36,7 +36,7 @@ With [CQRS](https://ibm-cloud-architecture.github.io/refarch-eda/design-patterns
 
 As some requirements are related to historical query, using an event approach, we need to keep all the events related to what happens to the order. Instead of implementing a complex logic with the query and command services, the event sourcing is supported by using Kafka topics. The following diagram illustrates the CQRS and event sourcing applied to the order management service. Client to the REST api, like a back end for front end app, performs a HTTP POST operation with the order data. The command generates events and persists order on its own data source. The query part is an event consumer and defines its own data projections to support the different queries:
 
-![](order-ms-cqrs-es.png) 
+![](images/order-ms-cqrs-es.png) 
 
 The datasource at the command level, may not be necessary, but we want to illustrate here the fact that it is possible to have a SQL based database or a document oriented database to keep the order last state: a call to get /orders/{id} will return the current order state. 
 

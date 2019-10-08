@@ -1,4 +1,4 @@
-package ibm.gse.orderms.infrastructure.events;
+package ibm.gse.orderms.infrastructure.events.voyage;
 
 public class VoyageAssignment {
 

@@ -3,9 +3,10 @@ package ibm.gse.orderms.domain.model.order;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ibm.gse.orderms.infrastructure.events.Cancellation;
-import ibm.gse.orderms.infrastructure.events.ContainerAssignment;
-import ibm.gse.orderms.infrastructure.events.VoyageAssignment;
+import ibm.gse.orderms.infrastructure.events.CancellationPayload;
+import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
+import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignment;
+import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignment;
 
 public class ShippingOrder {
 
@@ -59,18 +60,46 @@ public class ShippingOrder {
         this.voyageID = voyageAssignment.getVoyageID();
     }
 
-    public void assignContainer(ContainerAssignment reeferAssignment) {
+    public void assignContainer(ReeferAssignment reeferAssignment) {
     	// This is to illustrate CQRS. In an integrated microservice the container ID will be saved her too
     	this.status = ShippingOrder.CONTAINER_ALLOCATED_STATUS;
     	this.reeferID = reeferAssignment.getContainerID();
     }
     
-    public void cancel(Cancellation cancellation) {
+    public void cancel(CancellationPayload cancellation) {
         this.status = ShippingOrder.CANCELLED_STATUS;
         this.reeferID = "";
         this.voyageID = "";
     }
     
+    
+    public ShippingOrderPayload toShippingOrderPayload() {
+    	ShippingOrderPayload sop = new ShippingOrderPayload(this.getOrderID(),
+    			this.getProductID(),
+    			this.getCustomerID(),
+    			this.getQuantity(),
+    			this.getPickupAddress(),
+    			this.getPickupDate(),
+    			this.getDestinationAddress(),
+    			this.getExpectedDeliveryDate(),
+    			this.getStatus()
+    			);
+    	return sop;
+    }
+    
+    public ShippingOrder fromShippingOrderPayload(ShippingOrderPayload sop) {
+    	ShippingOrder order = new ShippingOrder(sop.getOrderID(),
+    			sop.getProductID(),
+    			sop.getCustomerID(),
+    			sop.getQuantity(),
+    			sop.getPickupAddress(),
+    			sop.getPickupDate(),
+    			sop.getDestinationAddress(),
+    			sop.getExpectedDeliveryDate(),
+    			sop.getStatus()
+    			);
+    	return order;
+    }
     
     public String getOrderID() {
         return orderID;

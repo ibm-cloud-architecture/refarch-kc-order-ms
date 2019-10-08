@@ -1,7 +1,7 @@
 package ut;
 
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 
 /**
  * Use this mockup class to emit order events
@@ -11,10 +11,10 @@ public class OrderEventEmitterMock implements EventEmitter{
 	public OrderEventEmitterMock() {}
 	
 	public boolean eventEmitted = false;
-	public OrderEventAbstract emittedEvent = null;
+	public OrderEventBase emittedEvent = null;
 
 	@Override
-	public void emit(OrderEventAbstract event) throws Exception {
+	public void emit(OrderEventBase event) throws Exception {
 		this.eventEmitted = true;
 		this.emittedEvent = event;	
 	}
@@ -25,7 +25,7 @@ public class OrderEventEmitterMock implements EventEmitter{
 		this.emittedEvent = null;	
 	}
 
-	public OrderEventAbstract getEventEmitted() {
+	public OrderEventBase getEventEmitted() {
 		return emittedEvent;
 	}
 	

@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 
 public class OrderCommandProducer implements EventEmitter  {
 	private static final Logger logger = LoggerFactory.getLogger(OrderCommandProducer.class);
@@ -43,7 +43,7 @@ public class OrderCommandProducer implements EventEmitter  {
 	 * 
 	 */
 	@Override
-	public void emit(OrderEventAbstract event) throws Exception {
+	public void emit(OrderEventBase event) throws Exception {
 
 		OrderCommandEvent orderCommandEvent = (OrderCommandEvent)event;
         String key = ((ShippingOrder)orderCommandEvent.getPayload()).getOrderID();

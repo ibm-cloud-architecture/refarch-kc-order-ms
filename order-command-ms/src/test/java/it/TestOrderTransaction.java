@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 
 /**
@@ -67,6 +68,9 @@ public class TestOrderTransaction extends CommonITTest {
     	assertNotNull(orderID);
     	response.close();
     	
+    	System.out.println(" Wait the command event is created and handled by agent");
+    	Thread.sleep(5000);
+    	 
     	response = makeGetRequest(url + "/" + orderID);
         String responseString = response.readEntity(String.class);
         ShippingOrder persistedOrder  = new Gson().fromJson(responseString, ShippingOrder.class);
@@ -81,8 +85,9 @@ public class TestOrderTransaction extends CommonITTest {
 	    Properties properties = KafkaInfrastructureConfig.getProducerProperties("test-event-producer");
 	    KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(properties);
 	    String voyageEvent = "{\"timestamp\": " + new Date().getTime() 
-	    		+ ",\"type\": \"OrderAssigned\", \"version\": \"1\"," 
-	    		+ " \"payload\": { \"voyageID\": \"v101\",\"orderID\": \"" + orderID
+	    		+ ",\"type\": \"" + OrderEventBase.TYPE_VOYAGE_ASSIGNED + "\", \"version\": \""
+	    		+ KafkaInfrastructureConfig.SCHEMA_VERSION + "\"," 
+	    		+ " \"payload\": { \"voyageID\": \"V101\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
 	    ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, orderID, voyageEvent);
 	    System.out.println("Mockup voyage service with " + voyageEvent);
@@ -91,13 +96,13 @@ public class TestOrderTransaction extends CommonITTest {
 			send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			fail("Interuption" + e.getMessage());
+			fail("Interruption" + e.getMessage());
 		} catch (ExecutionException e) {
 			e.printStackTrace();
-			fail("Interuption" + e.getMessage());
+			fail("Interruption" + e.getMessage());
 		} catch (TimeoutException e) {
 			e.printStackTrace();
-			fail("Interuption" + e.getMessage());
+			fail("Interruption" + e.getMessage());
 		} finally {
 			kafkaProducer.close();
 		}
@@ -114,7 +119,7 @@ public class TestOrderTransaction extends CommonITTest {
         // ###############################
         kafkaProducer = new KafkaProducer<String, String>(properties);
 	    String containerEvent = "{\"timestamp\": " + new Date().getTime() 
-	    		+ ",\"type\": \"ContainerAllocated\", \"version\": \"1\"," 
+	    		+ ",\"type\": \"" + OrderEventBase.TYPE_REEFER_ASSIGNED + "\", \"version\": \"1\"," 
 	    		+ " \"payload\": { \"containerID\": \"c02\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
 	    record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, orderID, containerEvent);

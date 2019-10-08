@@ -21,8 +21,9 @@ public class KafkaConsumerMockup<K,V> extends KafkaConsumer<K,V>  {
 	 protected int partitionNumber = 0;
 	 protected int lastCommittedOffet = 0;
 	 
-	 public KafkaConsumerMockup(Properties properties) {
+	 public KafkaConsumerMockup(Properties properties,String topicName) {
 		super(properties);
+		this.topicName = topicName;
 	}
 	 
 	 @SuppressWarnings("unchecked")
@@ -43,7 +44,7 @@ public class KafkaConsumerMockup<K,V> extends KafkaConsumer<K,V>  {
 				this.lastCommittedOffet, 
 				(K)this.key, (V)this.value);
 		l.add(cs);
-		TopicPartition tp = new TopicPartition(KafkaInfrastructureConfig.ORDER_COMMAND_TOPIC,0);
+		TopicPartition tp = new TopicPartition(this.topicName,0);
 		Map<TopicPartition,List<ConsumerRecord<K,V>>> m = new HashMap<TopicPartition,List<ConsumerRecord<K,V>>>();
 		m.put(tp, l);
 		ConsumerRecords<K,V> records = new ConsumerRecords<K,V>(m);

@@ -34,7 +34,7 @@ public class TestOrderCommandAgent {
 	public void createAgent() {
 		// use the mockup in this class. Do not create consumer multiple times
 		if (orderCommandsConsumerMock == null) {
-			orderCommandsConsumerMock = new KafkaConsumerMockup<String,String>(KafkaInfrastructureConfig.getConsumerProperties("test-grp","test-id",true,"earliest"));	
+			orderCommandsConsumerMock = new KafkaConsumerMockup<String,String>(KafkaInfrastructureConfig.getConsumerProperties("test-grp","test-id",true,"earliest"),"orderCommands");	
 		}
 		if ( orderEventProducerMock == null) {
 			orderEventProducerMock = new OrderEventEmitterMock();

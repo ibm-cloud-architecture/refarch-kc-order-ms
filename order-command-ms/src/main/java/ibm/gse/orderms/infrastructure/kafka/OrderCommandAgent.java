@@ -18,9 +18,8 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.EventListener;
-import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
-import ibm.gse.orderms.infrastructure.events.OrderUpdatedEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 public class OrderCommandAgent implements EventListener {
@@ -72,7 +71,7 @@ public class OrderCommandAgent implements EventListener {
 	    }
 
 	@Override
-	public void handle(OrderEventAbstract event) {
+	public void handle(OrderEventBase event) {
 		
 		OrderCommandEvent commandEvent = (OrderCommandEvent)event;
 		logger.info("handle command event : " + commandEvent.getType());
@@ -99,9 +98,10 @@ public class OrderCommandAgent implements EventListener {
     		return ; 
     	}
 		
-        OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(new Date().getTime(),
+        OrderEvent orderCreatedEvent = new OrderEvent(new Date().getTime(),
+        		OrderEvent.TYPE_ORDER_CREATED,
         		KafkaInfrastructureConfig.SCHEMA_VERSION,
-        		shippingOrder);
+        		shippingOrder.toShippingOrderPayload());
         try {
         	orderEventProducer.emit(orderCreatedEvent);
 		} catch (Exception e) {
@@ -120,16 +120,19 @@ public class OrderCommandAgent implements EventListener {
         Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
         if (oco.isPresent()) {
               try {
-            	  orderRepository.updateShippingOrder(shippingOrder);
+            	  synchronized (orderRepository) {
+            		  orderRepository.updateShippingOrder(shippingOrder);
+            	  }
               } catch (Exception e ) {
             	  e.printStackTrace();
             	  return ;
               }
                 
               try {
-            	  OrderUpdatedEvent orderUpdateEvent = new OrderUpdatedEvent(new Date().getTime(),
-            			  	KafkaInfrastructureConfig.SCHEMA_VERSION,
-            			  	shippingOrder);
+            	  OrderEvent orderUpdateEvent = new OrderEvent(new Date().getTime(),
+            			  	OrderEvent.TYPE_ORDER_UPDATED,
+            			    KafkaInfrastructureConfig.SCHEMA_VERSION,
+            			  	shippingOrder.toShippingOrderPayload());
             	  orderEventProducer.emit(orderUpdateEvent);
 			} catch (Exception e) {
 				e.printStackTrace();

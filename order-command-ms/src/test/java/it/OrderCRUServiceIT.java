@@ -24,7 +24,6 @@ import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.OrderCreatedEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ut.ShippingOrderTestDataFactory;
@@ -130,6 +129,8 @@ public class OrderCRUServiceIT extends CommonITTest {
                 String responseString = response.readEntity(String.class);
                 System.out.println(responseString);
                 ShippingOrder[] orders = new Gson().fromJson(responseString, ShippingOrder[].class);
+                Assert.assertNotNull(orders);
+                Assert.assertTrue(orders.length > 0);
                 break outer;
                 
             } else {
@@ -152,7 +153,7 @@ public class OrderCRUServiceIT extends CommonITTest {
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z",
                 "notPendingStatus");
-        OrderEvent event = new OrderCreatedEvent(System.currentTimeMillis(), "1", order);
+        OrderEvent event = new OrderEvent(System.currentTimeMillis(), OrderEvent.TYPE_ORDER_CREATED,"1", order.toShippingOrderPayload());
 
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
             String value = new Gson().toJson(event);

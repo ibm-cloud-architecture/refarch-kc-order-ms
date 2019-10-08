@@ -1,19 +1,15 @@
 package ibm.gse.orderms.infrastructure.kafka;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,21 +17,22 @@ import com.google.gson.Gson;
 
 import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.command.events.AssignContainerEvent;
-import ibm.gse.orderms.infrastructure.command.events.OrderAssignedEvent;
-import ibm.gse.orderms.infrastructure.command.events.CancelOrderEvent;
-import ibm.gse.orderms.infrastructure.events.Cancellation;
-import ibm.gse.orderms.infrastructure.events.ContainerAssignment;
+import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
+import ibm.gse.orderms.infrastructure.events.CancellationPayload;
 import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
-import ibm.gse.orderms.infrastructure.events.VoyageAssignment;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignedEvent;
+import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignment;
+import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
+import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignment;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
-import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
 
 /**
- * Kafka consumer to get order events from other service or from this service
+ * Kafka consumer to get order events from other services or from this command
+ * service
+ * 
  * 
  * @author jerome boyer
  *
@@ -44,9 +41,8 @@ public class OrderEventAgent implements EventListener {
     private static final Logger logger = LoggerFactory.getLogger(OrderEventAgent.class.getName());
     private final KafkaConsumer<String, String> kafkaConsumer;
     private final ShippingOrderRepository orderRepository; 
+    private static final Gson gson = new Gson();
     
-    private OffsetAndMetadata reloadLimit;
-    private boolean reloadCompleted = false;
 
     public OrderEventAgent() {
         Properties properties = KafkaInfrastructureConfig.getConsumerProperties("ordercmd-event-consumer-grp",
@@ -112,14 +108,32 @@ public class OrderEventAgent implements EventListener {
         return reloadCompleted;
     }
 */
-    public List<OrderEvent> poll() {
+    public List<OrderEventBase> poll() {
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT);
-        List<OrderEvent> result = new ArrayList<>();
+        List<OrderEventBase> result = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {
-            OrderEvent event = OrderEvent.deserialize(rec.value());
+        	OrderEventBase event = deserialize(rec.value());
             result.add(event);
         }
         return result;
+    }
+    
+    public OrderEventBase deserialize(String eventAsString) {
+    	   OrderEventBase orderEvent = gson.fromJson(eventAsString, OrderEventBase.class);
+           switch (orderEvent.getType()) {
+           case OrderEventBase.TYPE_ORDER_CREATED:
+           case OrderEventBase.TYPE_ORDER_UPDATED:
+               return gson.fromJson(eventAsString, OrderEvent.class);
+           case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
+               return gson.fromJson(eventAsString, VoyageAssignedEvent.class);
+           case OrderEventBase.TYPE_ORDER_CANCELLED:
+               return gson.fromJson(eventAsString, OrderCancelledEvent.class);
+           case OrderEventBase.TYPE_REEFER_ASSIGNED:
+           	return gson.fromJson(eventAsString, ReeferAssignedEvent.class);
+           default:
+               //TODO handle
+               return null;
+           }
     }
 
     public void safeClose() {
@@ -139,15 +153,14 @@ public class OrderEventAgent implements EventListener {
     }
 */
 	@Override
-	public void handle(OrderEventAbstract event) {
+	public void handle(OrderEventBase orderEvent) {
 		 try {
-	            OrderEvent orderEvent = (OrderEvent) event;
+	  
 	            logger.info("@@@@ in handle " + new Gson().toJson(orderEvent));
 	            switch (orderEvent.getType()) {
-	            
-	            case OrderEvent.TYPE_ASSIGNED:
+	            case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
 	                synchronized (orderRepository) {
-	                    VoyageAssignment voyageAssignment = ((OrderAssignedEvent) orderEvent).getPayload();
+	                	VoyageAssignment voyageAssignment = (VoyageAssignment)((VoyageAssignedEvent) orderEvent).getPayload();
 	                    String orderID = voyageAssignment.getOrderID();
 	                    Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
 	                    if (oco.isPresent()) {
@@ -159,9 +172,9 @@ public class OrderEventAgent implements EventListener {
 	                    }
 	                }
 	                break;
-	            case OrderEvent.TYPE_CANCELLED:
+	            case OrderEventBase.TYPE_ORDER_CANCELLED:
 	                synchronized (orderRepository) {
-	                    Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
+	                    CancellationPayload cancellation = ((OrderCancelledEvent) orderEvent).getPayload();
 	                    String orderID = cancellation.getOrderID();
 	                    Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
 	                    if (oco.isPresent()) {
@@ -173,9 +186,9 @@ public class OrderEventAgent implements EventListener {
 	                    }
 	                }
 	                break;
-	            case OrderEvent.TYPE_CONTAINER_ALLOCATED:
+	            case OrderEventBase.TYPE_REEFER_ASSIGNED:
 	            	synchronized (orderRepository) {
-	            		ContainerAssignment ca = ((AssignContainerEvent) orderEvent).getPayload();
+	            		ReeferAssignment ca = ((ReeferAssignedEvent) orderEvent).getPayload();
 		            	String orderID = ca.getOrderID();
 		            	Optional<ShippingOrder>oco = orderRepository.getOrderByOrderID(orderID);
 		            	if (oco.isPresent()) {
@@ -187,8 +200,11 @@ public class OrderEventAgent implements EventListener {
 		                }
 	            	}
 	            	break;
+	            case OrderEventBase.TYPE_ORDER_CREATED:
+	            case OrderEventBase.TYPE_ORDER_UPDATED:
+	            	break;
 	            default:
-	                logger.warn("Unknown event type: " + orderEvent);
+	                logger.warn("Not yet implemented event type: " + orderEvent.getType());
 	            }
 	        } catch (Exception e) {
 	            logger.error((new Date()).toString() + " " + e.getMessage(), e);

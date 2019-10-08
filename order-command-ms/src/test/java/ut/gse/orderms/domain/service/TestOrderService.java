@@ -8,11 +8,11 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventAbstract;
+import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -26,6 +26,7 @@ public class TestOrderService {
 
 	public static ShippingOrderRepository orderRepository = new ShippingOrderRepositoryMock();
 	
+	
 	@Test
 	public void shouldEmitEventOnOrderCreation() {
 		OrderCommandEventProducerMock commandEventProducer = new OrderCommandEventProducerMock(orderRepository);
@@ -38,11 +39,12 @@ public class TestOrderService {
 		service.createOrder(order);
 		
 		Assert.assertTrue(commandEventProducer.eventEmitted);
-		OrderEventAbstract createOrderEvent = commandEventProducer.getEventEmitted();
+		OrderEventBase createOrderEvent = commandEventProducer.getEventEmitted();
 		
 		Assert.assertNotNull(createOrderEvent);
 		Assert.assertTrue(OrderCommandEvent.TYPE_CREATE_ORDER.equals(createOrderEvent.getType()));
-		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)createOrderEvent.getPayload()).getOrderID()));
+		OrderCommandEvent  orderCommand = (OrderCommandEvent)createOrderEvent;
+		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)orderCommand.getPayload()).getOrderID()));
 		commandEventProducer.safeClose();
 		Assert.assertFalse(commandEventProducer.eventEmitted);
 		
@@ -60,10 +62,11 @@ public class TestOrderService {
 		order.setQuantity(100);
 		service.updateShippingOrder(order);
 		Assert.assertTrue(commandEventProducer.eventEmitted);
-		OrderEventAbstract orderUpdatedEvent = commandEventProducer.getEventEmitted();
+		OrderEventBase orderUpdatedEvent = commandEventProducer.getEventEmitted();
 		Assert.assertNotNull(orderUpdatedEvent);
 		Assert.assertTrue(OrderCommandEvent.TYPE_UPDATE_ORDER.equals(orderUpdatedEvent.getType()));
-		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)orderUpdatedEvent.getPayload()).getOrderID()));
+		OrderCommandEvent  orderCommand = (OrderCommandEvent)orderUpdatedEvent;
+		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)orderCommand.getPayload()).getOrderID()));
 	}
 	
 
@@ -93,7 +96,7 @@ public class TestOrderService {
 	@Test
 	public void shouldGetOrderFromRepository() {
 		// we need the command event consumer mock and event emitter with a real agent
-		KafkaConsumerMockup<String,String> kcm = new KafkaConsumerMockup<String,String>(KafkaInfrastructureConfig.getConsumerProperties("test-grp","test-id",true,"earliest"));	
+		KafkaConsumerMockup<String,String> kcm = new KafkaConsumerMockup<String,String>(KafkaInfrastructureConfig.getConsumerProperties("test-grp","test-id",true,"earliest"),"orderCommands");	
 		OrderEventEmitterMock orderEventEmitter = new OrderEventEmitterMock();
 		
 		// agent consume command events and generate order event
