@@ -42,9 +42,9 @@ kafka:
 eventstreams:
   enabled: true
   apikeyConfigMap: eventstreams-apikey
-  truststoreRequired: false
+  truststoreRequired: true
   truststorePath: /config/resources/security/es-ssl
   truststoreFile: es-cert.jks
   truststoreSecret: es-truststore-jks
-  truststorePassword: changeit
+  truststorePassword: password
 serviceAccountName: default
