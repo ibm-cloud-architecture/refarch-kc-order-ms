@@ -5,8 +5,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ibm.gse.orderms.infrastructure.events.CancellationPayload;
 import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignment;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignment;
+import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignmentPayload;
+import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
 
 public class ShippingOrder {
 
@@ -54,7 +54,7 @@ public class ShippingOrder {
         this.status = status;
     }
 
-    public void assign(VoyageAssignment voyageAssignment) {
+    public void assign(VoyageAssignmentPayload voyageAssignment) {
         this.voyageID = voyageAssignment.getVoyageID();
         setAssignStatus();
     }
@@ -64,7 +64,7 @@ public class ShippingOrder {
     		this.status = ShippingOrder.ASSIGNED_STATUS;
     	}
     }
-    public void assignContainer(ReeferAssignment reeferAssignment) {
+    public void assignContainer(ReeferAssignmentPayload reeferAssignment) {
     	this.reeferID = reeferAssignment.getContainerID();
     	setAssignStatus();
     }

@@ -21,11 +21,16 @@ For the query part, the projection can be kept in memory or persisted on its own
 
 As the BFF still needs to get order by ID or perform complex queries, it has to access the order service using HTTP, therefore we have prefered to use one communication protocol.  
 
-The following sequence diagram illustrates the relationships between the components over time:
+The following sequence diagram illustrates the relationships between the components over time for the new shipping order processing:
 
 ![](images/order-cmd-query-flow.png)
 
-To avoid transaction between the database update and the event published, the choice is to publish the command event to a specific kafka topic as early as the shipping order data is received and use a consumer inside the command service to load the data and save to the database. The kafka topic act as a source of trust for this service. This is illustrated in [this article.](https://ibm-cloud-architecture.github.io/refarch-eda/design-patterns/cqrs/#the-consistency-challenge)
+To avoid transaction between the database update and the event published, the choice is to publish the command event to a specific kafka topic (`orderCommands`) as early as the shipping order data is received and use a consumer inside the command service to load the data and save to the database. The kafka topic act as a source of trust for this service. This is illustrated in [this article.](https://ibm-cloud-architecture.github.io/refarch-eda/design-patterns/cqrs/#the-consistency-challenge)
+
+The following diagram illustrates the update shipping oder flow, and the call to a complex query from a remote client going directly to the query microservice:
+
+![](images/update-order.png)
+ 
 
 ## Code structure
 
@@ -48,32 +53,16 @@ As defined by the list of commands to implements, most those operations are defi
 
 When the application starts there is a [ServletContextListener](https://docs.oracle.com/javaee/6/api/javax/servlet/ServletContextListener.html) implementation class started to create kafka consumers. When consumers reach an issue to get events, they create an error to the `errors` topic, so administrator user could replay the events from the last committed offset. Any kafka broker communication issue is shutting down the consumer loop.
 
-### Infrastructure Layer
-
-This layer includes Repository and Agents consumer of events as well as event emitters for the command events and the factual events. Normally events are factuals per design. This is just a  little bit of semantic play here, as we are using command events to manage data integrity.
-
 
 ### Domain layer
 
-### Main classes of the command service
-
-![](images/order-cmd-classes.png)
-
-* [ShippingOrderResource](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/app/ShippingOrderResource.java) is the REST api resource class for `/orders` POST, PUT and GET. It is part of the app layer.
-* [ShippingOrderService](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/domain/service/ShippingOrderService.java) is part of the domain layer, and groups the service operation to manage a shipping order. 
-* [ShippingOrderRepository](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/repository/ShippingOrderRepository.java) This is an interface, but there is a mockup implementation to keep the data in memory. It is part of the infrastructure layer.
-* [OrderCommandProducer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandProducer.java) is part of the infrastructure, and produce command event to sequence the operation between the messaging and the database.
-* [OrderCommandAgent](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandAgent.java) is also part of the infrastructure, with its counter part class the [OrderCommandRunner](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/OrderCommandRunner.java) which loop on polling message from the `orderCommands` topic.
-* [OrderEventProducer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderEventProducer.java) is producing events for other microservice to consume.
-
-The following sequence diagram illustrates how those components are working together:
-
-![](images/seq-diagram.png)
+The domain layer implements the business logic, defines the main business entities and value objects, and defines services used by app layer.
 
 
-## Data and Event Model
+#### Data Model
 
-By applying a domain-driven design we can identify aggregates, entities, value objects and domain events. Those elements help us to be our information model as classes. For any event-driven microservice you need to assess what data to carry in the event and what persist in the potential data source. 
+We have identified aggregates, entities, value objects and business policies and rules. Those elements help us to build our information model as classes. For any event-driven microservice you need to assess what data to carry in the event and what to persist in the potential data source. 
+
 The following diagram illustrates the different data models in the context of this order microservice:
 
 ![](./order-evt-data.png)
@@ -101,19 +90,42 @@ The Order entered in the User interface is defined like:
 
 The information to persist in the database may be used to do analytics, and get the last status of order. It may use relational database and may have information like Address table, ShippingOrder table and ReeferOrder join table.
 
-### Command Events
+#### Main classes of the command service
 
-We did use command event to avoid XA transaction between kafka and database. So we use a 'private' topic: `orderCommands` to queue the command to create or update a Shipping order. The command microservice has an agent to consumer such events, get the shipping order data and save to the database.
+![](images/order-cmd-classes.png)
 
-### Factual Events
+* [ShippingOrderResource](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/app/ShippingOrderResource.java) is the REST api resource class for `/orders` POST, PUT and GET. It is part of the app layer.
+* [ShippingOrderService](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/domain/service/ShippingOrderService.java) is part of the domain layer, and groups the service operation to manage a shipping order. 
+* [ShippingOrderRepository](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/repository/ShippingOrderRepository.java) This is an interface, but there is a mockup implementation to keep the data in memory. It is part of the infrastructure layer.
+* [OrderCommandProducer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandProducer.java) is part of the infrastructure, and produce command event to sequence the operation between the messaging and the database.
+* [OrderCommandAgent](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandAgent.java) is also part of the infrastructure, with its counter part class the [OrderCommandRunner](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/OrderCommandRunner.java) which loop on polling message from the `orderCommands` topic.
+* [OrderEventProducer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderEventProducer.java) is producing events for other microservice to consume.
 
-On the event side we may generate OrderCreated, OrderCancelled,... But what is in the event payload? 
+The following sequence diagram illustrates how those components are working together:
+
+![](images/seq-diagram.png)
+
+
+### Infrastructure Layer
+
+This layer includes Repository and Agents consumer of events as well as event emitters for the command events and the factual events. Normally events are factuals per design. This is just a  little bit of semantic play here, as we are using command events to manage data integrity.
+
+#### Command Events
+
+We did use command event to avoid XA transaction between kafka and database. So we use a 'private' topic: `orderCommands` to queue the commands to create or update a Shipping order. The command microservice has an agent to consume such events, get the shipping order data and save to the database.
+
+See this class: [OrderCommandAgent](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandAgent.java)
+
+#### Factual Events
+
+On the event side, we may generate OrderCreated, OrderCancelled,... so other services can act on those shipping order changes. The event payload will depend of the event type. So we first define a base class for timestamp, version and type. Then each specific event define the payload.
+
+![](images/event-model.png)
 
 We can propose the following structure where type will help to specify the event type and by getting a generic payload we can have anything in it.
 
 ```
-class OrderEvent {
-    orderId: string;
+class OrderEventBase {
     timestamp: string;   //  date as ISO format
     payload: any;
     type: string;
@@ -121,12 +133,13 @@ class OrderEvent {
 }
 ```
 
-`version` attribute will be used when we will use a schema registry.
+`version` attribute will be used when we will use a schema registry. Using Avro and schema registry will help managing different version of the payload. 
 
-There are other questions we need to address is real project:
+```
+class ReeferAssignedEvent extends OrderEventBase {
+    ReeferAssignmentPayload payload;
+}
+```
 
-* do we need to ensure consistency between those data views? 
-* Can we consider the event, which are immutable data elements, as the source of truth? 
-
-In traditional SOA service with application maintaining all the tables and beans to support all the business requirements, ACID transactions support the consistency and integrity of the data, and the database is one source of truth. With microservices responsible to manage its own aggregate, clearly separated from other business entities, data eventual consistency is the standard. If you want to read more about the Event Sourcing and CQRS patterns [see this article.](https://ibm-cloud-architecture.github.io/refarch-eda/evt-microservices/ED-patterns)
+In traditional SOA service with application maintaining all the tables and beans to support all the business requirements, ACID transactions support the consistency and integrity of the data, and the database is one source of truth. With event driven microservices responsible to manage its own aggregate, clearly separated from other business entities, data eventual consistency is the standard, and adopting event sourcing pattern and an event backbone, like kafka, which becomes the source of truth. 
 

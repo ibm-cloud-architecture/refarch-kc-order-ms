@@ -4,9 +4,9 @@ import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 
 public class ReeferAssignedEvent extends OrderEventBase {
 
-	private ReeferAssignment payload;
+	private ReeferAssignmentPayload payload;
 
-	public ReeferAssignedEvent(long timestampMillis, String version,ReeferAssignment payload) {
+	public ReeferAssignedEvent(long timestampMillis, String version,ReeferAssignmentPayload payload) {
 		this.timestampMillis = timestampMillis;
     	this.version = version;
     	this.type = OrderEventBase.TYPE_REEFER_ASSIGNED;
@@ -18,11 +18,11 @@ public class ReeferAssignedEvent extends OrderEventBase {
 	}
 	
 	
-	public ReeferAssignment getPayload() {
+	public ReeferAssignmentPayload getPayload() {
 		return payload;
 	}
 
-	public void setPayload(ReeferAssignment payload) {
+	public void setPayload(ReeferAssignmentPayload payload) {
 		this.payload = payload;
 	}
 	

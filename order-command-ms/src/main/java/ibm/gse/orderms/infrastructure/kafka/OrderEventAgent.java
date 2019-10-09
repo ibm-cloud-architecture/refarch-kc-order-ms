@@ -23,9 +23,9 @@ import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignedEvent;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignment;
+import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignmentPayload;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignment;
+import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 
@@ -160,7 +160,7 @@ public class OrderEventAgent implements EventListener {
 	            switch (orderEvent.getType()) {
 	            case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
 	                synchronized (orderRepository) {
-	                	VoyageAssignment voyageAssignment = (VoyageAssignment)((VoyageAssignedEvent) orderEvent).getPayload();
+	                	VoyageAssignmentPayload voyageAssignment = (VoyageAssignmentPayload)((VoyageAssignedEvent) orderEvent).getPayload();
 	                    String orderID = voyageAssignment.getOrderID();
 	                    Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
 	                    if (oco.isPresent()) {
@@ -188,7 +188,7 @@ public class OrderEventAgent implements EventListener {
 	                break;
 	            case OrderEventBase.TYPE_REEFER_ASSIGNED:
 	            	synchronized (orderRepository) {
-	            		ReeferAssignment ca = ((ReeferAssignedEvent) orderEvent).getPayload();
+	            		ReeferAssignmentPayload ca = ((ReeferAssignedEvent) orderEvent).getPayload();
 		            	String orderID = ca.getOrderID();
 		            	Optional<ShippingOrder>oco = orderRepository.getOrderByOrderID(orderID);
 		            	if (oco.isPresent()) {

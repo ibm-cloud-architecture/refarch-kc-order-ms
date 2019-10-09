@@ -12,7 +12,7 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignment;
+import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -61,7 +61,7 @@ public class TestEventDeserialization {
 		
 		VoyageAssignedEvent voyageAssignedEvent = new VoyageAssignedEvent(new Date().getTime(),
 				"1",
-				new VoyageAssignment("O01","V01")); 
+				new VoyageAssignmentPayload("O01","V01")); 
 		Gson gson = new Gson();
 		String voyageAssignedEventAsString = gson.toJson(voyageAssignedEvent);
 		System.out.println(voyageAssignedEventAsString);
