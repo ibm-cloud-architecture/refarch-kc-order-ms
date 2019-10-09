@@ -6,6 +6,7 @@ image:
   repository: docker-registry-default.apps.green-with-envy.ocp.csplab.local/reefershipmentsolution/kc-ordercmdms
   tag: latest
   pullPolicy: Always
+  pullSecret: null
   resources:
     requests:
       cpu: 200m
