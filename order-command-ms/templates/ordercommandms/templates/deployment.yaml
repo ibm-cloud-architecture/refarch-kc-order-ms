@@ -1,0 +1,93 @@
+---
+# Source: ordercommandms/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "ordercommandms-deployment"
+  labels:
+    chart: 'ordercommandms-1.0.0'
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: "ordercommandms-selector"
+        version: "current"
+    spec:
+      serviceAccountName: kcontainer-runtime
+      containers:
+      - name: "ordercommandms"
+        image: "ibmcase/kc-ordercommandms:latest"
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9080
+          initialDelaySeconds: 20
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "300Mi"
+        env:
+          - name: PORT
+            value: "9080"
+          - name: APPLICATION_NAME
+            value: "release-name"
+          - name: KAFKA_BROKERS
+            valueFrom:
+              configMapKeyRef:
+                name: "kafka-brokers"
+                key: brokers
+          - name: KAFKA_APIKEY
+            valueFrom:
+              secretKeyRef:
+                name: "eventstreams-apikey"
+                key: binding
+          - name: TRUSTSTORE_ENABLED
+            value: "true"
+          - name: TRUSTSTORE_PWD
+            value: "password"
+          - name: TRUSTSTORE_PATH
+            value: "/config/resources/security/es-ssl/es-cert.jks"
+          # This file is included in-line in the env section of deployment.yaml
+          # if .Values.generatedBindings.enabled is true.
+          - name: IBM_APM_SERVER_URL
+            valueFrom:
+              secretKeyRef:
+                name: apm-server-config
+                key: ibm_apm_server_url
+                optional: true
+          - name: IBM_APM_KEYFILE
+            valueFrom:
+              secretKeyRef:
+                name: apm-server-config
+                key: ibm_apm_keyfile
+                optional: true
+          - name: IBM_APM_KEYFILE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: apm-server-config
+                key: ibm_apm_keyfile_password
+                optional: true
+          - name: IBM_APM_INGRESS_URL
+            valueFrom:
+              secretKeyRef:
+                name: apm-server-config
+                key: ibm_apm_ingress_url
+                optional: true
+          - name: IBM_APM_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: apm-server-config
+                key: ibm_apm_access_token
+                optional: true
+          
+        volumeMounts:
+          - mountPath: "/config/resources/security/es-ssl"
+            name: eventstreams-truststore
+            readOnly: true
+      volumes:
+        - name: eventstreams-truststore
+          secret:
+            secretName: "es-truststore-jks"

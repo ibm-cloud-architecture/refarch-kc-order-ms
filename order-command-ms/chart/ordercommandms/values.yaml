@@ -3,10 +3,9 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: us.icr.io/ibmcaseeda/kc-ordercmdms
+  repository: docker-registry-default.apps.green-with-envy.ocp.csplab.local/reefershipmentsolution/kc-ordercmdms
   tag: latest
   pullPolicy: Always
-  pullSecret: browncompute-registry-secret
   resources:
     requests:
       cpu: 200m
@@ -15,8 +14,8 @@ service:
   name: Node
   type: NodePort
   servicePort: 9080
-  nodePort: 31200
   servicePortHttps: 9443
+  nodePort: 30201
 hpa:
   enabled: false
   minReplicas: 1

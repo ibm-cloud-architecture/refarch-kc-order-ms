@@ -25,7 +25,7 @@ Regardless of specific deployment targets (OCP, IKS, k8s), the following prerequ
         - Example: `kubectl create secret generic es-ca-pemfile --from-file=/Users/osowski/Downloads/es-cert.pem`
 
 !!! note
-      The name of those secrets are used in the Helm chart `values.yaml` and `deployment.yaml` files of each project.
+      The name of those secrets are used in the Helm chart `values.yaml` and `deployment.yaml` files of each project. The `helm template` command will generate service and deployment yaml files with the good value for each chart. (See [section below](#deploy-to-ocp-311))
 
       ```
       kafka:

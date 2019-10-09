@@ -1,0 +1,18 @@
+---
+# Source: ordercommandms/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: "ordercommandms-service"
+  labels:
+    chart: "ordercommandms-1.0.0"
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 9080
+    nodePort: 30201
+  - name: https
+    port: 9443
+  selector:
+    app: "ordercommandms-selector"

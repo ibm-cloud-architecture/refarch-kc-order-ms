@@ -16,7 +16,7 @@ public class ShippingOrder {
     public static final String BOOKED_STATUS = "booked";
     public static final String REJECTED_STATUS = "rejected";
     public static final String COMPLETED_STATUS = "completed";
-    public static final String CONTAINER_ALLOCATED_STATUS = "container-allocated";
+
     public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
     public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
     public static final String CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
@@ -55,15 +55,18 @@ public class ShippingOrder {
     }
 
     public void assign(VoyageAssignment voyageAssignment) {
-    	// This is to illustrate CQRS. In an integrated microservice the voyage ID will be saved her too
-        this.status = ShippingOrder.ASSIGNED_STATUS;
         this.voyageID = voyageAssignment.getVoyageID();
+        setAssignStatus();
     }
 
+    public void setAssignStatus() {
+    	if (this.voyageID != null && this.reeferID != null) {
+    		this.status = ShippingOrder.ASSIGNED_STATUS;
+    	}
+    }
     public void assignContainer(ReeferAssignment reeferAssignment) {
-    	// This is to illustrate CQRS. In an integrated microservice the container ID will be saved her too
-    	this.status = ShippingOrder.CONTAINER_ALLOCATED_STATUS;
     	this.reeferID = reeferAssignment.getContainerID();
+    	setAssignStatus();
     }
     
     public void cancel(CancellationPayload cancellation) {
