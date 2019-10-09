@@ -59,12 +59,16 @@ This layer includes Repository and Agents consumer of events as well as event em
 
 ![](images/order-cmd-classes.png)
 
-* [ShippingOrderResource](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/app/ShippingOrderResource.java)
-* [ShippingOrderService](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/domain/service/ShippingOrderService.java)
-* [ShippingOrderRepository](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/repository/ShippingOrderRepository.java) This is an interface, but there is a mockup implementation to keep the data in memory.
-* [OrderCommandProducer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandProducer.java)
-* [OrderCommandAgent](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandAgent.java)
-* [OrderEventProducer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderEventProducer.java)
+* [ShippingOrderResource](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/app/ShippingOrderResource.java) is the REST api resource class for `/orders` POST, PUT and GET. It is part of the app layer.
+* [ShippingOrderService](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/domain/service/ShippingOrderService.java) is part of the domain layer, and groups the service operation to manage a shipping order. 
+* [ShippingOrderRepository](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/repository/ShippingOrderRepository.java) This is an interface, but there is a mockup implementation to keep the data in memory. It is part of the infrastructure layer.
+* [OrderCommandProducer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandProducer.java) is part of the infrastructure, and produce command event to sequence the operation between the messaging and the database.
+* [OrderCommandAgent](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderCommandAgent.java) is also part of the infrastructure, with its counter part class the [OrderCommandRunner](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/OrderCommandRunner.java) which loop on polling message from the `orderCommands` topic.
+* [OrderEventProducer](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/src/main/java/ibm/gse/orderms/infrastructure/kafka/OrderEventProducer.java) is producing events for other microservice to consume.
+
+The following sequence diagram illustrates how those components are working together:
+
+![](images/seq-diagram.png)
 
 
 ## Data and Event Model
