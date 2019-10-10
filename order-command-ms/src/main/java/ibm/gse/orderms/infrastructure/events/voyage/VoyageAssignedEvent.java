@@ -5,9 +5,9 @@ import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 public class VoyageAssignedEvent extends OrderEventBase {
 
   
-	VoyageAssignment payload;
+	VoyageAssignmentPayload payload;
 	
-    public VoyageAssignedEvent(long timestampMillis, String version, VoyageAssignment payload) {
+    public VoyageAssignedEvent(long timestampMillis, String version, VoyageAssignmentPayload payload) {
     	this.timestampMillis = timestampMillis;
     	this.version = version;
     	this.type = OrderEventBase.TYPE_VOYAGE_ASSIGNED;
@@ -17,7 +17,7 @@ public class VoyageAssignedEvent extends OrderEventBase {
     public VoyageAssignedEvent() {
     }
 
-	public VoyageAssignment getPayload() {
+	public VoyageAssignmentPayload getPayload() {
 		return payload;
 	}
 

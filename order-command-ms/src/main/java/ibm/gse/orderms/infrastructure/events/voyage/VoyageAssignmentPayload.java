@@ -1,16 +1,16 @@
 package ibm.gse.orderms.infrastructure.events.voyage;
 
-public class VoyageAssignment {
+public class VoyageAssignmentPayload {
 
     private String orderID;
     private String voyageID;
 
-    public VoyageAssignment(String orderID, String voyageID) {
+    public VoyageAssignmentPayload(String orderID, String voyageID) {
         this.orderID = orderID;
         this.voyageID = voyageID;
     }
 
-    public VoyageAssignment() {}
+    public VoyageAssignmentPayload() {}
 
     public String getOrderID() {
         return orderID;

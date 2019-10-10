@@ -74,7 +74,7 @@ public class TestOrderTransaction extends CommonITTest {
     	response = makeGetRequest(url + "/" + orderID);
         String responseString = response.readEntity(String.class);
         ShippingOrder persistedOrder  = new Gson().fromJson(responseString, ShippingOrder.class);
-        Assert.assertTrue("pending".contentEquals(persistedOrder.getStatus()));
+        Assert.assertTrue(ShippingOrder.PENDING_STATUS.contentEquals(persistedOrder.getStatus()));
 
         response.close();
         
@@ -108,11 +108,11 @@ public class TestOrderTransaction extends CommonITTest {
 		}
         Thread.sleep(10000);
         
-        // 3 verify the status is now assigned as there is a voyage
+        // 3 verify the status is still pending as there is only a voyage
         // ###############################
         Response res = makeGetRequest(url + "/" + orderID);
         ShippingOrder o = new Gson().fromJson(res.readEntity(String.class), ShippingOrder.class);
-        assertEquals("assigned",o.getStatus());
+        assertEquals(ShippingOrder.PENDING_STATUS,o.getStatus());
        
         // the voyage ID is set on the query side of the order service.
         // 4- now allocate the container: the container service is listening to event that the voyage id is assigned to container id so it search for a container and assiend it.
@@ -138,7 +138,7 @@ public class TestOrderTransaction extends CommonITTest {
         // ###############################
         res = makeGetRequest(url + "/" + orderID);
         o = new Gson().fromJson(res.readEntity(String.class), ShippingOrder.class);
-        assertEquals("container-allocated",o.getStatus());
+        assertEquals(ShippingOrder.ASSIGNED_STATUS,o.getStatus());
 	}
 
 }

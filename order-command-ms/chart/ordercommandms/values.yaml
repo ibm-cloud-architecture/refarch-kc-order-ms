@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: docker-registry-default.apps.green-with-envy.ocp.csplab.local/reefershipmentsolution/kc-ordercmdms
+  repository: ibmcaseed/kc-ordercmdms
   tag: latest
   pullPolicy: Always
   pullSecret: null
