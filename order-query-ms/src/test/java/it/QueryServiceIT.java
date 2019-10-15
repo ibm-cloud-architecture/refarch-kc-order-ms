@@ -25,22 +25,22 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import ibm.labs.kc.order.query.dao.QueryOrder;
-import ibm.labs.kc.order.query.kafka.ApplicationConfig;
-import ibm.labs.kc.order.query.model.Address;
-import ibm.labs.kc.order.query.model.ContainerAssignment;
-import ibm.labs.kc.order.query.model.Order;
-import ibm.labs.kc.order.query.model.Rejection;
-import ibm.labs.kc.order.query.model.VoyageAssignment;
-import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
-import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
-import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
-import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
-import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
-import ibm.labs.kc.order.query.model.events.OrderEvent;
-import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
+import ibm.gse.orderqueryms.domain.model.Address;
+import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
+import ibm.gse.orderqueryms.domain.model.Order;
+import ibm.gse.orderqueryms.domain.model.Rejection;
+import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
+import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffShipEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnShipEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.AssignContainerEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.AssignOrderEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.ContainerDeliveredEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.CreateOrderEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.OrderCompletedEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.RejectOrderEvent;
+import ibm.gse.orderqueryms.infrastructure.kafka.ApplicationConfig;
 
 public class QueryServiceIT {
     private String port = System.getProperty("liberty.test.port");

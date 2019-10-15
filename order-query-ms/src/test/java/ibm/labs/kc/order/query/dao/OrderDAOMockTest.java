@@ -9,8 +9,10 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import ibm.labs.kc.order.query.model.Address;
-import ibm.labs.kc.order.query.model.Order;
+import ibm.gse.orderqueryms.domain.model.Address;
+import ibm.gse.orderqueryms.domain.model.Order;
+import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
+import ibm.gse.orderqueryms.infrastructure.repository.OrderDAOMock;
 
 public class OrderDAOMockTest {
 	
