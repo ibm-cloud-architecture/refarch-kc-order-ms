@@ -1,11 +1,16 @@
-# Build and run the order microsercives locally
+# Build and run the order microservices locally
 
-We support different deployment models: local with docker-compose, and remote using kubernetes on IBM Cloud (IKS), or on premise with Openshift. To build and run we are proposing to use some shell scripts. Each script accepts one argument:
+We support different deployment models for event streams and the reefer solution: local with docker-compose, and remote using kubernetes on IBM Cloud (IKS), or on premise with Openshift. 
 
-* LOCAL (default is argument is omitted)
-* IBM_CLOUD
+When developing the microservice we can access kafka / event streams remote deployed on IBM Cloud or running locally via docker compose. 
 
-This argument is used to set environment variables used in the code.  In fact the `setenv.sh` script is defined in the root `refarch-kc` project and the `scripts` folder.
+To build and run we are proposing to use some shell scripts. Each script accepts one argument:
+
+* LOCAL (default if no argument): it uses the kafka image as define in docker compose from the `refarch-kc` project.
+* IBM_CLOUD : to access event streams as service on IBM Cloud.
+* ICP : to access event streams deployed on Openshift cluster on premise. 
+
+This argument is used to set environment variables used in the code.  In fact the `setenv.sh` script is used, and is defined in the root `refarch-kc` project and the `scripts` folder.
 
 ## Pre-requisites
 
@@ -22,7 +27,7 @@ You can have the following software already installed on your computer or use [o
 
 ## Build
 
-There are two separate folder to manage the code and scripts for the CQRS command and query part:
+There are two separate folders to manage the code and scripts for the CQRS command and query parts:
 
 * order-command-ms
 * order-query-ms
