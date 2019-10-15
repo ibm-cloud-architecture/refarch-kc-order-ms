@@ -36,13 +36,20 @@ import ut.ShippingOrderTestDataFactory;
 public class OrderCRUServiceIT extends CommonITTest {
 
 
+
+    public void testSuite() {
+    	try {
+    		this.shouldGetOrderIDAfterCreation();
+    		this.testCreateEmptyJson();
+    	} catch (Exception e) {
+    		Assert.fail("Should not have exception");
+    	}
+    }
+    
     @Test
     public void shouldGetOrderIDAfterCreation() throws Exception {
         System.out.println("Testing create order " + url);
-
-        
     	ShippingOrderCreateParameters orderDTO = ShippingOrderTestDataFactory.orderCreateFixtureWithoutID();
-    
         Response response = makePostRequest(url, new Gson().toJson(orderDTO));
         try {
 
@@ -51,7 +58,7 @@ public class OrderCRUServiceIT extends CommonITTest {
             assertTrue(response.hasEntity());
             String responseString = response.readEntity(String.class);
             assertNotNull(responseString);
-            System.out.println(responseString);
+            System.out.println(" --> created order ID: " + responseString);
         } finally {
             response.close();
         }
@@ -69,13 +76,12 @@ public class OrderCRUServiceIT extends CommonITTest {
     }
 
     @Test
-    public void shouldGenerateErrorAsItisaBadOrderNegativeQuantity() throws Exception {
+    public void shouldGenerateErrorAsTheOrderHasNegativeQuantity() throws Exception {
         ShippingOrderCreateParameters cor = new ShippingOrderCreateParameters();
         cor.setExpectedDeliveryDate("2019-01-15T17:48Z");
         cor.setPickupDate("2019-01-14T17:48Z");
         cor.setProductID("myProductID");
         cor.setCustomerID("GoodManuf");
-
         cor.setQuantity(-100);
 
         Response response = makePostRequest(url, new Gson().toJson(cor));
@@ -93,7 +99,7 @@ public class OrderCRUServiceIT extends CommonITTest {
     	Response response = makePostRequest(url, new Gson().toJson(orderDTO));
     	String orderID = response.readEntity(String.class);
     	System.out.println("shouldUpdateTheQuantity for " + orderID);
-    	// Wait the command event to be produce and consumer and data persisted
+    	// Wait the command event to be produced and consumed and data persisted
     	Thread.sleep(5000);
     	// now modify the quantity
         ShippingOrderUpdateParameters cor = new ShippingOrderUpdateParameters();
@@ -118,6 +124,7 @@ public class OrderCRUServiceIT extends CommonITTest {
         response.close();
     }
 
+  
     @Test
     public void shouldGetSomeRecords() throws InterruptedException {
     	ShippingOrderCreateParameters orderDTO = ShippingOrderTestDataFactory.orderCreateFixtureWithoutID();
@@ -140,7 +147,7 @@ public class OrderCRUServiceIT extends CommonITTest {
     	response.close();
     }
     
-    //@Test
+   
     public void testUpdateDenied() throws Exception {
         String orderID = UUID.randomUUID().toString();
         String putURL = url + "/" + orderID;

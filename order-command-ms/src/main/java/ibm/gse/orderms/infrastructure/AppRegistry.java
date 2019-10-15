@@ -1,5 +1,8 @@
-package ibm.gse.orderms.app;
+package ibm.gse.orderms.infrastructure;
 
+import javax.enterprise.context.ApplicationScoped;
+
+import ibm.gse.orderms.app.ShippingOrderResource;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandProducer;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventProducer;
@@ -11,11 +14,13 @@ import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
  * @author jeromeboyer
  *
  */
+@ApplicationScoped
 public class AppRegistry {
 
 	private ShippingOrderResource orderResource = null;
 	
 	private static AppRegistry instance = new AppRegistry();
+
 	private static ShippingOrderRepository orderRepository;
 	private static OrderCommandProducer orderCommandProducer;
 	private static OrderEventProducer orderEventProducer;
@@ -27,7 +32,7 @@ public class AppRegistry {
 	
 	
 	public  ShippingOrderResource orderResource() {
-		synchronized(instance) {
+		synchronized(this) {
 			if (orderResource == null ) {
 				orderResource = new ShippingOrderResource();
 			}
@@ -36,9 +41,9 @@ public class AppRegistry {
 	}
 
 
-   
+	
     public ShippingOrderRepository shippingOrderRepository() {
-    	synchronized(instance) {
+    	synchronized(this) {
 	        if (orderRepository == null) {
 	        	orderRepository = new ShippingOrderRepositoryMock();
 	        }
@@ -48,7 +53,7 @@ public class AppRegistry {
 
 
 	public EventEmitter orderCommandProducer() {
-	    	synchronized(instance) {
+	    	synchronized(this) {
 	    		if (orderCommandProducer == null) {
 	    			orderCommandProducer = new OrderCommandProducer();
 	    		}
@@ -57,7 +62,7 @@ public class AppRegistry {
 	}
 	
 	public EventEmitter orderEventProducer() {
-    	synchronized(instance) {
+    	synchronized(this) {
     		if (orderEventProducer == null) {
     			orderEventProducer = new OrderEventProducer();
     		}

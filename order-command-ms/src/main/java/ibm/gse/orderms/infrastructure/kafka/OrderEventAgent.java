@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
+import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.events.CancellationPayload;
 import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;

@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
  * @author jerome boyer
  *
  */
+
 public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
     private static final Logger logger = LoggerFactory.getLogger(ShippingOrderRepositoryMock.class);
     private final Map<String, ShippingOrder> orders;
