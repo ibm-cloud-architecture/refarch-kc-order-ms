@@ -1,7 +1,7 @@
 package ibm.gse.orderqueryms.app;
 
-import ibm.gse.orderqueryms.infrastructure.repository.OrderActionDAO;
-import ibm.gse.orderqueryms.infrastructure.repository.OrderActionDAOImpl;
+import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
+import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAOMock;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderDAO;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderDAOMock;
 
@@ -11,7 +11,7 @@ public class AppRegistry {
 	
 	private static AppRegistry instance = new AppRegistry();
 	private static OrderDAO orderRepository;
-	private static OrderActionDAO orderHistoryRepository;
+	private static OrderHistoryDAO orderHistoryRepository;
 	//private static OrderCommandProducer orderCommandProducer;
 	//private static OrderEventProducer orderEventProducer;
 	
@@ -40,10 +40,10 @@ public class AppRegistry {
         return orderRepository;
     }
     
-    public OrderActionDAO orderHistoryRepository() {
+    public OrderHistoryDAO orderHistoryRepository() {
     	synchronized(instance) {
 	        if (orderHistoryRepository == null) {
-	        	orderHistoryRepository = new OrderActionDAOImpl();
+	        	orderHistoryRepository = new OrderHistoryDAOMock();
 	        }
     	}
         return orderHistoryRepository;

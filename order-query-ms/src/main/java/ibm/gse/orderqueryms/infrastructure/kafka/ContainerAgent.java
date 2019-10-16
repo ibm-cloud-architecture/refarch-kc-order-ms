@@ -33,7 +33,7 @@ import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnTruckEven
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOrderAssignedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOrderReleasedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerRemovedEvent;
-import ibm.gse.orderqueryms.infrastructure.repository.OrderActionDAO;
+import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
 
 public class ContainerAgent implements EventListener {
 	
@@ -44,7 +44,7 @@ public class ContainerAgent implements EventListener {
     //private OffsetAndMetadata reloadLimit;
     //private boolean reloadCompleted = false;
     
-	private final OrderActionDAO orderHistoryRepository;
+	private final OrderHistoryDAO orderHistoryRepository;
 
     public ContainerAgent() {
         Properties properties = ApplicationConfig.getContainerConsumerProperties("orderquery-container-consumer");

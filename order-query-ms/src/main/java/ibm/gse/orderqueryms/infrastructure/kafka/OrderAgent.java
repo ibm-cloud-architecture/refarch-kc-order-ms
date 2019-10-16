@@ -35,7 +35,7 @@ import ibm.gse.orderqueryms.infrastructure.events.order.OrderCompletedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.RejectOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.UpdateOrderEvent;
-import ibm.gse.orderqueryms.infrastructure.repository.OrderActionDAO;
+import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderDAO;
 
 public class OrderAgent implements EventListener {
@@ -43,7 +43,7 @@ public class OrderAgent implements EventListener {
 	private static final Logger logger = LoggerFactory.getLogger(OrderAgent.class.getName());
 	private final KafkaConsumer<String, String> kafkaConsumer;
 	private final OrderDAO orderRepository;
-	private final OrderActionDAO orderHistoryRepository;
+	private final OrderHistoryDAO orderHistoryRepository;
 	private static final Gson gson = new Gson();
 
 	public OrderAgent() {
@@ -55,7 +55,7 @@ public class OrderAgent implements EventListener {
 		orderHistoryRepository = AppRegistry.getInstance().orderHistoryRepository();
 	}
 
-	public OrderAgent(KafkaConsumer<String, String> kafkaConsumer, OrderDAO orderRepository, OrderActionDAO orderHistoryRepository) {
+	public OrderAgent(KafkaConsumer<String, String> kafkaConsumer, OrderDAO orderRepository, OrderHistoryDAO orderHistoryRepository) {
 		this.kafkaConsumer = kafkaConsumer;
 		this.orderRepository = orderRepository;
 		this.orderHistoryRepository = orderHistoryRepository;

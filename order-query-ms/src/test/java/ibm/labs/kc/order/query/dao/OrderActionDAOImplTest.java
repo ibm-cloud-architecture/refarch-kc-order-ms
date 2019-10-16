@@ -7,7 +7,7 @@ import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistoryInfo;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
-import ibm.gse.orderqueryms.infrastructure.repository.OrderActionDAOImpl;
+import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAOMock;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +20,7 @@ public class OrderActionDAOImplTest {
 	
 	@Test
     public void testGetOrderHistory() {
-		OrderActionDAOImpl orderActionDAO = new OrderActionDAOImpl();
+		OrderHistoryDAOMock orderActionDAO = new OrderHistoryDAOMock();
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         
         OrderHistoryInfo orderAction1 = OrderHistoryInfo.newFromOrder(new Order("orderID1", "productId", "custId1", 2,

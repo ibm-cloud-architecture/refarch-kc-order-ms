@@ -40,7 +40,7 @@ public class OrderQueryResource {
             @APIResponse(responseCode = "404", description = "Order not found", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order found", content = @Content(mediaType = "application/json")) })
     public Response getById(@PathParam("Id") String orderId) {
-        logger.info("QueryService.getById(" + orderId + ")");
+        logger.info("OrderQueryResource.getById(" + orderId + ")");
 
         Optional<QueryOrder> oo = orderDAO.getById(orderId);
         if (oo.isPresent()) {
@@ -57,7 +57,7 @@ public class OrderQueryResource {
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Orders found", content = @Content(mediaType = "application/json")) })
     public Response getByManuf(@PathParam("manuf") String manuf) {
-        logger.info("QueryService.getByManuf(" + manuf + ")");
+        logger.info("OrderQueryResource.getByManuf(" + manuf + ")");
 
         Collection<QueryOrder> orders = orderDAO.getByManuf(manuf);
         return Response.ok().entity(orders).build();
@@ -70,7 +70,7 @@ public class OrderQueryResource {
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Orders found", content = @Content(mediaType = "application/json")) })
     public Response getByStatus(@PathParam("status") String status) {
-        logger.info("QueryService.getByStatus(" + status + ")");
+        logger.info("OrderQueryResource.getByStatus(" + status + ")");
 
         Collection<QueryOrder> orders = orderDAO.getByStatus(status);
         return Response.ok().entity(orders).build();

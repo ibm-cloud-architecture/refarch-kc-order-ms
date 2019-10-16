@@ -6,7 +6,7 @@ import java.util.Optional;
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistoryInfo;
 
-public interface OrderActionDAO {
+public interface OrderHistoryDAO {
 	
 	public void addOrder(OrderHistory orderAction);
 	public void addContainer(OrderHistory orderAction);

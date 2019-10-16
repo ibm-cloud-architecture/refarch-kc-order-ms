@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistoryInfo;
 
-public class OrderActionDAOImpl implements OrderActionDAO{
+public class OrderHistoryDAOMock implements OrderHistoryDAO{
 	
-	private static final Logger logger = LoggerFactory.getLogger(OrderActionDAOImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(OrderHistoryDAOMock.class);
 	
 	private final Map<String, OrderHistory> orderEvents;
 	private final Map<String, OrderHistory> containerEvents;
@@ -25,17 +25,17 @@ public class OrderActionDAOImpl implements OrderActionDAO{
 	private ArrayList<OrderHistory> ordHistory;
 	private ArrayList<OrderHistory> contHistory;
 	
-	private static OrderActionDAOImpl instance;
+	private static OrderHistoryDAOMock instance;
 
-    public synchronized static OrderActionDAO instance() {
+    public synchronized static OrderHistoryDAO instance() {
         if (instance == null) {
-            instance = new OrderActionDAOImpl();
+            instance = new OrderHistoryDAOMock();
         }
         return instance;
     }
 
     // for testing
-    public OrderActionDAOImpl() {
+    public OrderHistoryDAOMock() {
     	
     	orderEvents = new ConcurrentHashMap<>();
     	ordHistory = new ArrayList<>();
