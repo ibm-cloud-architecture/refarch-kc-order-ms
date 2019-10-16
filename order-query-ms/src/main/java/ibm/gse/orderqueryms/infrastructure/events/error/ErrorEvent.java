@@ -1,4 +1,7 @@
-package ibm.gse.orderqueryms.infrastructure.events;
+package ibm.gse.orderqueryms.infrastructure.events.error;
+
+import ibm.gse.orderqueryms.infrastructure.events.AbstractEvent;
+import ibm.gse.orderqueryms.infrastructure.events.Event;
 
 public class ErrorEvent extends AbstractEvent {
 

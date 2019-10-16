@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-import ibm.gse.orderqueryms.infrastructure.events.ErrorEvent;
 import ibm.gse.orderqueryms.infrastructure.events.Event;
 import ibm.gse.orderqueryms.infrastructure.events.EventEmitter;
+import ibm.gse.orderqueryms.infrastructure.events.error.ErrorEvent;
 
 public class ErrorProducer implements EventEmitter {
 
