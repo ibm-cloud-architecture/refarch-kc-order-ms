@@ -2,6 +2,7 @@ package ibm.gse.orderqueryms.app;
 
 import java.util.Collection;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -17,17 +18,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
-import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
+import ibm.gse.orderqueryms.domain.service.OrderHistoryService;
 
 @Path("orders")
 public class OrderHistoryResource {
-	
 	static final Logger logger = LoggerFactory.getLogger(OrderHistoryResource.class);
+	
+	@Inject
+	public OrderHistoryService orderHistoryService;
 
-    private OrderHistoryDAO orderHistoryDAO;
+	public OrderHistoryResource() {
+		
+	}
 
-    public OrderHistoryResource() {
-    	orderHistoryDAO = AppRegistry.getInstance().orderHistoryRepository();
+    public OrderHistoryResource(OrderHistoryService orderHistoryService) {
+    	this.orderHistoryService = orderHistoryService;
     }
 	
 	@GET
@@ -38,7 +43,7 @@ public class OrderHistoryResource {
             @APIResponse(responseCode = "200", description = "Order history found", content = @Content(mediaType = "application/json")) })
     public Response getOrderHistory(@PathParam("orderId") String orderId) {
         logger.info("OrderHistoryResource.getOrderHistory(" + orderId + ")");
-        Collection<OrderHistory> orderAction = orderHistoryDAO.getOrderStatus(orderId);
+        Collection<OrderHistory> orderAction = this.orderHistoryService.getOrderStatus(orderId);
         return Response.ok(orderAction, MediaType.APPLICATION_JSON).build();
     }
 
