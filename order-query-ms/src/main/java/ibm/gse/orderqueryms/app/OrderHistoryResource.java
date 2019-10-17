@@ -18,17 +18,16 @@ import org.slf4j.LoggerFactory;
 
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
-import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAOMock;
 
 @Path("orders")
-public class OrderHistoryResource { //implements EventListener
+public class OrderHistoryResource {
 	
 	static final Logger logger = LoggerFactory.getLogger(OrderHistoryResource.class);
 
     private OrderHistoryDAO orderHistoryDAO;
 
     public OrderHistoryResource() {
-    	orderHistoryDAO = OrderHistoryDAOMock.instance();
+    	orderHistoryDAO = AppRegistry.getInstance().orderHistoryRepository();
     }
 	
 	@GET

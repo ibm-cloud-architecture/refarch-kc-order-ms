@@ -17,7 +17,7 @@ public class OrderQueryService {
     private OrderDAO orderDAO;
 
     public OrderQueryService() {
-        orderDAO = AppRegistry.getInstance().orderRepository(); //OrderDAOMock.instance();
+        orderDAO = AppRegistry.getInstance().orderRepository();
     }
 	
     public Optional<QueryOrder> getOrderById(String orderId){

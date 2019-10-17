@@ -1,6 +1,7 @@
 package ibm.gse.orderqueryms.infrastructure.kafka;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -39,23 +40,21 @@ public class ContainerAgent implements EventListener {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ContainerAgent.class.getName());
     private final KafkaConsumer<String, String> kafkaConsumer;
-
-    //private boolean initDone = false;
-    //private OffsetAndMetadata reloadLimit;
-    //private boolean reloadCompleted = false;
     
 	private final OrderHistoryDAO orderHistoryRepository;
 
     public ContainerAgent() {
         Properties properties = ApplicationConfig.getContainerConsumerProperties("orderquery-container-consumer");
-        kafkaConsumer = new KafkaConsumer<>(properties);
-
-        //Properties reloadProperties = ApplicationConfig.getContainerConsumerReloadProperties("orderquery-container-reload-consumer\"");
-        //reloadConsumer = new KafkaConsumer<String, String>(reloadProperties);
+        kafkaConsumer = new KafkaConsumer<String, String>(properties);
+		this.kafkaConsumer.subscribe(Collections.singletonList(ApplicationConfig.CONTAINER_TOPIC));
 
 		orderHistoryRepository = AppRegistry.getInstance().orderHistoryRepository();
     }
 	
+	public ContainerAgent(KafkaConsumer<String, String> kafkaConsumer, OrderHistoryDAO orderHistoryRepository) {
+		this.kafkaConsumer = kafkaConsumer;
+		this.orderHistoryRepository = orderHistoryRepository;
+	}
 	
     public List<ContainerEvent> poll() {
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
@@ -77,13 +76,6 @@ public class ContainerAgent implements EventListener {
 	
 	@Override
 	public void handle(AbstractEvent event) {
-
-		// TODO PRUNE FOR container only events
-		// TODO TBD Where are we listening to container-specific events?
-		
-		/*
-		 * From OrderActionService
-		 */
         
         String containerID;
         Optional<OrderHistoryInfo> oqc;

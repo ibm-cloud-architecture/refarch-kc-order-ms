@@ -33,63 +33,6 @@ public class AgentsInitializer implements ServletContextListener {
         executor.execute(containerRunner);
     }
 
-    /*
-    private Runnable newReloadOrderRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                logger.info("ReloadState started");
-                EventListener queryServiceListener = new QueryService();
-                EventListener orderActionServicelistener = new OrderActionService();
-
-                while (!orderConsumer.reloadCompleted()) {
-                    List<OrderEvent> events = orderConsumer.pollForReload();
-                    for (OrderEvent event : events) {
-                        try {
-                        	queryServiceListener.handle(event, "order");
-                        	orderActionServicelistener.handle(event, "order");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            // TODO fail to restart would be the correct handling
-                            // mark the app as unhealthy
-                        }
-                    }
-                }
-                
-                logger.info("ReloadState order completed");
-                orderConsumer.safeReloadClose();
-                
-            }
-        };
-    }
-    
-    private Runnable newReloadContainerRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                logger.info("ReloadState started");
-                EventListener orderActionServicelistener = new OrderActionService();
-
-                while (!containerConsumer.reloadCompleted()) {
-                    List<ContainerEvent> events = containerConsumer.pollForReload();
-                    for (ContainerEvent event : events) {
-                        try {
-                        	orderActionServicelistener.handle(event, "container");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            // TODO fail to restart would be the correct handling
-                            // mark the app as unhealthy
-                        }
-                    }
-                }
-                logger.info("ReloadState completed");
-                containerConsumer.safeReloadClose();
-            }
-        };
-    }
-	*/
-
-
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         logger.info("ConsumerLoop contextDestroyed");

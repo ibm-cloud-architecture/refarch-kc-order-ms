@@ -12,10 +12,8 @@ public class AppRegistry {
 	private static OrderHistoryDAO orderHistoryRepository;
 	
 	public static AppRegistry getInstance() {
-		return instance;
-		
+		return instance;	
 	}
-	
    
     public OrderDAO orderRepository() {
     	synchronized(instance) {

@@ -28,11 +28,9 @@ public class OrderQueryResource {
 
 	@Inject
 	public OrderQueryService orderQueryService;
-    
-    //private OrderDAO orderDAO;
 
     public OrderQueryResource() {
-        //orderDAO = OrderDAOMock.instance();
+
     }
     
     public OrderQueryResource(OrderQueryService orderQueryService) {
@@ -49,7 +47,7 @@ public class OrderQueryResource {
     public Response getById(@PathParam("Id") String orderId) {
         logger.info("OrderQueryResource.getById(" + orderId + ")");
 
-        Optional<QueryOrder> oo = this.orderQueryService.getOrderById(orderId); //orderDAO.getById(orderId);
+        Optional<QueryOrder> oo = this.orderQueryService.getOrderById(orderId);
         if (oo.isPresent()) {
             return Response.ok().entity(oo.get()).build();
         } else {
@@ -66,7 +64,7 @@ public class OrderQueryResource {
     public Response getByManuf(@PathParam("manuf") String manuf) {
         logger.info("OrderQueryResource.getByManuf(" + manuf + ")");
 
-        Collection<QueryOrder> orders = this.orderQueryService.getOrdersByManufacturer(manuf); //orderDAO.getByManuf(manuf);
+        Collection<QueryOrder> orders = this.orderQueryService.getOrdersByManufacturer(manuf);
         return Response.ok().entity(orders).build();
     }
 
@@ -79,7 +77,7 @@ public class OrderQueryResource {
     public Response getByStatus(@PathParam("status") String status) {
         logger.info("OrderQueryResource.getByStatus(" + status + ")");
 
-        Collection<QueryOrder> orders = this.orderQueryService.getOrdersByStatus(status); //orderDAO.getByStatus(status);
+        Collection<QueryOrder> orders = this.orderQueryService.getOrdersByStatus(status);
         return Response.ok().entity(orders).build();
     }
 
