@@ -22,36 +22,36 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import ibm.labs.kc.order.query.action.OrderAction;
-import ibm.labs.kc.order.query.action.OrderActionInfo;
-import ibm.labs.kc.order.query.kafka.ApplicationConfig;
-import ibm.labs.kc.order.query.model.Address;
-import ibm.labs.kc.order.query.model.Container;
-import ibm.labs.kc.order.query.model.ContainerAssignment;
-import ibm.labs.kc.order.query.model.Order;
-import ibm.labs.kc.order.query.model.Rejection;
-import ibm.labs.kc.order.query.model.VoyageAssignment;
-import ibm.labs.kc.order.query.model.events.AssignContainerEvent;
-import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
-import ibm.labs.kc.order.query.model.events.ContainerDeliveredEvent;
-import ibm.labs.kc.order.query.model.events.ContainerEvent;
-import ibm.labs.kc.order.query.model.events.ContainerGoodsLoadedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerGoodsUnLoadedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOffMaintainanceEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOffShipEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOffTruckEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOnMaintainanceEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOnShipEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOnTruckEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOrderAssignedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerOrderReleasedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerRemovedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerAddedEvent;
-import ibm.labs.kc.order.query.model.events.ContainerAtLocationEvent;
-import ibm.labs.kc.order.query.model.events.CreateOrderEvent;
-import ibm.labs.kc.order.query.model.events.OrderCompletedEvent;
-import ibm.labs.kc.order.query.model.events.OrderEvent;
-import ibm.labs.kc.order.query.model.events.RejectOrderEvent;
+import ibm.gse.orderqueryms.domain.model.Address;
+import ibm.gse.orderqueryms.domain.model.Container;
+import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
+import ibm.gse.orderqueryms.domain.model.Order;
+import ibm.gse.orderqueryms.domain.model.Rejection;
+import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
+import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
+import ibm.gse.orderqueryms.domain.model.order.history.OrderHistoryInfo;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerAddedEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerAtLocationEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerGoodsLoadedEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerGoodsUnLoadedEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffMaintainanceEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffShipEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffTruckEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnMaintainanceEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnShipEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnTruckEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOrderAssignedEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOrderReleasedEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerRemovedEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.AssignContainerEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.AssignOrderEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.ContainerDeliveredEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.CreateOrderEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.OrderCompletedEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.RejectOrderEvent;
+import ibm.gse.orderqueryms.infrastructure.kafka.ApplicationConfig;
 
 public class OrderActionServiceIT {
 
@@ -75,9 +75,9 @@ public class OrderActionServiceIT {
     	OrderEvent ord_event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
     	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(ord_event2));
 
-    	OrderActionInfo expectedOrder = OrderActionInfo.newFromOrder(order);
+    	OrderHistoryInfo expectedOrder = OrderHistoryInfo.newFromOrder(order);
     	expectedOrder.reject(rejection);
-    	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, ord_event2.getTimestampMillis(), ord_event2.getType());
+    	OrderHistory expectedComplexQueryOrder = OrderHistory.newFromHistoryOrder(expectedOrder, ord_event2.getTimestampMillis(), ord_event2.getType());
 
         Thread.sleep(10000L);
 
@@ -87,7 +87,7 @@ public class OrderActionServiceIT {
           Response response = makeGetRequest(url + "orderHistory/"+orderID);
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
-          ArrayList<OrderAction> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderAction>>(){}.getType());
+          ArrayList<OrderHistory> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderHistory>>(){}.getType());
           Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
         }
 
@@ -106,7 +106,7 @@ public class OrderActionServiceIT {
         OrderEvent ord_event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testOrderStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(ord_event));
 
-        OrderActionInfo expectedOrder = OrderActionInfo.newFromOrder(order);
+        OrderHistoryInfo expectedOrder = OrderHistoryInfo.newFromOrder(order);
 
         VoyageAssignment va = new VoyageAssignment(orderID, "myVoyage");
         OrderEvent ord_event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
@@ -124,7 +124,7 @@ public class OrderActionServiceIT {
         ContainerEvent cont_event = new ContainerAddedEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event));
 
-        OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
+        OrderHistoryInfo expectedContainer = OrderHistoryInfo.newFromContainer(cont);
 
         cont.setStatus("ContainerAtLocation");
         ContainerEvent cont_event2 = new ContainerAtLocationEvent(System.currentTimeMillis(), "1", cont);
@@ -203,7 +203,7 @@ public class OrderActionServiceIT {
 
         expectedOrder.orderCompleted(order1);
 
-    	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryOrder(expectedOrder, ord_event7.getTimestampMillis(), ord_event7.getType());
+    	OrderHistory expectedComplexQueryOrder = OrderHistory.newFromHistoryOrder(expectedOrder, ord_event7.getTimestampMillis(), ord_event7.getType());
         
     	int maxattempts = 10;
 
@@ -211,7 +211,7 @@ public class OrderActionServiceIT {
           Response response = makeGetRequest(url + "orderHistory/"+orderID);
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
-          ArrayList<OrderAction> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderAction>>(){}.getType());
+          ArrayList<OrderHistory> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderHistory>>(){}.getType());
           Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
         }
     }
@@ -226,7 +226,7 @@ public class OrderActionServiceIT {
         ContainerEvent cont_event = new ContainerAddedEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.CONTAINER_TOPIC, containerID, new Gson().toJson(cont_event));
 
-        OrderActionInfo expectedContainer = OrderActionInfo.newFromContainer(cont);
+        OrderHistoryInfo expectedContainer = OrderHistoryInfo.newFromContainer(cont);
 
     	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         Order order = new Order(orderID, "productId", "custId", 2,
@@ -235,7 +235,7 @@ public class OrderActionServiceIT {
         OrderEvent ord_event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
         sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(ord_event));
 
-        OrderActionInfo expectedOrder = OrderActionInfo.newFromOrder(order);
+        OrderHistoryInfo expectedOrder = OrderHistoryInfo.newFromOrder(order);
 
         VoyageAssignment va = new VoyageAssignment(orderID, "myVoyage");
         OrderEvent ord_event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
@@ -267,7 +267,7 @@ public class OrderActionServiceIT {
 
         expectedContainer.containerRemoved(cont);
 
-    	OrderAction expectedComplexQueryOrder = OrderAction.newFromHistoryContainer(expectedContainer, cont_event4.getTimestampMillis(), cont_event4.getType());
+    	OrderHistory expectedComplexQueryOrder = OrderHistory.newFromHistoryContainer(expectedContainer, cont_event4.getTimestampMillis(), cont_event4.getType());
 
         int maxattempts = 10;
         
@@ -277,7 +277,7 @@ public class OrderActionServiceIT {
           Response response = makeGetRequest(url + "orderHistory/"+orderID);
           Assert.assertEquals(response.getStatus(), 200);
           String responseString = response.readEntity(String.class);
-          ArrayList<OrderAction> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderAction>>(){}.getType());
+          ArrayList<OrderHistory> complexQueryOrders = new Gson().fromJson(responseString,new TypeToken<List<OrderHistory>>(){}.getType());
           Assert.assertTrue(complexQueryOrders.contains(expectedComplexQueryOrder));
         }
     }

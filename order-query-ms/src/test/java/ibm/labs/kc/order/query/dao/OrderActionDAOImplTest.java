@@ -1,13 +1,13 @@
 package ibm.labs.kc.order.query.dao;
 
-import ibm.labs.kc.order.query.action.OrderAction;
-import ibm.labs.kc.order.query.action.OrderActionDAOImpl;
-import ibm.labs.kc.order.query.action.OrderActionInfo;
-import ibm.labs.kc.order.query.model.Address;
-import ibm.labs.kc.order.query.model.Order;
-import ibm.labs.kc.order.query.model.VoyageAssignment;
-import ibm.labs.kc.order.query.model.events.AssignOrderEvent;
-import ibm.labs.kc.order.query.model.events.OrderEvent;
+import ibm.gse.orderqueryms.domain.model.Address;
+import ibm.gse.orderqueryms.domain.model.Order;
+import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
+import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
+import ibm.gse.orderqueryms.domain.model.order.history.OrderHistoryInfo;
+import ibm.gse.orderqueryms.infrastructure.events.order.AssignOrderEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
+import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAOMock;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,10 +20,10 @@ public class OrderActionDAOImplTest {
 	
 	@Test
     public void testGetOrderHistory() {
-		OrderActionDAOImpl orderActionDAO = new OrderActionDAOImpl();
+		OrderHistoryDAOMock orderActionDAO = new OrderHistoryDAOMock();
         Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
         
-        OrderActionInfo orderAction1 = OrderActionInfo.newFromOrder(new Order("orderID1", "productId", "custId1", 2,
+        OrderHistoryInfo orderAction1 = OrderHistoryInfo.newFromOrder(new Order("orderID1", "productId", "custId1", 2,
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z", Order.PENDING_STATUS));
         
@@ -31,7 +31,7 @@ public class OrderActionDAOImplTest {
         OrderEvent event1 = new AssignOrderEvent(System.currentTimeMillis(), "1", va1);
         orderAction1.assign(va1);
         
-        OrderActionInfo orderAction2 = OrderActionInfo.newFromOrder(new Order("orderID2", "productId", "custId1", 2,
+        OrderHistoryInfo orderAction2 = OrderHistoryInfo.newFromOrder(new Order("orderID2", "productId", "custId1", 2,
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z", Order.PENDING_STATUS));
         
@@ -39,26 +39,26 @@ public class OrderActionDAOImplTest {
         OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va2);
         orderAction2.assign(va2);
         
-        OrderAction expectedOrderAction1 = OrderAction.newFromOrder(orderAction1, event1.getTimestampMillis(), event1.getType());
-        OrderAction expectedQueryAction2 = OrderAction.newFromOrder(orderAction2, event2.getTimestampMillis(), event2.getType());
+        OrderHistory expectedOrderAction1 = OrderHistory.newFromOrder(orderAction1, event1.getTimestampMillis(), event1.getType());
+        OrderHistory expectedQueryAction2 = OrderHistory.newFromOrder(orderAction2, event2.getTimestampMillis(), event2.getType());
               
         orderActionDAO.addOrder(expectedOrderAction1);
         orderActionDAO.orderHistory(expectedOrderAction1);
         orderActionDAO.addOrder(expectedQueryAction2);
         orderActionDAO.orderHistory(expectedQueryAction2);
 
-        Collection<OrderAction> expectedwithID = new ArrayList<>();
+        Collection<OrderHistory> expectedwithID = new ArrayList<>();
         expectedwithID.add(expectedOrderAction1);
         
-        Collection<OrderAction> expected = new ArrayList<>();
+        Collection<OrderHistory> expected = new ArrayList<>();
         
-        for (OrderAction complexQueryOrder : expectedwithID) {
-        	OrderAction reqOrder = new OrderAction(complexQueryOrder.getTimestampMillis(), complexQueryOrder.getAction(), complexQueryOrder.getType());
+        for (OrderHistory complexQueryOrder : expectedwithID) {
+        	OrderHistory reqOrder = new OrderHistory(complexQueryOrder.getTimestampMillis(), complexQueryOrder.getAction(), complexQueryOrder.getType());
         	expected.add(reqOrder);
         }
 
 
-        Collection<OrderAction> byStatus = orderActionDAO.getOrderStatus("orderID1");
+        Collection<OrderHistory> byStatus = orderActionDAO.getOrderStatus("orderID1");
         assertArrayEquals(Collections.unmodifiableCollection(expected).toArray(),byStatus.toArray());
     }
 
