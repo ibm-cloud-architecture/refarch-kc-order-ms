@@ -7,9 +7,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibm.gse.orderqueryms.app.AppRegistry;
 import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderDAO;
-import ibm.gse.orderqueryms.infrastructure.repository.OrderDAOMock;
 
 public class OrderQueryService {
     static final Logger logger = LoggerFactory.getLogger(OrderQueryService.class);
@@ -17,7 +17,7 @@ public class OrderQueryService {
     private OrderDAO orderDAO;
 
     public OrderQueryService() {
-        orderDAO = OrderDAOMock.instance();
+        orderDAO = AppRegistry.getInstance().orderRepository(); //OrderDAOMock.instance();
     }
 	
     public Optional<QueryOrder> getOrderById(String orderId){
