@@ -35,8 +35,8 @@ import ibm.gse.orderqueryms.infrastructure.events.order.OrderCompletedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.RejectOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.UpdateOrderEvent;
-import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderDAO;
+import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
 
 public class OrderAgent implements EventListener {
 
@@ -44,7 +44,6 @@ public class OrderAgent implements EventListener {
 	private final KafkaConsumer<String, String> kafkaConsumer;
 	private final OrderDAO orderRepository;
 	private final OrderHistoryDAO orderHistoryRepository;
-	private static final Gson gson = new Gson();
 
 	public OrderAgent() {
 		Properties properties = ApplicationConfig.getOrderConsumerProperties("orderquery-orders-consumer");
@@ -65,29 +64,10 @@ public class OrderAgent implements EventListener {
 		ConsumerRecords<String, String> recs = kafkaConsumer.poll(ApplicationConfig.CONSUMER_POLL_TIMEOUT);
 		List<OrderEvent> result = new ArrayList<>();
 		for (ConsumerRecord<String, String> rec : recs) {
-			OrderEvent event = deserialize(rec.value());
+			OrderEvent event = OrderEvent.deserialize(rec.value());
 			result.add(event);
 		}
 		return result;
-	}
-
-	public OrderEvent deserialize(String eventAsString) {
-		OrderEvent orderEvent = gson.fromJson(eventAsString, OrderEvent.class);
-		switch (orderEvent.getType()) {
-		case OrderEvent.TYPE_CREATED:
-			return gson.fromJson(eventAsString, CreateOrderEvent.class);
-		case OrderEvent.TYPE_UPDATED:
-			return gson.fromJson(eventAsString, UpdateOrderEvent.class);
-		case OrderEvent.TYPE_ASSIGNED:
-			return gson.fromJson(eventAsString, AssignOrderEvent.class);
-		case OrderEvent.TYPE_CANCELLED:
-			return gson.fromJson(eventAsString, CancelOrderEvent.class);
-		case OrderEvent.TYPE_CONTAINER_ALLOCATED:
-			return gson.fromJson(eventAsString, AssignContainerEvent.class);
-		default:
-			// TODO handle
-			return null;
-		}
 	}
 
 	public void safeClose() {
@@ -108,7 +88,7 @@ public class OrderAgent implements EventListener {
 				orderEvent = (OrderEvent) orderEvent;
 
 				String orderID;
-				Optional<QueryOrder> oqo;
+				Optional<QueryOrder> orderQueryObject;
 
 				if (orderEvent != null) {
 					System.out.println("@@@@ in handle " + new Gson().toJson(orderEvent));
@@ -124,9 +104,9 @@ public class OrderAgent implements EventListener {
 						synchronized (orderRepository) {
 							Order o2 = ((UpdateOrderEvent) orderEvent).getPayload();
 							orderID = o2.getOrderID();
-							oqo = orderRepository.getById(orderID);
-							if (oqo.isPresent()) {
-								QueryOrder qo = oqo.get();
+							orderQueryObject = orderRepository.getById(orderID);
+							if (orderQueryObject.isPresent()) {
+								QueryOrder qo = orderQueryObject.get();
 								qo.update(o2);
 								orderRepository.update(qo);
 							} else {
@@ -138,9 +118,9 @@ public class OrderAgent implements EventListener {
 						synchronized (orderRepository) {
 							VoyageAssignment voyageAssignment = ((AssignOrderEvent) orderEvent).getPayload();
 							orderID = voyageAssignment.getOrderID();
-							oqo = orderRepository.getById(orderID);
-							if (oqo.isPresent()) {
-								QueryOrder qo = oqo.get();
+							orderQueryObject = orderRepository.getById(orderID);
+							if (orderQueryObject.isPresent()) {
+								QueryOrder qo = orderQueryObject.get();
 								qo.assign(voyageAssignment);
 								orderRepository.update(qo);
 							} else {
@@ -152,9 +132,9 @@ public class OrderAgent implements EventListener {
 						synchronized (orderRepository) {
 							Rejection rejection = ((RejectOrderEvent) orderEvent).getPayload();
 							orderID = rejection.getOrderID();
-							oqo = orderRepository.getById(orderID);
-							if (oqo.isPresent()) {
-								QueryOrder qo = oqo.get();
+							orderQueryObject = orderRepository.getById(orderID);
+							if (orderQueryObject.isPresent()) {
+								QueryOrder qo = orderQueryObject.get();
 								qo.reject(rejection);
 								orderRepository.update(qo);
 							} else {
@@ -166,9 +146,9 @@ public class OrderAgent implements EventListener {
 						synchronized (orderRepository) {
 							ContainerAssignment container = ((AssignContainerEvent) orderEvent).getPayload();
 							orderID = container.getOrderID();
-							oqo = orderRepository.getById(orderID);
-							if (oqo.isPresent()) {
-								QueryOrder qo = oqo.get();
+							orderQueryObject = orderRepository.getById(orderID);
+							if (orderQueryObject.isPresent()) {
+								QueryOrder qo = orderQueryObject.get();
 								qo.assignContainer(container);
 								orderRepository.update(qo);
 							} else {
@@ -180,9 +160,9 @@ public class OrderAgent implements EventListener {
 						synchronized (orderRepository) {
 							ContainerAssignment container = ((ContainerDeliveredEvent) orderEvent).getPayload();
 							orderID = container.getOrderID();
-							oqo = orderRepository.getById(orderID);
-							if (oqo.isPresent()) {
-								QueryOrder qo = oqo.get();
+							orderQueryObject = orderRepository.getById(orderID);
+							if (orderQueryObject.isPresent()) {
+								QueryOrder qo = orderQueryObject.get();
 								qo.containerDelivered(container);
 								orderRepository.update(qo);
 							} else {
@@ -194,9 +174,9 @@ public class OrderAgent implements EventListener {
 						synchronized (orderRepository) {
 							Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
 							orderID = cancellation.getOrderID();
-							oqo = orderRepository.getById(orderID);
-							if (oqo.isPresent()) {
-								QueryOrder qo = oqo.get();
+							orderQueryObject = orderRepository.getById(orderID);
+							if (orderQueryObject.isPresent()) {
+								QueryOrder qo = orderQueryObject.get();
 								qo.cancel(cancellation);
 								orderRepository.update(qo);
 							} else {
@@ -208,9 +188,9 @@ public class OrderAgent implements EventListener {
 						synchronized (orderRepository) {
 							Order order = ((OrderCompletedEvent) orderEvent).getPayload();
 							orderID = order.getOrderID();
-							oqo = orderRepository.getById(orderID);
-							if (oqo.isPresent()) {
-								QueryOrder qo = oqo.get();
+							orderQueryObject = orderRepository.getById(orderID);
+							if (orderQueryObject.isPresent()) {
+								QueryOrder qo = orderQueryObject.get();
 								qo.orderCompleted(order);
 								orderRepository.update(qo);
 							} else {
@@ -229,7 +209,7 @@ public class OrderAgent implements EventListener {
 
 				// Processing order history
 
-		        Optional<OrderHistoryInfo> orderHistoryActionInfo; // was oqo
+		        Optional<OrderHistoryInfo> orderHistoryInfo; // was oqo
 				
 				System.out.println("@@@@ in handle order action handling order" + new Gson().toJson(orderEvent));
 				switch (orderEvent.getType()) {
@@ -250,9 +230,9 @@ public class OrderAgent implements EventListener {
 						long timestampMillis = ((UpdateOrderEvent) orderEvent).getTimestampMillis();
 						String action = ((UpdateOrderEvent) orderEvent).getType();
 						orderID = o2.getOrderID();
-						orderHistoryActionInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryActionInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryActionInfo.get();
+						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
+						if (orderHistoryInfo.isPresent()) {
+							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.update(o2);
 							OrderHistory cqo = OrderHistory.newFromOrder(orderActionItem, timestampMillis, action);
 							orderHistoryRepository.updateOrder(cqo);
@@ -268,9 +248,9 @@ public class OrderAgent implements EventListener {
 						long timestampMillis = ((AssignOrderEvent) orderEvent).getTimestampMillis();
 						String action = ((AssignOrderEvent) orderEvent).getType();
 						orderID = voyageAssignment.getOrderID();
-						orderHistoryActionInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryActionInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryActionInfo.get();
+						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
+						if (orderHistoryInfo.isPresent()) {
+							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.assign(voyageAssignment);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
@@ -287,9 +267,9 @@ public class OrderAgent implements EventListener {
 						long timestampMillis = ((RejectOrderEvent) orderEvent).getTimestampMillis();
 						String action = ((RejectOrderEvent) orderEvent).getType();
 						orderID = rejection.getOrderID();
-						orderHistoryActionInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryActionInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryActionInfo.get();
+						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
+						if (orderHistoryInfo.isPresent()) {
+							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.reject(rejection);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
@@ -306,9 +286,9 @@ public class OrderAgent implements EventListener {
 						long timestampMillis = ((AssignContainerEvent) orderEvent).getTimestampMillis();
 						String action = ((AssignContainerEvent) orderEvent).getType();
 						orderID = container.getOrderID();
-						orderHistoryActionInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryActionInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryActionInfo.get();
+						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
+						if (orderHistoryInfo.isPresent()) {
+							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.assignContainer(container);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
@@ -325,9 +305,9 @@ public class OrderAgent implements EventListener {
 						long timestampMillis = ((ContainerDeliveredEvent) orderEvent).getTimestampMillis();
 						String action = ((ContainerDeliveredEvent) orderEvent).getType();
 						orderID = container.getOrderID();
-						orderHistoryActionInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryActionInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryActionInfo.get();
+						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
+						if (orderHistoryInfo.isPresent()) {
+							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.containerDelivered(container);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
@@ -344,9 +324,9 @@ public class OrderAgent implements EventListener {
 						long timestampMillis = ((CancelOrderEvent) orderEvent).getTimestampMillis();
 						String action = ((CancelOrderEvent) orderEvent).getType();
 						orderID = cancellation.getOrderID();
-						orderHistoryActionInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryActionInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryActionInfo.get();
+						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
+						if (orderHistoryInfo.isPresent()) {
+							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.cancel(cancellation);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
@@ -363,9 +343,9 @@ public class OrderAgent implements EventListener {
 						long timestampMillis = ((OrderCompletedEvent) orderEvent).getTimestampMillis();
 						String action = ((OrderCompletedEvent) orderEvent).getType();
 						orderID = order.getOrderID();
-						orderHistoryActionInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryActionInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryActionInfo.get();
+						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
+						if (orderHistoryInfo.isPresent()) {
+							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.orderCompleted(order);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);

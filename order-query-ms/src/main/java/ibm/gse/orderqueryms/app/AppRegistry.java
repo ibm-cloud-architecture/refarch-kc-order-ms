@@ -7,29 +7,15 @@ import ibm.gse.orderqueryms.infrastructure.repository.OrderDAOMock;
 
 public class AppRegistry {
 
-	//private ShippingOrderResource orderResource = null;
-	
 	private static AppRegistry instance = new AppRegistry();
 	private static OrderDAO orderRepository;
 	private static OrderHistoryDAO orderHistoryRepository;
-	//private static OrderCommandProducer orderCommandProducer;
-	//private static OrderEventProducer orderEventProducer;
 	
 	public static AppRegistry getInstance() {
 		return instance;
 		
 	}
 	
-	/*
-	public  ShippingOrderResource orderResource() {
-		synchronized(instance) {
-			if (orderResource == null ) {
-				orderResource = new ShippingOrderResource();
-			}
-		}
-		return orderResource;
-	}
-	*/
    
     public OrderDAO orderRepository() {
     	synchronized(instance) {
@@ -48,27 +34,5 @@ public class AppRegistry {
     	}
         return orderHistoryRepository;
     }
-
-    /*
-	public EventEmitter orderCommandProducer() {
-	    	synchronized(instance) {
-	    		if (orderCommandProducer == null) {
-	    			orderCommandProducer = new OrderCommandProducer();
-	    		}
-	    	}
-	        return orderCommandProducer;
-	}
-	*/
-	
-    /*
-	public EventEmitter orderEventProducer() {
-    	synchronized(instance) {
-    		if (orderEventProducer == null) {
-    			orderEventProducer = new OrderEventProducer();
-    		}
-    	}
-        return orderEventProducer;
-	}
-	*/
 	
 }
