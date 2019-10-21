@@ -60,9 +60,11 @@ public class OrderCommandAgent implements EventListener {
 	  
 	  /** 
 	   * Get n records from the order command topic
-	   * @return
+	   * 
+	   * @return FIFO list command events
 	   */
 	  public List<OrderCommandEvent> poll() {
+		 // The kafka consumer poll api ensures liveness. The consumer sends periodic heartbeats to the server
         ConsumerRecords<String, String> recs = this.orderCommandsConsumer.poll(KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT);
         List<OrderCommandEvent> result = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {

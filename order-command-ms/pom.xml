@@ -10,11 +10,13 @@
         <artifactId>liberty-maven-app-parent</artifactId>
         <version>RELEASE</version>
     </parent>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <version.maven-war-plugin>3.2.2</version.maven-war-plugin>
         <kafka.version>2.2.0</kafka.version>
         <app.name>${project.artifactId}</app.name>
         
@@ -28,20 +30,7 @@
     	<failOnMissingWebXml>false</failOnMissingWebXml>
     	<openliberty.version>RELEASE</openliberty.version>
     </properties>
-    <repositories>
-      <repository>
-        <id>oss.sonatype.org-snapshot</id>
-        <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-        <releases>
-          <enabled>false</enabled>
-        </releases>
-        <snapshots>
-          <enabled>true</enabled>
-        </snapshots>
-      </repository>
-    </repositories>
-
-
+   
     <dependencies>
     	<dependency>
             <groupId>org.eclipse.microprofile</groupId>
@@ -50,6 +39,7 @@
             <scope>provided</scope>
             <type>pom</type>
         </dependency>
+         <!-- For tests -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -68,7 +58,20 @@
             <version>1.1.4</version>
             <scope>test</scope>
         </dependency>
-       
+        <dependency>
+		    <groupId>org.apache.kafka</groupId>
+		    <artifactId>kafka-streams-test-utils</artifactId>
+		    <version>${kafka.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-core</artifactId>
+		    <version>3.0.0</version>
+		    <scope>test</scope>
+		</dependency>
+        
+       <!--  app specifics -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
@@ -86,12 +89,7 @@
     		<artifactId>kafka-clients</artifactId>
     		<version>${kafka.version}</version>
 		</dependency>
-		<dependency>
-		    <groupId>org.apache.kafka</groupId>
-		    <artifactId>kafka-streams-test-utils</artifactId>
-		    <version>${kafka.version}</version>
-		    <scope>test</scope>
-		</dependency>
+
         <dependency>
            <groupId>org.slf4j</groupId>
            <artifactId>slf4j-api</artifactId>
@@ -117,21 +115,16 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
         </dependency>
-        <dependency>
-		    <groupId>org.mockito</groupId>
-		    <artifactId>mockito-core</artifactId>
-		    <version>3.0.0</version>
-		    <scope>test</scope>
-		</dependency>
-        
+
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>${version.maven-war-plugin}</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <packagingExcludes>pom.xml</packagingExcludes>
@@ -184,6 +177,9 @@
                             <environmentVariables>
                                 <KAFKA_BROKERS>${KAFKA_BROKERS}</KAFKA_BROKERS>
                                 <KAFKA_APIKEY>${KAFKA_APIKEY}</KAFKA_APIKEY>
+                                <TRUSTSTORE_ENABLED>${TRUSTSTORE_ENABLED}</TRUSTSTORE_ENABLED>
+                                <TRUSTSTORE_PATH>${TRUSTSTORE_PATH}</TRUSTSTORE_PATH>
+                                <TRUSTSTORE_PWD>${TRUSTSTORE_PWD}</TRUSTSTORE_PWD>
                            </environmentVariables>
                         </configuration>
                     </execution>
@@ -229,12 +225,14 @@
 			                <version>${openliberty.version}</version>
 			                <type>zip</type>
 			              </assemblyArtifact>
+			              <serverName>defaultServer</serverName>
+			              <stripVersion>true</stripVersion>
 			              <configFile>src/main/liberty/config/server.xml</configFile>
 			              <appArchive>${project.build.directory}/${app.name}.war</appArchive>
 			            
 			              <packageFile>${project.build.directory}/${app.name}.jar</packageFile>
 			              <include>runnable</include>
-			              <serverName>defaultServer</serverName>
+			             
 			              <installAppPackages>project</installAppPackages>
 			              <configDirectory>${project.basedir}/src/main/liberty/server</configDirectory>
 			              <bootstrapProperties>

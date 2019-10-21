@@ -33,7 +33,7 @@ public class TestOrderResource  {
 	static ShippingOrderRepository orderRepository = new ShippingOrderRepositoryMock();
 
 	/**
-	 * Need to inject mockup for event emmitter to avoid dependency with external messaging middleware
+	 * Need to inject mockup for event emitter to avoid dependency with external messaging middleware
 	 */
 	@Before
 	public void prepareTests() {

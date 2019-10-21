@@ -20,7 +20,7 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
  * @author jerome boyer
  *
  */
-
+@ApplicationScoped
 public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
     private static final Logger logger = LoggerFactory.getLogger(ShippingOrderRepositoryMock.class);
     private final Map<String, ShippingOrder> orders;

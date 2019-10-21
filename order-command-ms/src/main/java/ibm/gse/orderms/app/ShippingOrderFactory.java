@@ -1,4 +1,4 @@
-package ibm.gse.orderms.domain.service;
+package ibm.gse.orderms.app;
 
 import java.util.UUID;
 

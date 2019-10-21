@@ -3,8 +3,6 @@ package ibm.gse.orderms.infrastructure.repository;
 import java.util.Collection;
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 
 
