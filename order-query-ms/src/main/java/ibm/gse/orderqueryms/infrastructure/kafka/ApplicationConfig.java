@@ -11,22 +11,50 @@ import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.ConfigProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 public class ApplicationConfig {
 
-    public static final String ORDER_TOPIC = "orders";
-    public static final String CONTAINER_TOPIC = "containers";
-    public static final String ERROR_TOPIC = "errors";
+	private static final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class.getName());
+	
+    private static Config config = ConfigProvider.getConfig();
+
+    private static String ORDER_TOPIC;
+    
+	private static String CONTAINER_TOPIC;
+
+    private static String ERROR_TOPIC;
+    
     public static final Duration CONSUMER_POLL_TIMEOUT = Duration.ofSeconds(10);
     public static final Duration CONSUMER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
     public static final long PRODUCER_TIMEOUT_SECS = 10;
     public static final long PRODUCER_CLOSE_TIMEOUT_SEC = 10;
     public static final long TERMINATION_TIMEOUT_SEC = 10;
 
-
+    public static String getOrderTopic() {
+    	ORDER_TOPIC = config.getValue("order.topic", String.class);
+    	logger.info("Get Order Topic: {}", ORDER_TOPIC);
+		return ORDER_TOPIC;
+	}
+    
+    public static String getContainerTopic() {
+    	CONTAINER_TOPIC = config.getValue("container.topic", String.class);
+    	logger.info("Get Container Topic: {}", CONTAINER_TOPIC);
+		return CONTAINER_TOPIC;
+	}
+    
+	public static String getErrorTopic() {
+		ERROR_TOPIC = config.getValue("error.topic",  String.class);
+    	logger.info("Get Error Topic: {}", ERROR_TOPIC);
+		return ERROR_TOPIC;
+	}
+    
     public static Properties getOrderConsumerProperties(String groupid) {
         Properties properties = buildCommonProperties();
         properties.put(ConsumerConfig.GROUP_ID_CONFIG,  groupid);
