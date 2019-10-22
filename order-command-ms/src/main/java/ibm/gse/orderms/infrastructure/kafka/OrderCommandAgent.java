@@ -7,14 +7,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
+import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.EventListener;
@@ -22,13 +25,21 @@ import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
+/**
+ * Order command agent listens to commands on the shipping order, that
+ * are published to the order commands topic.
+ *
+ * It uses the repository to save the newly create order or update and existing one.
+ * 
+ * Once the persistence is done, it emits events for other service to consume.
+ */
+@ApplicationScoped
 public class OrderCommandAgent implements EventListener {
 	 
 	  private static final Logger logger = LoggerFactory.getLogger(OrderCommandAgent.class.getName());
 	  
 	  private final KafkaConsumer<String, String> orderCommandsConsumer;
-	  
-	  private final ShippingOrderRepository orderRepository; 
+	  private ShippingOrderRepository orderRepository; 
 	  private EventEmitter orderEventProducer;
 	  
 	  public OrderCommandAgent() {
@@ -49,9 +60,11 @@ public class OrderCommandAgent implements EventListener {
 	  
 	  /** 
 	   * Get n records from the order command topic
-	   * @return
+	   * 
+	   * @return FIFO list command events
 	   */
 	  public List<OrderCommandEvent> poll() {
+		 // The kafka consumer poll api ensures liveness. The consumer sends periodic heartbeats to the server
         ConsumerRecords<String, String> recs = this.orderCommandsConsumer.poll(KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT);
         List<OrderCommandEvent> result = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {

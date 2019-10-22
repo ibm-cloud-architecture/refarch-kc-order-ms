@@ -8,12 +8,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.app.ShippingOrderResource;
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
+import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
@@ -33,7 +33,7 @@ public class TestOrderResource  {
 	static ShippingOrderRepository orderRepository = new ShippingOrderRepositoryMock();
 
 	/**
-	 * Need to inject mockup for event emmitter to avoid dependency with external messaging middleware
+	 * Need to inject mockup for event emitter to avoid dependency with external messaging middleware
 	 */
 	@Before
 	public void prepareTests() {

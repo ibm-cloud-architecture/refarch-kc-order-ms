@@ -9,9 +9,9 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
+import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 public class TestShippingOrderRepository {

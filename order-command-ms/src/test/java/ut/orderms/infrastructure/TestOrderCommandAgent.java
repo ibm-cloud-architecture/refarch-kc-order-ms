@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
@@ -30,9 +31,9 @@ public class TestOrderCommandAgent {
 	static ShippingOrderRepository repository = null ;
 	static KafkaConsumerMockup<String,String> orderCommandsConsumerMock = null;
 	static EventEmitter orderEventProducerMock = null;
-	@Before
-	public void createAgent() {
-		// use the mockup in this class. Do not create consumer multiple times
+	
+	@BeforeClass
+	public static void createMockups() {
 		if (orderCommandsConsumerMock == null) {
 			orderCommandsConsumerMock = new KafkaConsumerMockup<String,String>(KafkaInfrastructureConfig.getConsumerProperties("test-grp","test-id",true,"earliest"),"orderCommands");	
 		}
@@ -40,6 +41,11 @@ public class TestOrderCommandAgent {
 			orderEventProducerMock = new OrderEventEmitterMock();
 		}
 		repository = new ShippingOrderRepositoryMock();
+	}
+	
+	@Before
+	public void createAgent() {		
+		
 		agent = new OrderCommandAgent(repository,orderCommandsConsumerMock,orderEventProducerMock);
 	}
 	/**

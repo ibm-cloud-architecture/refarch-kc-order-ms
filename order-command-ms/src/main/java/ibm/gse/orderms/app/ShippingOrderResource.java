@@ -27,7 +27,6 @@ import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.app.dto.ShippingOrderReference;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.domain.service.ShippingOrderFactory;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
 
 /**
@@ -59,7 +58,7 @@ public class ShippingOrderResource {
             @APIResponse(responseCode = "200", description = "Order created, return order unique identifier", content = @Content(mediaType = "text/plain")) })
 	public Response createShippingOrder(ShippingOrderCreateParameters orderParameters) {
 		if (orderParameters == null ) {
-			return Response.status(400, "No parameters sent").build();
+			return Response.status(400, "No parameter sent").build();
 		}
 		try {
 		   ShippingOrderCreateParameters.validateInputData(orderParameters);

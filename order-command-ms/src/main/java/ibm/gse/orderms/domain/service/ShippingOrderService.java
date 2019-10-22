@@ -7,9 +7,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ibm.gse.orderms.app.AppRegistry;
 import ibm.gse.orderms.app.dto.ShippingOrderReference;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
+import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
