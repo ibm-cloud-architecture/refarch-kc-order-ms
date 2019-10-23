@@ -48,7 +48,7 @@ public class OrderEventProducer implements EventEmitter {
             key = null;
         }
         String value = new Gson().toJson(orderEvent);
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, key, value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), key, value);
 
         Future<RecordMetadata> send = kafkaProducer.send(record);
         send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);

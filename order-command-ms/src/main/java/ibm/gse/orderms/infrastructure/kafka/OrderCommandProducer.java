@@ -51,7 +51,7 @@ public class OrderCommandProducer implements EventEmitter  {
         
         try {
 	        kafkaProducer.beginTransaction();
-	        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_COMMAND_TOPIC, key, value);
+	        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderCommandTopic(), key, value);
 	        Future<RecordMetadata> send = kafkaProducer.send(record);
 	        logger.info("Command event sent: " + value);
 	        send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);

@@ -39,6 +39,9 @@ generatedBindings:
   enabled: true
 kafka:
   brokersConfigMap: kafka-brokers
+  orderTopicName: orders
+  orderCommandTopicName: orderCommands
+  errorTopicName: errors
 eventstreams:
   enabled: true
   apikeyConfigMap: eventstreams-apikey

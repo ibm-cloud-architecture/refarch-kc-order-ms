@@ -89,7 +89,7 @@ public class TestOrderTransaction extends CommonITTest {
 	    		+ KafkaInfrastructureConfig.SCHEMA_VERSION + "\"," 
 	    		+ " \"payload\": { \"voyageID\": \"V101\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
-	    ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, orderID, voyageEvent);
+	    ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), orderID, voyageEvent);
 	    System.out.println("Mockup voyage service with " + voyageEvent);
         Future<RecordMetadata> send = kafkaProducer.send(record);
         try {
@@ -122,7 +122,7 @@ public class TestOrderTransaction extends CommonITTest {
 	    		+ ",\"type\": \"" + OrderEventBase.TYPE_REEFER_ASSIGNED + "\", \"version\": \"1\"," 
 	    		+ " \"payload\": { \"containerID\": \"c02\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
-	    record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, orderID, containerEvent);
+	    record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), orderID, containerEvent);
 	    System.out.println("Mockup container service with " + containerEvent);
         send = kafkaProducer.send(record);
         try {

@@ -41,6 +41,7 @@ import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
 public class OrderAgent implements EventListener {
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderAgent.class.getName());
+
 	private final KafkaConsumer<String, String> kafkaConsumer;
 	private final OrderDAO orderRepository;
 	private final OrderHistoryDAO orderHistoryRepository;
@@ -48,7 +49,7 @@ public class OrderAgent implements EventListener {
 	public OrderAgent() {
 		Properties properties = ApplicationConfig.getOrderConsumerProperties("orderquery-orders-consumer");
 		kafkaConsumer = new KafkaConsumer<String, String>(properties);
-		this.kafkaConsumer.subscribe(Collections.singletonList(ApplicationConfig.ORDER_TOPIC));
+		this.kafkaConsumer.subscribe(Collections.singletonList(ApplicationConfig.getOrderTopic()));
 
 		orderRepository = AppRegistry.getInstance().orderRepository();
 		orderHistoryRepository = AppRegistry.getInstance().orderHistoryRepository();

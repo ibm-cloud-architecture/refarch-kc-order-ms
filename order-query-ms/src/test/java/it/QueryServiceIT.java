@@ -3,8 +3,6 @@ package it;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.Future;
@@ -19,11 +17,9 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import ibm.gse.orderqueryms.domain.model.Address;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
@@ -31,8 +27,6 @@ import ibm.gse.orderqueryms.domain.model.Order;
 import ibm.gse.orderqueryms.domain.model.Rejection;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffShipEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnShipEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignContainerEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.ContainerDeliveredEvent;
@@ -46,7 +40,7 @@ public class QueryServiceIT {
     private String port = System.getProperty("liberty.test.port");
     private String endpoint = "/orders/";
     private String url = "http://localhost:" + port + endpoint;
-
+    
     @Test
     public void testGetById() throws Exception {
         String orderID = UUID.randomUUID().toString();
@@ -56,7 +50,7 @@ public class QueryServiceIT {
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testGetById", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+        sendEvent("testGetById", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
         QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
         int maxattempts = 10;
@@ -85,7 +79,7 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testGetByStatus", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       sendEvent("testGetByStatus", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
        int maxattempts = 10;
        boolean ok = false;
@@ -118,7 +112,7 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testGetByManuf", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       sendEvent("testGetByManuf", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        int maxattempts = 10;
@@ -152,11 +146,11 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       sendEvent("testHandleVoyageAssignment", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
        VoyageAssignment va = new VoyageAssignment(orderID, "12345");
        OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
-       sendEvent("testHandleVoyageAssignment", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+       sendEvent("testHandleVoyageAssignment", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        expectedOrder.assign(va);
@@ -191,11 +185,11 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       sendEvent("testNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
        Rejection rejection = new Rejection(orderID, "custId");
        OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
-       sendEvent("testNoAvailability", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+       sendEvent("testNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        expectedOrder.reject(rejection);
@@ -230,11 +224,11 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       sendEvent("testAllocatedContainer", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
        OrderEvent event2 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
-       sendEvent("testAllocatedContainer", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+       sendEvent("testAllocatedContainer", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        expectedOrder.assignContainer(container);
@@ -271,11 +265,11 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testContainerDelivered", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       sendEvent("testContainerDelivered", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
        OrderEvent event2 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
-       sendEvent("testContainerDelivered", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+       sendEvent("testContainerDelivered", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        expectedOrder.containerDelivered(container);
@@ -312,11 +306,11 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testOrderCompleted", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event));
+       sendEvent("testOrderCompleted", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
        Order order1 = new Order(orderID);
        OrderEvent event2 = new OrderCompletedEvent(System.currentTimeMillis(), "1", order1);
-       sendEvent("testOrderCompleted", ApplicationConfig.ORDER_TOPIC, orderID, new Gson().toJson(event2));
+       sendEvent("testOrderCompleted", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        expectedOrder.orderCompleted(order1);

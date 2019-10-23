@@ -34,7 +34,7 @@ public class ErrorProducer implements EventEmitter {
         ErrorEvent errorEvent = (ErrorEvent) event;
         String value = new Gson().toJson(errorEvent);
 
-        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.ERROR_TOPIC, value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(ApplicationConfig.getErrorTopic(), value);
 
         Future<RecordMetadata> send = kafkaProducer.send(record);
         send.get(ApplicationConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
