@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -47,14 +46,14 @@ public class OrderCommandAgent implements EventListener {
 	    		  "ordercmd-command-consumer",false,"earliest");
 	      this.orderCommandsConsumer = new KafkaConsumer<String, String>(properties);
 	      this.orderRepository = AppRegistry.getInstance().shippingOrderRepository();
-	      this.orderCommandsConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.ORDER_COMMAND_TOPIC));
+	      this.orderCommandsConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.getOrderCommandTopic()));
 	      this.orderEventProducer = AppRegistry.getInstance().orderEventProducer();
 	  }
 	  
 	  public OrderCommandAgent(ShippingOrderRepository repo, KafkaConsumer<String, String>  kafka, EventEmitter oee) {
 		  this.orderCommandsConsumer = kafka;
 		  this.orderRepository = repo;
-		  this.orderCommandsConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.ORDER_COMMAND_TOPIC));
+		  this.orderCommandsConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.getOrderCommandTopic()));
 		  this.orderEventProducer = oee;
 	  }
 	  

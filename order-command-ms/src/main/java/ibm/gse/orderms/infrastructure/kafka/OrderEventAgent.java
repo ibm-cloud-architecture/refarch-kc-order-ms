@@ -48,7 +48,7 @@ public class OrderEventAgent implements EventListener {
         Properties properties = KafkaInfrastructureConfig.getConsumerProperties("ordercmd-event-consumer-grp",
         		"OrderEventAgent",	true,"earliest");
         kafkaConsumer = new KafkaConsumer<String, String>(properties);
-  	    this.kafkaConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.ORDER_TOPIC));
+        this.kafkaConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.getOrderTopic()));
   	
         orderRepository = AppRegistry.getInstance().shippingOrderRepository();	
     }
