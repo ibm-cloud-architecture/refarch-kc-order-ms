@@ -124,4 +124,4 @@ The selected voyage must be from a source port near the pickup location travelli
     All the end user interactions are done in the user interface, in a separate project, but the order microservice supports the backend operations.
 
 
-At this stage we have identified the bounded context, the aggregates, the commands and events we need to implement for this order management service. The implementation involves at least two microservices, one of the command and one for the query. The implementation details are explained in [this note.](#implementation-considerations.md)
+At this stage we have identified the bounded context, the aggregates, the commands and events we need to implement for this order management service. The implementation involves at least two microservices, one of the command and one for the query. The implementation details are explained in [this note.](implementation-considerations.md)
