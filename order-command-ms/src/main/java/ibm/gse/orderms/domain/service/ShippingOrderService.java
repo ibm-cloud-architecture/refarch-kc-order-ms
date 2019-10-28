@@ -30,24 +30,15 @@ public class ShippingOrderService {
 		this.emitter = emitter;
 		this.orderRepository = orderRepository;
 	}
-
-	public void createOrder(ShippingOrder order) {
+	
+	
+	public void createOrder(ShippingOrder order) throws Exception {
 		OrderCommandEvent createOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
 				KafkaInfrastructureConfig.SCHEMA_VERSION, 
 				order,
 				OrderCommandEvent.TYPE_CREATE_ORDER);	
-        try {
+
             emitter.emit(createOrderCommandEvent);
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Fail to publish create order command event see stack above... retry one time");
-            try {
-				emitter.emit(createOrderCommandEvent);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-				logger.error("Fail to publish create order command event ... too bad");
-			}
-        }
 		
 	}
 

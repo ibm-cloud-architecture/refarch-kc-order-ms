@@ -3,12 +3,15 @@ package ibm.gse.orderms.infrastructure.kafka;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.KafkaException;
+import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +45,14 @@ public class OrderCommandProducer implements EventEmitter  {
 	 * the command (the replication is done)
 	 * 
 	 */
-	@Override
+    @Override
+    @Retry(retryOn=TimeoutException.class,
+    maxRetries = 4,
+    maxDuration = 10000,
+    delay = 200,
+    jitter = 100,
+    abortOn=InterruptedException.class)
+    @Timeout(4000)
 	public void emit(OrderEventBase event) throws Exception {
 
 		OrderCommandEvent orderCommandEvent = (OrderCommandEvent)event;
@@ -58,6 +68,8 @@ public class OrderCommandProducer implements EventEmitter  {
 	        kafkaProducer.commitTransaction();
         } catch (KafkaException e){
         	kafkaProducer.abortTransaction();
+        	logger.error(e.getMessage());
+        	throw new KafkaException(e);
         }
 	}
 
@@ -66,7 +78,7 @@ public class OrderCommandProducer implements EventEmitter  {
 		try {
             kafkaProducer.close();
         } catch (Exception e) {
-            logger.warn("Failed closing Producer", e);
+            logger.error("Failed closing Producer", e);
         }
 		
 	}

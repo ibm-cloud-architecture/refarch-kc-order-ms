@@ -18,13 +18,13 @@ import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 
 
-public class ErrorProducer implements EventEmitter {
+public class ErrorEventProducer implements EventEmitter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ErrorProducer.class);
+    private static final Logger logger = LoggerFactory.getLogger(ErrorEventProducer.class);
 
     private KafkaProducer<String, String> kafkaProducer;
 
-    public ErrorProducer() {
+    public ErrorEventProducer() {
         Properties properties = KafkaInfrastructureConfig.getProducerProperties("error-query-producer");
         kafkaProducer = new KafkaProducer<String, String>(properties);
     }

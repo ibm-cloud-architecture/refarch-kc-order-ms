@@ -4,27 +4,19 @@ import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 
 /**
- * Use this mockup class to emit order events
+ * Use this mockup class to emit error events
  *
  */
-public class OrderEventEmitterMock implements EventEmitter{
-	public OrderEventEmitterMock() {}
+public class ErrorEventEmitterMock implements EventEmitter{
+	public ErrorEventEmitterMock() {}
 	
 	public boolean eventEmitted = false;
 	public OrderEventBase emittedEvent = null;
-	public boolean failure = false;
-	
+
 	@Override
 	public void emit(OrderEventBase event) throws Exception {
-		if (this.failure) {
-			this.eventEmitted = false;
-			this.emittedEvent = null;
-			throw new Exception("ERROR could not connect to backbone");
-		} else {
-			this.eventEmitted = true;
-			this.emittedEvent = event;
-		}
- 			
+		this.eventEmitted = true;
+		this.emittedEvent = event;	
 	}
 
 	@Override

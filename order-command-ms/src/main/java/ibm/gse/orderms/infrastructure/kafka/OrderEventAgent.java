@@ -1,5 +1,7 @@
 package ibm.gse.orderms.infrastructure.kafka;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -16,10 +18,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
 import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.events.CancellationPayload;
 import ibm.gse.orderms.infrastructure.events.EventListener;
+import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignedEvent;
@@ -42,20 +44,30 @@ public class OrderEventAgent implements EventListener {
     private final KafkaConsumer<String, String> kafkaConsumer;
     private final ShippingOrderRepository orderRepository; 
     private static final Gson gson = new Gson();
-    
+    private Duration pollTimeOut;
+    private Duration closeTimeOut;
+    private boolean running = true;
 
     public OrderEventAgent() {
         Properties properties = KafkaInfrastructureConfig.getConsumerProperties("ordercmd-event-consumer-grp",
         		"OrderEventAgent",	true,"earliest");
         kafkaConsumer = new KafkaConsumer<String, String>(properties);
         this.kafkaConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.getOrderTopic()));
-  	
         orderRepository = AppRegistry.getInstance().shippingOrderRepository();	
+        this.pollTimeOut = KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT;
+        this.closeTimeOut = KafkaInfrastructureConfig.CONSUMER_CLOSE_TIMEOUT;
     }
     
+    /**
+     * Constructor used for unit testing
+     * @param kafkaConsumer
+     * @param orderRepository
+     */
     public OrderEventAgent(KafkaConsumer<String, String> kafkaConsumer, ShippingOrderRepository orderRepository) {
     	this.kafkaConsumer = kafkaConsumer;
     	this.orderRepository = orderRepository;
+    	this.pollTimeOut = Duration.of(10, ChronoUnit.SECONDS);
+    	this.closeTimeOut = Duration.of(10, ChronoUnit.SECONDS);
     }
     
     
@@ -109,7 +121,7 @@ public class OrderEventAgent implements EventListener {
     }
 */
     public List<OrderEventBase> poll() {
-        ConsumerRecords<String, String> recs = kafkaConsumer.poll(KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT);
+        ConsumerRecords<String, String> recs = kafkaConsumer.poll(this.pollTimeOut);
         List<OrderEventBase> result = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {
         	OrderEventBase event = deserialize(rec.value());
@@ -138,7 +150,7 @@ public class OrderEventAgent implements EventListener {
 
     public void safeClose() {
         try {
-            kafkaConsumer.close(KafkaInfrastructureConfig.CONSUMER_CLOSE_TIMEOUT);
+            kafkaConsumer.close(this.closeTimeOut);
         } catch (Exception e) {
             logger.warn("Failed closing Consumer", e);
         }
@@ -210,6 +222,10 @@ public class OrderEventAgent implements EventListener {
 	            logger.error((new Date()).toString() + " " + e.getMessage(), e);
 	        }
 		
+	}
+
+	public boolean isRunning() {
+		return this.running;
 	}
 
 }

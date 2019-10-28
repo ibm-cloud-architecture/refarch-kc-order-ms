@@ -7,13 +7,23 @@ import static org.junit.Assert.fail;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.AppRegistry;
+import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
+import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
+
+/**
+ * Validate the repository behavior
+ * 
+ * @author jeromeboyer
+ *
+ */
 public class TestShippingOrderRepository {
 	
 	public static  ShippingOrderRepository repository = AppRegistry.getInstance().shippingOrderRepository();
@@ -22,6 +32,8 @@ public class TestShippingOrderRepository {
 	 * At the repository level the ShippingOrder Entity is valid.
 	 * As we use the command pattern the caller of the repository API is 
 	 * the agent listener for the CreateOrderCommand
+	 * @throws OrderCreationException 
+	 * @throws OrderUpdateException 
 	 */
     @Test
     public void testAddShippingOrderShouldReturnID() {
@@ -35,25 +47,36 @@ public class TestShippingOrderRepository {
                 ShippingOrder.PENDING_STATUS);
         
 
-        // Empty Repository  
+        // verify the repository is empty
         assertEquals(0, repository.getAll().size());
 
-        // Insert
-        repository.addNewShippingOrder(order1);
+        // Insert one order
+        try {
+			repository.addOrUpdateNewShippingOrder(order1);
+		} catch (OrderCreationException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
         assertEquals(1, repository.getAll().size());
         assertEquals(order1, repository.getOrderByOrderID(order1.getOrderID()).get());
 
-        // Insert existing key
+        // Insert existing key, no new record added
         try {
-            repository.addNewShippingOrder(order1);
-            fail();
-        } catch (IllegalStateException ise) {
+            repository.addOrUpdateNewShippingOrder(order1);
+        } catch (OrderCreationException ise) {
         	System.out.println(ise.getMessage());
+        	fail();
         }
 
         // Update
         order1.setPickupDate("2018-01-10T13:30Z");
-        repository.updateShippingOrder(order1);
+        try {
+			repository.updateShippingOrder(order1);
+		} catch (OrderUpdateException e) {
+			e.printStackTrace();
+			fail();
+		}
+       
         assertEquals(1, repository.getAll().size());
         assertEquals(order1, repository.getOrderByOrderID(order1.getOrderID()).get());
         assertEquals("2018-01-10T13:30Z", repository.getOrderByOrderID(order1.getOrderID()).get().getPickupDate());
@@ -67,12 +90,17 @@ public class TestShippingOrderRepository {
         try {
             repository.updateShippingOrder(order2);
             fail();
-        } catch (IllegalStateException ise) {
+        } catch (OrderUpdateException ise) {
         	System.out.println(ise.getMessage());
         }
 
         // Insert
-        repository.addNewShippingOrder(order2);
+        try {
+			repository.addOrUpdateNewShippingOrder(order2);
+		} catch (OrderCreationException e) {
+			e.printStackTrace();
+			fail();
+		}
         assertEquals(2, repository.getAll().size());
         ShippingOrder orderOut = repository.getOrderByOrderID(order2.getOrderID()).get();
         assertEquals(order2, orderOut);

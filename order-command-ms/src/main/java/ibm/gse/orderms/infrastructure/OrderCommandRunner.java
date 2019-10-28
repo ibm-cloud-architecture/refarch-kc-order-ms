@@ -38,6 +38,7 @@ public class OrderCommandRunner implements Runnable {
             while (running && ok) {
                 try {
                     List<OrderCommandEvent> events = orderCommandAgent.poll();
+                    // in case of timeout the list is empty.
                     for (OrderCommandEvent event : events) {
                        	orderCommandAgent.handle(event);
                     }

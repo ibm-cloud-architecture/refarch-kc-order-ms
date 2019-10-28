@@ -2,7 +2,11 @@ package ut.gse.orderms.domain.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,12 +15,11 @@ import com.google.gson.Gson;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
+import ut.ErrorEventEmitterMock;
 import ut.KafkaConsumerMockup;
 import ut.OrderCommandEventProducerMock;
 import ut.OrderEventEmitterMock;
@@ -36,7 +39,12 @@ public class TestOrderService {
 		Assert.assertFalse(commandEventProducer.eventEmitted);
 		
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
-		service.createOrder(order);
+		try {
+			service.createOrder(order);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
 		
 		Assert.assertTrue(commandEventProducer.eventEmitted);
 		OrderEventBase createOrderEvent = commandEventProducer.getEventEmitted();
@@ -57,7 +65,12 @@ public class TestOrderService {
 				orderRepository);
 		
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
-		service.createOrder(order);
+		try {
+			service.createOrder(order);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
 		commandEventProducer.safeClose();
 		order.setQuantity(100);
 		service.updateShippingOrder(order);
@@ -78,7 +91,12 @@ public class TestOrderService {
 				orderRepository);
 		
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
-		service.createOrder(order);
+		try {
+			service.createOrder(order);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
 		Optional<ShippingOrder> persistedOrder = service.getOrderByOrderID(order.getOrderID());
 		Assert.assertTrue(persistedOrder.isPresent());
 	}
@@ -96,11 +114,22 @@ public class TestOrderService {
 	@Test
 	public void shouldGetOrderFromRepository() {
 		// we need the command event consumer mock and event emitter with a real agent
-		KafkaConsumerMockup<String,String> kcm = new KafkaConsumerMockup<String,String>(KafkaInfrastructureConfig.getConsumerProperties("test-grp","test-id",true,"earliest"),"orderCommands");	
+		Properties properties = new Properties();
+		properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		properties.put(ConsumerConfig.GROUP_ID_CONFIG,  "test-grp");
+		properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, Boolean.toString(false));
+		properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+		properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "test-clientID");
+
+		KafkaConsumerMockup<String,String> kcm = new KafkaConsumerMockup<String,String>(properties,"orderCommands");	
 		OrderEventEmitterMock orderEventEmitter = new OrderEventEmitterMock();
-		
+		ErrorEventEmitterMock errorEventEmitter = new ErrorEventEmitterMock();
 		// agent consume command events and generate order event
-		OrderCommandAgent orderCommandAgent = new OrderCommandAgent(orderRepository,kcm,orderEventEmitter);
+		OrderCommandAgent orderCommandAgent = new OrderCommandAgent(orderRepository,kcm,orderEventEmitter,errorEventEmitter);
 		
 		// need mockup emitter
 		OrderCommandEventProducerMock eventEmitter = new OrderCommandEventProducerMock(orderRepository);
@@ -109,7 +138,12 @@ public class TestOrderService {
 				orderRepository);
 		
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
-		service.createOrder(order);
+		try {
+			service.createOrder(order);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
 		// well the repository was updated by the mockup command event emmitter, so let trick it by reset
 		orderRepository.reset();
 		

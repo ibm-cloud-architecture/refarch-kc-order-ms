@@ -24,6 +24,7 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
     private static final Logger logger = LoggerFactory.getLogger(ShippingOrderRepositoryMock.class);
     private final Map<String, ShippingOrder> orders;
+	private boolean failure = false;
 
 
     public ShippingOrderRepositoryMock() {
@@ -31,10 +32,17 @@ public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
     }
 
     @Override
-    public void addNewShippingOrder(ShippingOrder order) {
+    public void addOrUpdateNewShippingOrder(ShippingOrder order) throws OrderCreationException{
         logger.info("Adding order id " + order.getOrderID());
+        // as a mockup we can add unit test controls
+        if (this.failure) {
+        	throw new OrderCreationException("time out to communicate to database");
+        }
+        
         if (orders.putIfAbsent(order.getOrderID(), order) != null) {
-            throw new IllegalStateException("order already exists " + order.getOrderID());
+        	// this has to be re-entrant: for example when replaying the command events 
+        	// from events not previously committed due to error. So cancel the duplicate event
+        	return ;
         }
     }
 
@@ -44,10 +52,15 @@ public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
     }
 
     @Override
-    public void updateShippingOrder(ShippingOrder order) {
+    public void updateShippingOrder(ShippingOrder order) throws OrderUpdateException {
         logger.info("Updating order id " + order.getOrderID());
+        // as a mockup we can add unit test controls
+        if (this.failure) {
+        	throw new OrderUpdateException("time out to communicate to database");
+        }
+        
         if (orders.replace(order.getOrderID(), order) == null) {
-            throw new IllegalStateException("order does not already exist " + order.getOrderID());
+            throw new OrderUpdateException("order does not already exist " + order.getOrderID());
         }
     }
 
@@ -64,5 +77,15 @@ public class ShippingOrderRepositoryMock implements ShippingOrderRepository {
 		orders.values().clear();
 		orders.keySet().clear();
 	}
+
+	public void injectFailure() {
+		this.failure  = true;
+	}
+
+	public void resetNormalOperation() {
+		this.failure = false;
+	}
+	
+	
 
 }
