@@ -3,6 +3,9 @@ on:
   push:
     paths:
       - 'order-command-ms/**'
+  pull_request:
+    paths:
+      - 'order-command-ms/**'
 jobs:
   build:
     runs-on: ubuntu-latest
