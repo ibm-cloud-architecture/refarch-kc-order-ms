@@ -6,7 +6,6 @@ on:
   pull_request:
     paths:
       - 'order-query-ms/**'
-
 jobs:
   build:
     runs-on: ubuntu-latest
