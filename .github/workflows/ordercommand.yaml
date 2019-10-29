@@ -13,9 +13,10 @@ jobs:
     - uses: actions/checkout@master
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
-      with:
-        name: ibm-cloud-architecture/kcontainer-order-command-ms
+      env:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+      with:
+        name: ibm-cloud-architecture/kcontainer-order-command-ms
         dockerfile: order-command-ms/Dockerfile.multistage
         workdir: order-command-ms
