@@ -2,11 +2,11 @@ name: Publish order-query Docker
 on:
   push:
     paths:
-      - 'order-command-ms/**'
+      - 'order-query-ms/**'
   pull_request:
-    paths: 
-      - 'order-command-ms/**'
-    
+    paths:
+      - 'order-query-ms/**'
+
 jobs:
   build:
     runs-on: ubuntu-latest
