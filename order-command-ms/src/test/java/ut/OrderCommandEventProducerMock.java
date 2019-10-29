@@ -31,7 +31,7 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 		// this is the mockup part: use the repo to move the data to consumer
         switch (emittedEvent.getType()) {
         case OrderCommandEvent.TYPE_CREATE_ORDER:
-        	repo.addNewShippingOrder(shippingOrder);			
+        	repo.addOrUpdateNewShippingOrder(shippingOrder);			
             break;
         case OrderCommandEvent.TYPE_UPDATE_ORDER:
         	repo.updateShippingOrder(shippingOrder);			

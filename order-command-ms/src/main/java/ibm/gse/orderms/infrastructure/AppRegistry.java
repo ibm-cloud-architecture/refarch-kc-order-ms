@@ -4,6 +4,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import ibm.gse.orderms.app.ShippingOrderResource;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
+import ibm.gse.orderms.infrastructure.kafka.ErrorEventProducer;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandProducer;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventProducer;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -24,6 +25,7 @@ public class AppRegistry {
 	private static ShippingOrderRepository orderRepository;
 	private static OrderCommandProducer orderCommandProducer;
 	private static OrderEventProducer orderEventProducer;
+	private static ErrorEventProducer errorEventProducer;
 	
 	public static AppRegistry getInstance() {
 		return instance;
@@ -69,5 +71,15 @@ public class AppRegistry {
     	}
         return orderEventProducer;
 }
+
+
+	public EventEmitter errorEventProducer() {
+		synchronized(this) {
+    		if (errorEventProducer == null) {
+    			errorEventProducer = new ErrorEventProducer();
+    		}
+    	}
+        return errorEventProducer;
+	}
 
 }

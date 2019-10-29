@@ -14,9 +14,14 @@ import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,7 +31,6 @@ import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 
 /**
  * This test is to validate SAGA pattern among the order, voyage and container services
@@ -82,18 +86,34 @@ public class TestOrderTransaction extends CommonITTest {
 	    
 	    // 2- Allocate a voyage	
 	    // ###############################
-	    Properties properties = KafkaInfrastructureConfig.getProducerProperties("test-event-producer");
+	    Properties properties = new Properties();
+	    properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, System.getenv().get("KAFKA_BROKERS"));
+	    properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		properties.put(ProducerConfig.CLIENT_ID_CONFIG, "testIgClient");
+		properties.put(ProducerConfig.ACKS_CONFIG, "1");
+		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+		properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+		properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+		properties.put(SaslConfigs.SASL_JAAS_CONFIG,
+				"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
+						+ System.getenv().get("KAFKA_APIKEY") + "\";");
+		properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
+		properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
+		properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
+		
+	    //KafkaInfrastructureConfig.getProducerProperties("test-event-producer");
 	    KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(properties);
 	    String voyageEvent = "{\"timestamp\": " + new Date().getTime() 
 	    		+ ",\"type\": \"" + OrderEventBase.TYPE_VOYAGE_ASSIGNED + "\", \"version\": \""
-	    		+ KafkaInfrastructureConfig.SCHEMA_VERSION + "\"," 
+	    		+ "1" + "\"," 
 	    		+ " \"payload\": { \"voyageID\": \"V101\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
-	    ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), orderID, voyageEvent);
+	    ProducerRecord<String, String> record = new ProducerRecord<>("orders", orderID, voyageEvent);
 	    System.out.println("Mockup voyage service with " + voyageEvent);
         Future<RecordMetadata> send = kafkaProducer.send(record);
         try {
-			send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
+			send.get(5, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			fail("Interruption" + e.getMessage());
@@ -122,11 +142,11 @@ public class TestOrderTransaction extends CommonITTest {
 	    		+ ",\"type\": \"" + OrderEventBase.TYPE_REEFER_ASSIGNED + "\", \"version\": \"1\"," 
 	    		+ " \"payload\": { \"containerID\": \"c02\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
-	    record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), orderID, containerEvent);
+	    record = new ProducerRecord<>("orders", orderID, containerEvent);
 	    System.out.println("Mockup container service with " + containerEvent);
         send = kafkaProducer.send(record);
         try {
-			send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
+			send.get(5, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Interuption" + e.getMessage());

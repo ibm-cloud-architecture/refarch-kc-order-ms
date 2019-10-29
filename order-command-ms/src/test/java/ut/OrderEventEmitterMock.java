@@ -12,11 +12,19 @@ public class OrderEventEmitterMock implements EventEmitter{
 	
 	public boolean eventEmitted = false;
 	public OrderEventBase emittedEvent = null;
-
+	public boolean failure = false;
+	
 	@Override
 	public void emit(OrderEventBase event) throws Exception {
-		this.eventEmitted = true;
-		this.emittedEvent = event;	
+		if (this.failure) {
+			this.eventEmitted = false;
+			this.emittedEvent = null;
+			throw new Exception("ERROR could not connect to backbone");
+		} else {
+			this.eventEmitted = true;
+			this.emittedEvent = event;
+		}
+ 			
 	}
 
 	@Override
@@ -27,6 +35,11 @@ public class OrderEventEmitterMock implements EventEmitter{
 
 	public OrderEventBase getEventEmitted() {
 		return emittedEvent;
+	}
+
+	public void timeOutEvent() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
