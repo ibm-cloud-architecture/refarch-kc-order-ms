@@ -143,7 +143,7 @@ public class OrderEventAgent implements EventListener {
            case OrderEventBase.TYPE_REEFER_ASSIGNED:
            	return gson.fromJson(eventAsString, ReeferAssignedEvent.class);
            default:
-               //TODO handle
+               logger.warn("Not supported event: " + eventAsString);
                return null;
            }
     }

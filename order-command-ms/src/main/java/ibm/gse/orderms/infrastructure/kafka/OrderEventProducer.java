@@ -9,6 +9,8 @@ import java.util.concurrent.TimeoutException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,13 @@ public class OrderEventProducer implements EventEmitter {
     }
 
     @Override
+    @Retry(retryOn=TimeoutException.class,
+    maxRetries = 4,
+    maxDuration = 10000,
+    delay = 200,
+    jitter = 100,
+    abortOn=InterruptedException.class)
+    @Timeout(4000)
     public void emit(OrderEventBase event) throws InterruptedException, ExecutionException, TimeoutException {
         OrderEvent orderEvent = (OrderEvent)event;
         String key;

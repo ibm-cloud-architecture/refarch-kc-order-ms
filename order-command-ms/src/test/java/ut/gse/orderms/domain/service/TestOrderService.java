@@ -19,7 +19,6 @@ import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
-import ut.ErrorEventEmitterMock;
 import ut.KafkaConsumerMockup;
 import ut.OrderCommandEventProducerMock;
 import ut.OrderEventEmitterMock;
@@ -127,7 +126,7 @@ public class TestOrderService {
 
 		KafkaConsumerMockup<String,String> kcm = new KafkaConsumerMockup<String,String>(properties,"orderCommands");	
 		OrderEventEmitterMock orderEventEmitter = new OrderEventEmitterMock();
-		ErrorEventEmitterMock errorEventEmitter = new ErrorEventEmitterMock();
+		OrderEventEmitterMock errorEventEmitter = new OrderEventEmitterMock();
 		// agent consume command events and generate order event
 		OrderCommandAgent orderCommandAgent = new OrderCommandAgent(orderRepository,kcm,orderEventEmitter,errorEventEmitter);
 		

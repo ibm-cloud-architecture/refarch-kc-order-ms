@@ -12,7 +12,7 @@ import org.junit.Test;
 public class HealthEndpointIT {
 
     private String port = System.getProperty("liberty.test.port");
-    private String endpoint = "/health";
+    private String endpoint = "/health/ready";
     private String url = "http://localhost:" + port + endpoint;
 
     @Test

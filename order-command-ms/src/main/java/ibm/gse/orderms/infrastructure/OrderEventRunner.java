@@ -19,9 +19,8 @@ public class OrderEventRunner implements Runnable {
 	public void run() {
 		logger.info("Order event consumer loop thread started");
 		OrderEventAgent orderEventAgent = new OrderEventAgent();
-        boolean ok = true;
         try {
-            while (running && ok) {
+            while (running && orderEventAgent.isRunning()) {
                 try {
                     List<OrderEventBase> events = orderEventAgent.poll();
                     for (OrderEventBase event : events) {
@@ -30,7 +29,7 @@ public class OrderEventRunner implements Runnable {
                 } catch (KafkaException ke) {
                     // Treat a Kafka exception as unrecoverable
                     // stop this task and queue a new one
-                    ok = false;
+                    running = false;
                 }
             }
         } finally {

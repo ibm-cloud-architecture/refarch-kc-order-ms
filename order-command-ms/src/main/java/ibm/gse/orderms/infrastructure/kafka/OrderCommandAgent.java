@@ -25,6 +25,7 @@ import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
+import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 /**
@@ -172,37 +173,36 @@ public class OrderCommandAgent implements EventListener {
 		}   
 	}
 	
-	
+	/**
+	 * For the order update 
+	 * @param commandEvent
+	 */
 	private void processOrderUpdate(OrderCommandEvent commandEvent) {
 	    ShippingOrder shippingOrder = (ShippingOrder) commandEvent.getPayload();
         String orderID = shippingOrder.getOrderID();
-   
-        Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
-        if (oco.isPresent()) {
-              try {
-            	  synchronized (orderRepository) {
-            		  orderRepository.updateShippingOrder(shippingOrder);
-            	  }
-              } catch (Exception e ) {
-            	  e.printStackTrace();
-            	  return ;
-              }
-                
-              try {
-            	  OrderEvent orderUpdateEvent = new OrderEvent(new Date().getTime(),
-            			  	OrderEvent.TYPE_ORDER_UPDATED,
-            			    schemaVersion,
-            			  	shippingOrder.toShippingOrderPayload());
-            	  orderEventProducer.emit(orderUpdateEvent);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return ;
-			}
-            this.orderCommandsConsumer.commitSync();
-        } else {
-                throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+        try {
+        	 Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
+        	 if (oco.isPresent()) {
+        		 orderRepository.updateShippingOrder(shippingOrder);
+        		 OrderEvent orderUpdateEvent = new OrderEvent(new Date().getTime(),
+         			  	OrderEvent.TYPE_ORDER_UPDATED,
+         			    schemaVersion,
+         			  	shippingOrder.toShippingOrderPayload());
+        		 try {
+	        		 orderEventProducer.emit(orderUpdateEvent);
+	        		 this.orderCommandsConsumer.commitSync();
+        		 } catch (Exception e) {
+        			e.printStackTrace();
+        			running = false; // liveness may kill this app and restart it
+        		    return ;
+        		 }
+        	 } else {
+        		logger.error("Cannot update order - Unknown order Id " + orderID);
+        		generateErrorEvent(shippingOrder);
+        	 }
+        } catch (OrderUpdateException oue) {
+        	generateErrorEvent(shippingOrder);
         }
-            
 	}
 
 	public boolean isRunning() {

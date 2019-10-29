@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +15,6 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
-import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -55,9 +52,9 @@ public class TestOrderEventAgent {
 	
 	@Test
 	/**
-	 * The create command event processing has persisted  the order in the repository
-	 * and emit an order create event. As the consumer will get this message it will
-	 * do nothing in this command microservice.
+	 * Test context: The create command event processing has persisted  the order into the repository
+	 * and emitted an order create event. As the consumer will get this message it will
+	 * do nothing in this microservice.
 	 * 
 	 * This function simulates sending the OrderCreated event.
 	 */
@@ -68,6 +65,23 @@ public class TestOrderEventAgent {
 		orderEventsConsumerMock.setValue(parser.toJson(orderCreatedEvent));
 		orderEventsConsumerMock.setKey(order.getOrderID());
 		List<OrderEventBase> events = agent.poll();
+		OrderEventBase orderCreatedEventReceived = events.get(0);
+		Assert.assertNotNull(orderCreatedEventReceived);
+		for (OrderEventBase event : events) {
+			agent.handle(event);
+		}
+	}
+	
+	@Test
+	public void shouldDoNothingOnOrderUpdatedEvent() {
+		ShippingOrderPayload order = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEvent orderCreatedEvent = new OrderEvent(); 
+		orderCreatedEvent.setType(OrderEventBase.TYPE_ORDER_UPDATED);
+		orderEventsConsumerMock.setValue(parser.toJson(orderCreatedEvent));
+		orderEventsConsumerMock.setKey(order.getOrderID());
+		List<OrderEventBase> events = agent.poll();
+		OrderEventBase orderUpdatedEventReceived = events.get(0);
+		Assert.assertNotNull(orderUpdatedEventReceived);
 		for (OrderEventBase event : events) {
 			agent.handle(event);
 		}

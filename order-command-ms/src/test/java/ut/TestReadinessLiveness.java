@@ -11,7 +11,6 @@ import ibm.gse.orderms.app.StarterReadinessCheck;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -33,7 +32,7 @@ public class TestReadinessLiveness {
 		consumerMock = new KafkaConsumerMockup<String,String>(properties,"orderCommands");	
 		orderEventProducerMock = new OrderEventEmitterMock();
 		ShippingOrderRepository repository = new ShippingOrderRepositoryMock();
-		EventEmitter errorEventProducerMock = new ErrorEventEmitterMock();
+		EventEmitter errorEventProducerMock = new OrderEventEmitterMock();
 		commandAgent = new OrderCommandAgent(repository,consumerMock,orderEventProducerMock,errorEventProducerMock);
 		OrderEventAgent eventAgent = new OrderEventAgent(consumerMock,repository);
 		liveness = new StarterLivenessCheck(commandAgent,eventAgent);

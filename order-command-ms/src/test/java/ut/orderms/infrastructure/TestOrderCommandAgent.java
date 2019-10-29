@@ -18,7 +18,6 @@ import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.kafka.ErrorEvent;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
-import ut.ErrorEventEmitterMock;
 import ut.KafkaConsumerMockup;
 import ut.OrderEventEmitterMock;
 import ut.ShippingOrderTestDataFactory;
@@ -42,7 +41,7 @@ public class TestOrderCommandAgent {
 	static ShippingOrderRepositoryMock repository = null ;
 	static KafkaConsumerMockup<String,String> orderCommandsConsumerMock = null;
 	static OrderEventEmitterMock orderEventProducerMock = null;
-	static ErrorEventEmitterMock errorEventProducerMock = null;
+	static OrderEventEmitterMock errorEventProducerMock = null;
 	
 	@BeforeClass
 	public static void createMockups() {
@@ -54,7 +53,7 @@ public class TestOrderCommandAgent {
 			orderEventProducerMock = new OrderEventEmitterMock();
 		}
 		if ( errorEventProducerMock == null) {
-			errorEventProducerMock = new ErrorEventEmitterMock();
+			errorEventProducerMock = new OrderEventEmitterMock();
 		}
 		repository = new ShippingOrderRepositoryMock();
 	}
@@ -70,6 +69,8 @@ public class TestOrderCommandAgent {
 		orderEventProducerMock.eventEmitted = false;
 		errorEventProducerMock.eventEmitted = false;
 		errorEventProducerMock.emittedEvent = null;
+		orderEventProducerMock.failure = false;
+		errorEventProducerMock.failure = false;
 	}
 	
 	/**
@@ -225,4 +226,46 @@ public class TestOrderCommandAgent {
 		repository.resetNormalOperation();
 	}
 
+	@Test
+	public void shouldStopRunningWhenItCouldNotEmitEventOnOrderCreation() {
+		Assert.assertTrue(agent.isRunning());
+		orderCommandsConsumerMock.setValue("{\"payload\":{\"orderID\":\"Order11\",\"productID\":\"FreshCarrots\""
+				+ ",\"customerID\":\"Farm01\",\"quantity\":10,"
+				+ "\"pickupAddress\":{\"street\":\"Street\",\"city\":\"City\",\"country\":\"County\",\"state\":\"State\",\"zipcode\":\"Zipcode\"},"
+				+ "\"pickupDate\":\"2019-01-14T17:48Z\","
+				+ "\"destinationAddress\":{\"street\":\"Street\",\"city\":\"City\",\"country\":\"County\",\"state\":\"State\",\"zipcode\":\"Zipcode\"},"
+				+ "\"expectedDeliveryDate\":\"2019-03-15T17:48Z\",\"status\":\"pending\"},\"timestampMillis\":0,"
+				+ "\"type\":\"CreateOrderCommand\"}");
+		orderCommandsConsumerMock.setKey("Order01");
+		List<OrderCommandEvent> results = agent.poll();
+		OrderCommandEvent createOrderEvent = results.get(0);
+		// inject communication error in kafka
+		orderEventProducerMock.failure = true;
+		agent.handle(createOrderEvent);
+		Assert.assertFalse(orderEventProducerMock.eventEmitted);
+		Assert.assertFalse(errorEventProducerMock.eventEmitted);
+		Assert.assertFalse(agent.isRunning());
+	}
+	
+	
+	@Test
+	public void shouldStopRunningWhenItCouldNotEmitEventOnOrderUpdate() {
+		Assert.assertTrue(agent.isRunning());
+		orderCommandsConsumerMock.setValue("{\"payload\":{\"orderID\":\"Order11\",\"productID\":\"FreshCarrots\""
+				+ ",\"customerID\":\"Farm01\",\"quantity\":10,"
+				+ "\"pickupAddress\":{\"street\":\"Street\",\"city\":\"City\",\"country\":\"County\",\"state\":\"State\",\"zipcode\":\"Zipcode\"},"
+				+ "\"pickupDate\":\"2019-01-14T17:48Z\","
+				+ "\"destinationAddress\":{\"street\":\"Street\",\"city\":\"City\",\"country\":\"County\",\"state\":\"State\",\"zipcode\":\"Zipcode\"},"
+				+ "\"expectedDeliveryDate\":\"2019-03-15T17:48Z\",\"status\":\"pending\"},\"timestampMillis\":0,"
+				+ "\"type\":\"UpdateOrderCommand\"}");
+		orderCommandsConsumerMock.setKey("Order01");
+		List<OrderCommandEvent> results = agent.poll();
+		OrderCommandEvent updateOrderEvent = results.get(0);
+		// inject communication error in kafka
+		orderEventProducerMock.failure = true;
+		agent.handle(updateOrderEvent);
+		Assert.assertFalse(orderEventProducerMock.eventEmitted);
+		Assert.assertFalse(errorEventProducerMock.eventEmitted);
+		Assert.assertFalse(agent.isRunning());
+	}
 }
