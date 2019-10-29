@@ -1,0 +1,22 @@
+name: Publish order-query Docker
+on:
+  push:
+    paths:
+      - 'order-command-ms/**'
+  pull_request:
+    paths: 
+      - 'order-command-ms/**'
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: ibm-cloud-architecture/kcontainer-order-query-ms
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        dockerfile: order-query-ms/Dockerfile.multistage
+        workdir: order-query-ms
