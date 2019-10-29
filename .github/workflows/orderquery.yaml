@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - 'order-query-ms/**'
+  check_run:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,7 +13,7 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: ibm-cloud-architecture/kcontainer-order-query-ms
+        name: ibmcase/kcontainer-order-query-ms
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Dockerfile.multistage
