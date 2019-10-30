@@ -169,6 +169,7 @@ public class OrderEventAgent implements EventListener {
 		 try {
 	  
 	            logger.info("@@@@ in handle " + new Gson().toJson(orderEvent));
+	            if (orderEvent == null) return;
 	            switch (orderEvent.getType()) {
 	            case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
 	                synchronized (orderRepository) {
