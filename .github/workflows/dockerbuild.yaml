@@ -34,7 +34,7 @@ jobs:
       WORKDIR: order-command-ms
       DOCKERFILE: Dockerfile.multistage
       IMAGE_NAME: ibmcase/kcontainer-order-command-ms
-      VERSION: ${{ jobs.bump-version.steps.bump-version-action.outputs.new_tag }}
+      VERSION: ${{ job.bump-version.steps.bump-version-action.outputs.new_tag }}
     steps:
     - uses: actions/checkout@master
     - name: Build the Docker image
@@ -55,7 +55,7 @@ jobs:
       WORKDIR: order-query-ms
       DOCKERFILE: Dockerfile.multistage
       IMAGE_NAME: ibmcase/kcontainer-order-query-ms
-      VERSION: ${{ jobs.bump-version.steps.bump-version-action.outputs.new_tag }}
+      VERSION: ${{ job.bump-version.steps.bump-version-action.outputs.new_tag }}
     steps:
     - uses: actions/checkout@master
     - name: Build the Docker image
