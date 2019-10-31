@@ -14,6 +14,7 @@ public class ShippingOrder {
     public static final String CANCELLED_STATUS = "cancelled";
     public static final String ASSIGNED_STATUS = "assigned";
     public static final String BOOKED_STATUS = "booked";
+    public static final String TRANSIT_STATUS = "transit";
     public static final String REJECTED_STATUS = "rejected";
     public static final String COMPLETED_STATUS = "completed";
 
