@@ -139,7 +139,7 @@ public class TestOrderTransaction extends CommonITTest {
         // ###############################
         kafkaProducer = new KafkaProducer<String, String>(properties);
 	    String containerEvent = "{\"timestamp\": " + new Date().getTime() 
-	    		+ ",\"type\": \"" + OrderEventBase.TYPE_REEFER_ASSIGNED + "\", \"version\": \"1\"," 
+	    		+ ",\"type\": \"" + OrderEventBase.TYPE_CONTAINER_ALLOCATED + "\", \"version\": \"1\"," 
 	    		+ " \"payload\": { \"containerID\": \"c02\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
 	    record = new ProducerRecord<>("orders", orderID, containerEvent);

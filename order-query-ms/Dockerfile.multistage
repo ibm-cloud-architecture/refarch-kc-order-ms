@@ -3,8 +3,7 @@ FROM ibmjava:8-sdk
 LABEL maintainer="IBM Cloud Architecture Solution Engineering at IBM Cloud"
 
 RUN apt-get update && \
- apt-get -y upgrade && \
- apt-get install -y vim wget curl git maven
+ apt-get install -y maven
 
  # attach volumes
 VOLUME /volume/gitrepo
@@ -20,10 +19,6 @@ RUN mvn install -DskipTests=true
 ### Stage 2 - Docker Build
 FROM open-liberty:microProfile3-java11
 LABEL maintainer="IBM Cloud Architecture Solution Engineering at IBM Cloud"
-
-USER root
-
-RUN apt-get update -q -y && apt-get dist-upgrade -q -y
 
 USER 1001
 COPY --from=0 /local/gitrepo/target/orderqueryms-1.0-SNAPSHOT.war /config/dropins

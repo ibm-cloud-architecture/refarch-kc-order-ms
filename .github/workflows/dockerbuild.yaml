@@ -1,0 +1,49 @@
+name: Build & push images for 'order'
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'docs/**'
+
+jobs:
+  build-docker-images:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Bump version and push tag
+      id: bump-version-action
+      uses: anothrNick/github-tag-action@master
+      env:
+        DEFAULT_BUMP: patch
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build the order-command docker image
+      id: build-command-image
+      run: |
+        docker login -u ${DOCKER_U} -p ${DOCKER_P}
+        cd ${WORKDIR}
+        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${IMAGE_TAG}
+        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+        docker push ${IMAGE_NAME}
+      env:
+        DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
+        WORKDIR: order-command-ms
+        DOCKERFILE: Dockerfile.multistage
+        IMAGE_NAME: ibmcase/kcontainer-order-command-ms
+        IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
+    - name: Build the order-query docker image
+      id: build-query-image
+      run: |
+        docker login -u ${DOCKER_U} -p ${DOCKER_P}
+        cd ${WORKDIR}
+        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${IMAGE_TAG}
+        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+        docker push ${IMAGE_NAME}
+      env:
+        DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
+        WORKDIR: order-query-ms
+        DOCKERFILE: Dockerfile.multistage
+        IMAGE_NAME: ibmcase/kcontainer-order-query-ms
+        IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}

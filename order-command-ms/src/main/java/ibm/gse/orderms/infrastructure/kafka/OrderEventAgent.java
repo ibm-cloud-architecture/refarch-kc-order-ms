@@ -140,7 +140,7 @@ public class OrderEventAgent implements EventListener {
                return gson.fromJson(eventAsString, VoyageAssignedEvent.class);
            case OrderEventBase.TYPE_ORDER_CANCELLED:
                return gson.fromJson(eventAsString, OrderCancelledEvent.class);
-           case OrderEventBase.TYPE_REEFER_ASSIGNED:
+           case OrderEventBase.TYPE_CONTAINER_ALLOCATED:
            	return gson.fromJson(eventAsString, ReeferAssignedEvent.class);
            default:
                logger.warn("Not supported event: " + eventAsString);
@@ -169,6 +169,7 @@ public class OrderEventAgent implements EventListener {
 		 try {
 	  
 	            logger.info("@@@@ in handle " + new Gson().toJson(orderEvent));
+	            if (orderEvent == null) return;
 	            switch (orderEvent.getType()) {
 	            case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
 	                synchronized (orderRepository) {
@@ -198,7 +199,7 @@ public class OrderEventAgent implements EventListener {
 	                    }
 	                }
 	                break;
-	            case OrderEventBase.TYPE_REEFER_ASSIGNED:
+	            case OrderEventBase.TYPE_CONTAINER_ALLOCATED:
 	            	synchronized (orderRepository) {
 	            		ReeferAssignmentPayload ca = ((ReeferAssignedEvent) orderEvent).getPayload();
 		            	String orderID = ca.getOrderID();

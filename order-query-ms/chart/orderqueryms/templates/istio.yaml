@@ -11,9 +11,4 @@ spec:
   - labels:
       version: "current"
     weight: {{ .Values.istio.weight }}
-{{ if .Values.base.enabled }}
-  - labels:
-      version: "base"
-    weight: {{ .Values.base.weight }}
-{{ end }}
 {{ end }}
