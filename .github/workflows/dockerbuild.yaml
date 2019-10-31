@@ -1,0 +1,59 @@
+name: Build & push images for 'order'
+on:
+  push:
+    branches:
+      - master
+    path-ignore:
+      - 'docs/**'
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Bump Versions
+      uses: remorses/bump-version@js
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        version_file: ./VERSION
+  build-command-image:
+    needs: bump-version
+    runs-on: ubuntu-latest
+    env:
+      WORKDIR: order-command-ms
+      DOCKERFILE: Dockerfile.multistage
+      IMAGE_NAME: ibmcase/kcontainer-order-command-ms
+    steps:
+    - uses: actions/checkout@master
+    - name: Build the Docker image
+      run: |
+        docker login -u ${DOCKER_U} -p ${DOCKER_P}
+        export TAG_VERSION=$(cat VERSION)
+        cd ${WORKDIR}
+        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${TAG_VERSION}
+        docker tag ${IMAGE_NAME}:${TAG_VERSION} ${IMAGE_NAME}:latest
+        docker push ${IMAGE_NAME}
+      env:
+        DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
+  build-query-image:
+    needs: bump-version
+    runs-on: ubuntu-latest
+    env:
+      WORKDIR: order-query-ms
+      DOCKERFILE: Dockerfile.multistage
+      IMAGE_NAME: ibmcase/kcontainer-order-query-ms
+    steps:
+    - uses: actions/checkout@master
+    - name: Build the Docker image
+      run: |
+        docker login -u ${DOCKER_U} -p ${DOCKER_P}
+        export TAG_VERSION=$(cat VERSION)
+        cd ${WORKDIR}
+        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${TAG_VERSION}
+        docker tag ${IMAGE_NAME}:${TAG_VERSION} ${IMAGE_NAME}:latest
+        docker push ${IMAGE_NAME}
+      env:
+        DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
