@@ -1,18 +1,33 @@
-name: Publish order-command Docker
+name: Build & push docker image
 on:
   push:
+    branches:
+      - master
     paths:
       - 'order-command-ms/**'
+env:
+  WORKDIR: order-command-ms
+  DOCKERFILE: Dockerfile.multistage
+  IMAGE_NAME: ibmcase/kcontainer-order-command-ms
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+    - name: Bump Versions
+      uses: remorses/bump-version@js
+      env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: ibmcase/kcontainer-order-command-ms
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        dockerfile: Dockerfile.multistage
-        workdir: order-command-ms
+        version_file: ./VERSION
+    - name: Build the Docker image
+      run: |
+        docker login -u ${DOCKER_U} -p ${DOCKER_P}
+        TAG_VERSION = $(cat VERSION)
+        cd ${WORKDIR}
+        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${TAG_VERSION}
+        docker tag ${IMAGE_NAME}:${TAG_VERSION} ${IMAGE_NAME}:latest
+        docker push ${TAG_VERSION}
+      env:
+        DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
