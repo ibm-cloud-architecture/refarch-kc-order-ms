@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-    path-ignore:
+    paths-ignore:
       - 'docs/**'
 
 jobs:
@@ -11,12 +11,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Bump Versions
-      uses: remorses/bump-version@js
+    - name: Bump version and push tag
+      id: bump-version-action
+      uses: anothrNick/github-tag-action@master
       env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        version_file: ./VERSION
+        DEFAULT_BUMP: patch
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #bump-version:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #  - uses: actions/checkout@master
+  #  - name: Bump Versions
+  #    uses: remorses/bump-version@js
+  #    env:
+  #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #    with:
+  #      version_file: ./VERSION
   build-command-image:
     needs: bump-version
     runs-on: ubuntu-latest
@@ -24,6 +34,7 @@ jobs:
       WORKDIR: order-command-ms
       DOCKERFILE: Dockerfile.multistage
       IMAGE_NAME: ibmcase/kcontainer-order-command-ms
+      VERSION: ${{ jobs.bump-version.steps.bump-version-action.outputs.new_tag }}
     steps:
     - uses: actions/checkout@master
     - name: Build the Docker image
@@ -44,6 +55,7 @@ jobs:
       WORKDIR: order-query-ms
       DOCKERFILE: Dockerfile.multistage
       IMAGE_NAME: ibmcase/kcontainer-order-query-ms
+      VERSION: ${{ jobs.bump-version.steps.bump-version-action.outputs.new_tag }}
     steps:
     - uses: actions/checkout@master
     - name: Build the Docker image
