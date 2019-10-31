@@ -21,26 +21,24 @@ jobs:
       id: build-command-image
       run: |
         docker login -u ${DOCKER_U} -p ${DOCKER_P}
-        export TAG_VERSION=$(cat VERSION)
         cd ${WORKDIR}
-        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${TAG_VERSION}
-        docker tag ${IMAGE_NAME}:${TAG_VERSION} ${IMAGE_NAME}:latest
+        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${IMAGE_TAG}
+        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
         docker push ${IMAGE_NAME}
       env:
+        DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
         WORKDIR: order-command-ms
         DOCKERFILE: Dockerfile.multistage
         IMAGE_NAME: ibmcase/kcontainer-order-command-ms
-        VERSION: ${{ steps.bump-version-action.outputs.new_tag }}
-        DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
+        IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
     - name: Build the order-query docker image
       id: build-query-image
       run: |
         docker login -u ${DOCKER_U} -p ${DOCKER_P}
-        export TAG_VERSION=$(cat VERSION)
         cd ${WORKDIR}
-        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${TAG_VERSION}
-        docker tag ${IMAGE_NAME}:${TAG_VERSION} ${IMAGE_NAME}:latest
+        docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${IMAGE_TAG}
+        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
         docker push ${IMAGE_NAME}
       env:
         DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
@@ -48,4 +46,4 @@ jobs:
         WORKDIR: order-query-ms
         DOCKERFILE: Dockerfile.multistage
         IMAGE_NAME: ibmcase/kcontainer-order-query-ms
-        VERSION: ${{ steps.bump-version-action.outputs.new_tag }}
+        IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
