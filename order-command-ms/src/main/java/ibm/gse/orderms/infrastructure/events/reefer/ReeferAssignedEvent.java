@@ -9,7 +9,7 @@ public class ReeferAssignedEvent extends OrderEventBase {
 	public ReeferAssignedEvent(long timestampMillis, String version,ReeferAssignmentPayload payload) {
 		this.timestampMillis = timestampMillis;
     	this.version = version;
-    	this.type = OrderEventBase.TYPE_REEFER_ASSIGNED;
+    	this.type = OrderEventBase.TYPE_CONTAINER_ALLOCATED;
     	this.payload = payload;
 	}
 

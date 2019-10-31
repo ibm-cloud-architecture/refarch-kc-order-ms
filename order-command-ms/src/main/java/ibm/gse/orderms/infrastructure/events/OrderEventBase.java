@@ -17,7 +17,7 @@ public class OrderEventBase {
 	 public static final String TYPE_ORDER_REJECTED = "OrderRejected";
 	 public static final String TYPE_ORDER_CANCELLED = "OrderCancelled";
 	   
-	 public static final String TYPE_REEFER_ASSIGNED = "ReeferAssigned";
+	 public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated";
 	 public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";
 	 public static final String TYPE_CONTAINER_ON_SHIP = "ContainerOnShip";
 	 public static final String TYPE_CONTAINER_OFF_SHIP = "ContainerOffShip";
