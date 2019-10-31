@@ -1,4 +1,4 @@
-name: Build & push docker image
+name: Build & push image for 'order-command-ms'
 on:
   push:
     branches:
@@ -23,7 +23,7 @@ jobs:
     - name: Build the Docker image
       run: |
         docker login -u ${DOCKER_U} -p ${DOCKER_P}
-        TAG_VERSION = $(cat VERSION)
+        export TAG_VERSION=$(cat VERSION)
         cd ${WORKDIR}
         docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${TAG_VERSION}
         docker tag ${IMAGE_NAME}:${TAG_VERSION} ${IMAGE_NAME}:latest
