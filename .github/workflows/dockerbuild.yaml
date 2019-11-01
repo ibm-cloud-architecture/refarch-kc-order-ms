@@ -8,6 +8,7 @@ on:
 
 jobs:
   build-docker-images:
+    if: startsWith(github.repository, 'ibm-cloud-architecture/')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
