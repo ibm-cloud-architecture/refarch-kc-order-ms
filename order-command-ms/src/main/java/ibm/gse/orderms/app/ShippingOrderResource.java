@@ -31,20 +31,20 @@ import ibm.gse.orderms.domain.service.ShippingOrderService;
 
 /**
  * Expose the commands and APIs used by external clients
- * 
+ *
  * @author jerome boyer
  *
  */
 @Path("orders")
 public class ShippingOrderResource {
 	static final Logger logger = LoggerFactory.getLogger(ShippingOrderResource.class);
-	
+
 	@Inject
 	public ShippingOrderService shippingOrderService;
 
-	public ShippingOrderResource() {	
+	public ShippingOrderResource() {
 	}
-	
+
 	public ShippingOrderResource(ShippingOrderService shippingOrderService) {
 		this.shippingOrderService = shippingOrderService;
 	}
@@ -62,7 +62,7 @@ public class ShippingOrderResource {
 		}
 		try {
 		   ShippingOrderCreateParameters.validateInputData(orderParameters);
-		 
+
 		} catch(IllegalArgumentException iae) {
 			return Response.status(400, iae.getMessage()).build();
 		}
@@ -72,9 +72,11 @@ public class ShippingOrderResource {
 		} catch(Exception e) {
 			return Response.serverError().build();
 		}
-	    return Response.ok().entity(order.getOrderID()).build();
+	    //return Response.ok().entity(order.getOrderID()).build();
+			//API contract expects a JSON Object and not just a plaintext string
+	    return Response.ok().entity(order).build();
 	}
-	
+
 
 
     @PUT
@@ -90,7 +92,7 @@ public class ShippingOrderResource {
      * Update an existing shipping order given an existing identifier and the update parameters
      * @param orderID
      * @param orderParameters
-     * @return 
+     * @return
      */
     public Response updateExistingOrder(@PathParam("Id") String orderID, ShippingOrderUpdateParameters orderParameters) {
     	   logger.info("updateExistingOrder: " + orderID);
@@ -98,7 +100,7 @@ public class ShippingOrderResource {
     	if (orderParameters == null ) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
-    	
+
         if(! Objects.equals(orderID, orderParameters.getOrderID())) {
         	logger.error(orderID + " does not match " + orderParameters.getOrderID());
             return Response.status(Status.BAD_REQUEST).build();
@@ -126,15 +128,15 @@ public class ShippingOrderResource {
         	 } catch (Exception e) {
                  logger.error("Error in payload", e);
                  return Response.serverError().build();
-             }    
+             }
             return Response.ok().build();
         } else {
         	logger.error(orderID + " not found ");
             return Response.status(Status.NOT_FOUND).build();
         }
     }
-    
-	
+
+
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Returns order references with order_id, customer_id and product_id", description = "")
@@ -146,10 +148,10 @@ public class ShippingOrderResource {
 
         Collection<ShippingOrderReference> orderList = shippingOrderService.getOrderReferences();
         if (! orderList.isEmpty()) {
-        	return Response.ok().entity(orderList).build();	
+        	return Response.ok().entity(orderList).build();
         } else {
         	 return Response.status(Status.NOT_FOUND).build();
-             	
+
         }
 	}
 
