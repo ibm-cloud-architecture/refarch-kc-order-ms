@@ -5,6 +5,7 @@ on:
       - master
     paths-ignore:
       - 'docs/**'
+      - '**/chart/'
 
 jobs:
   build-docker-images:
