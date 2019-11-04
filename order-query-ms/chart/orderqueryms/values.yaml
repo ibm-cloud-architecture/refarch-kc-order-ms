@@ -30,7 +30,7 @@ istio:
   enabled: false
   weight: 100
 generatedBindings:
-  enabled: true
+  enabled: false
 kafka:
   brokersConfigMap: kafka-brokers
   orderTopicName: orders
