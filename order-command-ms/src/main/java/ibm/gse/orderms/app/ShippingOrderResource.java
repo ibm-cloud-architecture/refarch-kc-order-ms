@@ -73,7 +73,7 @@ public class ShippingOrderResource {
 			return Response.serverError().build();
 		}
 	    //return Response.ok().entity(order.getOrderID()).build();
-			//API contract expects a JSON Object and not just a plaintext string
+	    //API contract expects a JSON Object and not just a plaintext string
 	    return Response.ok().entity(order).build();
 	}
 
