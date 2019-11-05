@@ -48,8 +48,8 @@ Be sure to have created an IBM kubernetes service cluster (See [this lab](https:
 Once the two docker images are built, upload them to the IKS private registry
 
 ```
-docker push us.icr.io/ibmcaseeda/kc-orderqueryms
-docker push us.icr.io/ibmcaseeda/kc-ordercmdms
+docker push us.icr.io/ibmcaseeda/kcontainer-order-query-ms
+docker push us.icr.io/ibmcaseeda/kcontainer-order-command-ms
 ```
 
 * Verify the images are in you private repo:
