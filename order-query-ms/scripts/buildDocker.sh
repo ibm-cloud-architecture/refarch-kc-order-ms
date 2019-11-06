@@ -4,7 +4,7 @@ echo " Build ORDER Query war and docker image  "
 echo "##########################################"
 
 msname="orderqueryms"
-kname="kc-orderqueryms"
+kname="kcontainer-order-query-ms"
 ns="greencompute"
 
 

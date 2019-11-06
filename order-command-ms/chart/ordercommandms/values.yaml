@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: ibmcaseed/kc-ordercmdms
+  repository: ibmcase/kcontainer-order-command-ms
   tag: latest
   pullPolicy: Always
   pullSecret: null
