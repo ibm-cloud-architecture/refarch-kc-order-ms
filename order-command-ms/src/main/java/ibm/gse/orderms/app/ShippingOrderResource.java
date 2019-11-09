@@ -108,7 +108,6 @@ public class ShippingOrderResource {
         if (existingOrder.isPresent()) {
         	try {
 	            ShippingOrderUpdateParameters.validate(orderParameters, existingOrder.get());
-	            logger.info("@@@ ");
 	            ShippingOrder updatedOrder = new ShippingOrder(orderID,
 	                    orderParameters.getProductID(),
 	                    orderParameters.getCustomerID(),
@@ -118,7 +117,6 @@ public class ShippingOrderResource {
 	                    orderParameters.getStatus());
 		            try {
 		            	shippingOrderService.updateShippingOrder(updatedOrder);
-		            	logger.info("@@@@ ");
 		            } catch (Exception e) {
 		                logger.error("Fail to publish order updated event", e);
 		                return Response.serverError().build();

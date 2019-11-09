@@ -26,10 +26,14 @@ public class OrderCommandProducer implements EventEmitter  {
 	private static final Logger logger = LoggerFactory.getLogger(OrderCommandProducer.class);
 	
 	private KafkaProducer<String, String> kafkaProducer;
-	
+	private Properties properties;
     
     public OrderCommandProducer() {
-    	Properties properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-command-producer");
+    	initProducer();
+    }
+    
+    private void initProducer() {
+    	properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-command-producer");
 		properties.put(ProducerConfig.ACKS_CONFIG, "all");
 		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
 		properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "order-cmd-1");
@@ -54,7 +58,7 @@ public class OrderCommandProducer implements EventEmitter  {
     abortOn=InterruptedException.class)
     @Timeout(4000)
 	public void emit(OrderEventBase event) throws Exception {
-
+    	if (kafkaProducer == null) initProducer();
 		OrderCommandEvent orderCommandEvent = (OrderCommandEvent)event;
         String key = ((ShippingOrder)orderCommandEvent.getPayload()).getOrderID();
         String value = new Gson().toJson(orderCommandEvent);
@@ -76,6 +80,7 @@ public class OrderCommandProducer implements EventEmitter  {
 	@Override
 	public void safeClose() {
 		try {
+			kafkaProducer.flush();
             kafkaProducer.close();
         } catch (Exception e) {
             logger.error("Failed closing Producer", e);
