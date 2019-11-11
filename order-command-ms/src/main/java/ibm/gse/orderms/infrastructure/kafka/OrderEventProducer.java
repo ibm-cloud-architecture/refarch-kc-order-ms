@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.eclipse.microprofile.faulttolerance.Retry;
@@ -30,12 +31,23 @@ public class OrderEventProducer implements EventEmitter {
 
 
     private KafkaProducer<String, String> kafkaProducer;
+    private Properties properties;
 
-
-    public OrderEventProducer() {
-        Properties properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-event-producer");
-        kafkaProducer = new KafkaProducer<String, String>(properties);
+    public OrderEventProducer() {  
+    	initProducer();
     }
+
+	private void initProducer() {
+		properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-event-producer");
+		properties.put(ProducerConfig.ACKS_CONFIG, "all");
+		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+		properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "order-cmd-1");
+	    kafkaProducer = new KafkaProducer<String, String>(properties);
+	    logger.debug(properties.toString());
+	    // registers the producer with the broker as one that can use transactions, 
+	    // identifying it by its transactional.id and a sequence number
+	    kafkaProducer.initTransactions();
+	}
 
     @Override
     @Retry(retryOn=TimeoutException.class,
@@ -46,7 +58,8 @@ public class OrderEventProducer implements EventEmitter {
     abortOn=InterruptedException.class)
     @Timeout(4000)
     public void emit(OrderEventBase event) throws InterruptedException, ExecutionException, TimeoutException {
-        OrderEvent orderEvent = (OrderEvent)event;
+        if (kafkaProducer == null) initProducer();
+    	OrderEvent orderEvent = (OrderEvent)event;
         String key;
         switch (orderEvent.getType()) {
         case OrderEvent.TYPE_ORDER_CREATED:
@@ -66,6 +79,7 @@ public class OrderEventProducer implements EventEmitter {
     @Override
     public void safeClose() {
         try {
+        	kafkaProducer.flush();
             kafkaProducer.close();
         } catch (Exception e) {
             logger.warn("Failed closing Producer", e);

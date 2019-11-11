@@ -42,8 +42,8 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 
 	@Override
 	public void safeClose() {
-		this.eventEmitted = false;
-		this.emittedEvent = null;	
+		//this.eventEmitted = false;
+		//this.emittedEvent = null;	
 	}
 
 	public OrderEventBase getEventEmitted() {

@@ -13,6 +13,8 @@ import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
+import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
+import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 public class ShippingOrderService {
@@ -32,14 +34,17 @@ public class ShippingOrderService {
 	}
 	
 	
-	public void createOrder(ShippingOrder order) throws Exception {
+	public void createOrder(ShippingOrder order) throws OrderCreationException {
 		OrderCommandEvent createOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
 				KafkaInfrastructureConfig.SCHEMA_VERSION, 
 				order,
 				OrderCommandEvent.TYPE_CREATE_ORDER);	
-
+		try {
             emitter.emit(createOrderCommandEvent);
-		
+		} catch (Exception e) {
+			emitter.safeClose();
+			throw new OrderCreationException("Error while emitting create order command event");
+		} 
 	}
 
 	public Collection<ShippingOrderReference> getOrderReferences() {
@@ -59,7 +64,7 @@ public class ShippingOrderService {
 		return this.orderRepository.getOrderByOrderID(orderId);
 	}
 
-	public void updateShippingOrder(ShippingOrder updatedOrder) {
+	public void updateShippingOrder(ShippingOrder updatedOrder) throws OrderUpdateException {
 		logger.info("updateShippingOrder "+ updatedOrder.getOrderID());
          
 		OrderCommandEvent updateOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
@@ -69,8 +74,10 @@ public class ShippingOrderService {
       try {
             emitter.emit(updateOrderCommandEvent);
         } catch (Exception e) {
-            logger.error("Fail to publish order created event", e);
-        }
+            logger.error("Fail to publish order update event", e);
+            emitter.safeClose();
+            throw new OrderUpdateException("Error while emitting update order command event");
+        } 
 	}
 
 }

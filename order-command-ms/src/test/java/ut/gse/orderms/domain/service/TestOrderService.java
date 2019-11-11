@@ -17,6 +17,7 @@ import ibm.gse.orderms.domain.service.ShippingOrderService;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
+import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 import ut.KafkaConsumerMockup;
@@ -52,8 +53,6 @@ public class TestOrderService {
 		Assert.assertTrue(OrderCommandEvent.TYPE_CREATE_ORDER.equals(createOrderEvent.getType()));
 		OrderCommandEvent  orderCommand = (OrderCommandEvent)createOrderEvent;
 		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)orderCommand.getPayload()).getOrderID()));
-		commandEventProducer.safeClose();
-		Assert.assertFalse(commandEventProducer.eventEmitted);
 		
 	}
 	
@@ -70,9 +69,13 @@ public class TestOrderService {
 			e.printStackTrace();
 			Assert.fail();
 		}
-		commandEventProducer.safeClose();
 		order.setQuantity(100);
-		service.updateShippingOrder(order);
+		try {
+			service.updateShippingOrder(order);
+		} catch (OrderUpdateException e) {
+			e.printStackTrace();
+			Assert.fail();
+		}
 		Assert.assertTrue(commandEventProducer.eventEmitted);
 		OrderEventBase orderUpdatedEvent = commandEventProducer.getEventEmitted();
 		Assert.assertNotNull(orderUpdatedEvent);

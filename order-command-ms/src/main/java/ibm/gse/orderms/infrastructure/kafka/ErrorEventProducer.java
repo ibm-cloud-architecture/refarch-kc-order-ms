@@ -25,7 +25,7 @@ public class ErrorEventProducer implements EventEmitter {
     private KafkaProducer<String, String> kafkaProducer;
 
     public ErrorEventProducer() {
-        Properties properties = KafkaInfrastructureConfig.getProducerProperties("error-query-producer");
+        Properties properties = KafkaInfrastructureConfig.getProducerProperties("error-event-producer");
         kafkaProducer = new KafkaProducer<String, String>(properties);
     }
 
