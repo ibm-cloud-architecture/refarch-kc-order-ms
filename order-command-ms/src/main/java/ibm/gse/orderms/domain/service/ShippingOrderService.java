@@ -42,11 +42,9 @@ public class ShippingOrderService {
 		try {
             emitter.emit(createOrderCommandEvent);
 		} catch (Exception e) {
-			throw new OrderCreationException("Error while emitting create order command event");
-		} finally {
 			emitter.safeClose();
-		}
-		
+			throw new OrderCreationException("Error while emitting create order command event");
+		} 
 	}
 
 	public Collection<ShippingOrderReference> getOrderReferences() {
@@ -77,10 +75,9 @@ public class ShippingOrderService {
             emitter.emit(updateOrderCommandEvent);
         } catch (Exception e) {
             logger.error("Fail to publish order update event", e);
+            emitter.safeClose();
             throw new OrderUpdateException("Error while emitting update order command event");
-        } finally {
-        	emitter.safeClose();
-        }
+        } 
 	}
 
 }
