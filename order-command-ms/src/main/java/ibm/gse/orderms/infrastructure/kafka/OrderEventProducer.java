@@ -39,14 +39,10 @@ public class OrderEventProducer implements EventEmitter {
 
 	private void initProducer() {
 		properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-event-producer");
-		properties.put(ProducerConfig.ACKS_CONFIG, "all");
-		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-		properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "order-cmd-1");
+		properties.put(ProducerConfig.ACKS_CONFIG, "1");
+		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
 	    kafkaProducer = new KafkaProducer<String, String>(properties);
 	    logger.debug(properties.toString());
-	    // registers the producer with the broker as one that can use transactions, 
-	    // identifying it by its transactional.id and a sequence number
-	    kafkaProducer.initTransactions();
 	}
 
     @Override
