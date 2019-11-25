@@ -12,5 +12,6 @@ public interface OrderDAO {
     public void update(QueryOrder order);
     public Collection<QueryOrder> getByManuf(String manuf);
     public Collection<QueryOrder> getByStatus(String status);
+    public Collection<QueryOrder> getByContainerId(String containerId);
     
 }
