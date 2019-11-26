@@ -49,3 +49,11 @@ jobs:
         DOCKERFILE: Dockerfile.multistage
         IMAGE_NAME: ibmcase/kcontainer-order-query-ms
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
+    - name: Webhook to GitOps repo
+      id: gitops-repo-webhook
+      uses: osowski/repository-dispatch@v1
+      with:
+        token: ${{ secrets.WEBHOOK_TOKEN }}
+        repository: ibm-cloud-architecture/refarch-kc-gitops
+        event-type: gitops-refresh
+        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "source": "${{ github.repository }}"}'
