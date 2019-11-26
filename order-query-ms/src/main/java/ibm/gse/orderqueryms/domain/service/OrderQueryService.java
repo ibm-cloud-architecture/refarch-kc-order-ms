@@ -82,4 +82,20 @@ public class OrderQueryService {
 		return results;
 	}
 
+	public Collection<QueryOrder> getOrders() {
+		logger.info("OrderQueryService:getOrders searching for all orders");
+		Collection<QueryOrder> results = new ArrayList<QueryOrder>();
+		
+		try {
+			results = orderDAO.getOrders();
+			logger.info("QueryOrderService:getOrders found " + results.size() + " orders");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("OrderQueryService:getOrders encountered an error searching for all orders", e);
+
+		}
+
+		return results;
+	}
+
 }

@@ -13,5 +13,6 @@ public interface OrderDAO {
     public Collection<QueryOrder> getByManuf(String manuf);
     public Collection<QueryOrder> getByStatus(String status);
     public Collection<QueryOrder> getByContainerId(String containerId);
+    public Collection<QueryOrder> getOrders();
     
 }

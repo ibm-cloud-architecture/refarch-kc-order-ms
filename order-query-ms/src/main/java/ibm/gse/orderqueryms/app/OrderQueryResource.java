@@ -94,4 +94,17 @@ public class OrderQueryResource {
         return Response.ok().entity(orders).build();
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get all orders", description = "")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "404", description = "Order not found", content = @Content(mediaType = "text/plain")),
+            @APIResponse(responseCode = "200", description = "Order found", content = @Content(mediaType = "application/json")) })
+    public Response getOrders() {
+        logger.info("OrderQueryResource.getOrders()");
+
+        Collection<QueryOrder> orders = this.orderQueryService.getOrders();
+        return Response.ok().entity(orders).build();
+    }
+
 }

@@ -100,4 +100,15 @@ public class OrderDAOMock implements OrderDAO {
         return Collections.unmodifiableCollection(result);
     }
 
+    // Getting the order based on the containerId
+    @Override
+    public Collection<QueryOrder> getOrders() {
+        Collection<QueryOrder> result = new ArrayList<>();
+
+        for (QueryOrder order : orders.values()) {
+            result.add(order);
+        }
+        return Collections.unmodifiableCollection(result);
+    }
+
 }
