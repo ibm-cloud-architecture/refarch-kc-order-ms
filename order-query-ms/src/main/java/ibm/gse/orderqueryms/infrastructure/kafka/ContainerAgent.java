@@ -25,10 +25,10 @@ import ibm.gse.orderqueryms.infrastructure.events.container.ContainerAtLocationE
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerGoodsLoadedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerGoodsUnLoadedEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffMaintainanceEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffMaintenanceEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffShipEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffTruckEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnMaintainanceEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnMaintenanceEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnShipEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnTruckEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOrderAssignedEvent;
@@ -134,9 +134,9 @@ public class ContainerAgent implements EventListener {
                 break;
             case ContainerEvent.TYPE_CONTAINER_ON_MAINTENANCE:
                 synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerOnMaintainanceEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerOnMaintainanceEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerOnMaintainanceEvent) containerEvent).getType();
+                	Container container = ((ContainerOnMaintenanceEvent) containerEvent).getPayload();
+                	long timestampMillis = ((ContainerOnMaintenanceEvent) containerEvent).getTimestampMillis();
+                	String action = ((ContainerOnMaintenanceEvent) containerEvent).getType();
                     containerID = container.getContainerID();
                     oqc = orderHistoryRepository.getByContainerId(containerID);
                     if (oqc.isPresent()) {
@@ -152,9 +152,9 @@ public class ContainerAgent implements EventListener {
                 break;
             case ContainerEvent.TYPE_CONTAINER_OFF_MAINTENANCE:
                 synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerOffMaintainanceEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerOffMaintainanceEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerOffMaintainanceEvent) containerEvent).getType();
+                	Container container = ((ContainerOffMaintenanceEvent) containerEvent).getPayload();
+                	long timestampMillis = ((ContainerOffMaintenanceEvent) containerEvent).getTimestampMillis();
+                	String action = ((ContainerOffMaintenanceEvent) containerEvent).getType();
                     containerID = container.getContainerID();
                     oqc = orderHistoryRepository.getByContainerId(containerID);
                     if (oqc.isPresent()) {

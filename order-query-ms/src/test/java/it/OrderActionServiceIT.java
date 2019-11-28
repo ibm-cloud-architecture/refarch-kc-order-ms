@@ -35,10 +35,10 @@ import ibm.gse.orderqueryms.infrastructure.events.container.ContainerAtLocationE
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerGoodsLoadedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerGoodsUnLoadedEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffMaintainanceEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffMaintenanceEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffShipEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffTruckEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnMaintainanceEvent;
+import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnMaintenanceEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnShipEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnTruckEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOrderAssignedEvent;
@@ -133,13 +133,13 @@ public class OrderActionServiceIT {
         expectedContainer.containerAtLocation(cont);
 
         cont.setStatus("ContainerOnMaintenance");
-        ContainerEvent cont_event3 = new ContainerOnMaintainanceEvent(System.currentTimeMillis(), "1", cont);
+        ContainerEvent cont_event3 = new ContainerOnMaintenanceEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event3));
 
         expectedContainer.containerOnMaintainance(cont);
         
         cont.setStatus("ContainerOffMaintenance");
-        ContainerEvent cont_event4 = new ContainerOffMaintainanceEvent(System.currentTimeMillis(), "1", cont);
+        ContainerEvent cont_event4 = new ContainerOffMaintenanceEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event4));
 
         expectedContainer.containerOffMaintainance(cont);
@@ -256,7 +256,7 @@ public class OrderActionServiceIT {
         expectedContainer.containerAtLocation(cont);
 
         cont.setStatus("ContainerOnMaintenance");
-        ContainerEvent cont_event3 = new ContainerOnMaintainanceEvent(System.currentTimeMillis(), "1", cont);
+        ContainerEvent cont_event3 = new ContainerOnMaintenanceEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event3));
 
         expectedContainer.containerOnMaintainance(cont);
