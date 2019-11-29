@@ -17,6 +17,4 @@
 
   <webApplication name="orderqueryms" location="${app.location}" contextRoot="/"/>
 
-  <logging consoleLogLevel="INFO"/>
-
 </server>

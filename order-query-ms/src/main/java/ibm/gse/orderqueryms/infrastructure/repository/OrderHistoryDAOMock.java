@@ -107,8 +107,8 @@ public class OrderHistoryDAOMock implements OrderHistoryDAO{
 																newOrderAction.getAction(),
 																newOrderAction.getType());
 		
-		logger.info("Adding to order events history " + modifiedOrderAction.getOrderActionItem().getOrderID() + modifiedOrderAction.getTimestampMillis()+
-				modifiedOrderAction.getAction(),modifiedOrderAction.getType());
+		logger.info("Adding to order events history " + modifiedOrderAction.getOrderActionItem().getOrderID() + " - " + modifiedOrderAction.getTimestampMillis() + " - " +
+				modifiedOrderAction.getAction() + " - " + modifiedOrderAction.getType());
 		
 		orderHistory.add(modifiedOrderAction);
 		ordHistory.add(modifiedOrderAction);
@@ -126,8 +126,8 @@ public class OrderHistoryDAOMock implements OrderHistoryDAO{
 																newOrderAction.getAction(),
 																newOrderAction.getType());
 		
-		logger.info("Adding to container events history " + modifiedOrderAction.getOrderActionItem().getContainerID() + modifiedOrderAction.getTimestampMillis()+
-				modifiedOrderAction.getAction(),modifiedOrderAction.getType());
+		logger.info("Adding to container events history " + modifiedOrderAction.getOrderActionItem().getContainerID() + " - " + modifiedOrderAction.getTimestampMillis() + " - " +
+				modifiedOrderAction.getAction() + " - " + modifiedOrderAction.getType());
 		
 		if(!containerHistory.contains(modifiedOrderAction)){
 			containerHistory.add(modifiedOrderAction);
@@ -150,7 +150,6 @@ public class OrderHistoryDAOMock implements OrderHistoryDAO{
                 result.add(reqOrder);
                 if(orderAction.getAction().equals("ContainerAllocated")){
                 	String containerID = orderAction.getOrderActionItem().getContainerID();
-                	System.out.println("I am geting called here");
                 	result.addAll(getContainerStatusforOrder(containerID));
                 }
             }
@@ -167,7 +166,7 @@ public class OrderHistoryDAOMock implements OrderHistoryDAO{
 		ArrayList<OrderHistory> result = new ArrayList<>();
 		for(OrderHistory oa: containerHistory){
 			if (containerID.equals(oa.getOrderActionItem().getContainerID())) {
-				logger.info("Getting container status "+oa.getTimestampMillis() + oa.getAction() + oa.getType());
+				logger.info("Getting container status " + oa.getTimestampMillis() + " - " + oa.getAction() + " - " + oa.getType());
 				OrderHistory reqContainer = new OrderHistory(oa.getTimestampMillis(), oa.getAction(), oa.getType());
 	            result.add(reqContainer);
 			}

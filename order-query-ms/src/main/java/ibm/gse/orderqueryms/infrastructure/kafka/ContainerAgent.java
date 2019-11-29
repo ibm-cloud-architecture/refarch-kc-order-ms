@@ -141,7 +141,7 @@ public class ContainerAgent implements EventListener {
                     oqc = orderHistoryRepository.getByContainerId(containerID);
                     if (oqc.isPresent()) {
                     	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerOnMaintainance(container);
+                    	orderActionItem.containerOnMaintenance(container);
                     	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
                     	orderHistoryRepository.updateContainer(orderAction);
                     	orderHistoryRepository.containerHistory(orderAction);
@@ -159,7 +159,7 @@ public class ContainerAgent implements EventListener {
                     oqc = orderHistoryRepository.getByContainerId(containerID);
                     if (oqc.isPresent()) {
                     	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerOffMaintainance(container);
+                    	orderActionItem.containerOffMaintenance(container);
                     	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
                     	orderHistoryRepository.updateContainer(orderAction);
                     	orderHistoryRepository.containerHistory(orderAction);

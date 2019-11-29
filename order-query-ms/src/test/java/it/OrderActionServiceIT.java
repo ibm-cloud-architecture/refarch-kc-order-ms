@@ -136,13 +136,13 @@ public class OrderActionServiceIT {
         ContainerEvent cont_event3 = new ContainerOnMaintenanceEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event3));
 
-        expectedContainer.containerOnMaintainance(cont);
+        expectedContainer.containerOnMaintenance(cont);
         
         cont.setStatus("ContainerOffMaintenance");
         ContainerEvent cont_event4 = new ContainerOffMaintenanceEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event4));
 
-        expectedContainer.containerOffMaintainance(cont);
+        expectedContainer.containerOffMaintenance(cont);
         
         cont.setStatus("ContainerAssignedToOrder");
         ContainerEvent cont_event5 = new ContainerOrderAssignedEvent(System.currentTimeMillis(), "1", cont);
@@ -259,7 +259,7 @@ public class OrderActionServiceIT {
         ContainerEvent cont_event3 = new ContainerOnMaintenanceEvent(System.currentTimeMillis(), "1", cont);
         sendEvent("testOrderRemovedContainerStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event3));
 
-        expectedContainer.containerOnMaintainance(cont);
+        expectedContainer.containerOnMaintenance(cont);
         
         cont.setStatus("ContainerRemoved");
         ContainerEvent cont_event4 = new ContainerRemovedEvent(System.currentTimeMillis(), "1", cont);
