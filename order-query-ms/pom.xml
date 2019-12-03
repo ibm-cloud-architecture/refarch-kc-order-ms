@@ -7,11 +7,18 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <parent>
+  <parent><!--required parent POM-->
+      <groupId>dev.appsody</groupId>
+      <artifactId>java-microprofile</artifactId>
+      <version>[0.2, 0.3)</version>
+      <relativePath/>
+  </parent>
+
+  <!--<parent>
     <groupId>net.wasdev.wlp.maven.parent</groupId>
     <artifactId>liberty-maven-app-parent</artifactId>
     <version>RELEASE</version>
-  </parent>
+  </parent>-->
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -150,6 +157,38 @@
           <packagingExcludes>pom.xml</packagingExcludes>
         </configuration>
       </plugin>
+      <!-- Default enablement of liberty-maven plugin -->
+      <plugin>
+        <groupId>net.wasdev.wlp.maven.plugins</groupId>
+        <artifactId>liberty-maven-plugin</artifactId>
+        <configuration>
+          <assemblyArtifact>
+            <groupId>io.openliberty</groupId>
+            <artifactId>openliberty-runtime</artifactId>
+            <version>${openliberty.version}</version>
+            <type>zip</type>
+          </assemblyArtifact>
+          <serverName>defaultServer</serverName>
+          <stripVersion>true</stripVersion>
+          <configFile>${basedir}/src/main/liberty/config/server.xml</configFile>
+          <!--<looseApplication>true</looseApplication>-->
+          <!--<appArchive>${project.build.directory}/${app.name}.war</appArchive>-->
+          <!--<packageFile>${project.build.directory}/${app.name}.zip</packageFile>-->
+          <packageFile>${package.file}</packageFile>
+          <!--<include>runnable</include>-->
+          <include>${packaging.type}</include>
+          <!--<installAppPackages>project</installAppPackages>-->
+          <!--<configDirectory>${project.basedir}/src/main/liberty/server</configDirectory>-->
+          <bootstrapProperties>
+            <default.http.port>${testServerHttpPort}</default.http.port>
+            <default.https.port>${testServerHttpsPort}</default.https.port>
+            <app.location>${project.artifactId}-${project.version}.war</app.location>
+
+            <project.name>${app.name}</project.name>
+            <jwt.issuer>https://server.example.com</jwt.issuer>
+          </bootstrapProperties>
+        </configuration>
+      </plugin>
       <!-- Plugin to run unit tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -260,76 +299,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>runnable</id>
-      <properties>
-        <package.file>${project.build.directory}/${app.name}.jar</package.file>
-        <packaging.type>runnable</packaging.type>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>liberty</id>
-      <activation>
-        <property>
-          <name>libertyEnv</name>
-          <value>!microclimate</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <!-- Default enablement of liberty-maven plugin -->
-          <plugin>
-            <groupId>net.wasdev.wlp.maven.plugins</groupId>
-            <artifactId>liberty-maven-plugin</artifactId>
-            <version>2.1.1</version>
-            <extensions>true</extensions>
-            <configuration>
-              <assemblyArtifact>
-                <groupId>io.openliberty</groupId>
-                <artifactId>openliberty-runtime</artifactId>
-                <version>${openliberty.version}</version>
-                <type>zip</type>
-              </assemblyArtifact>
-              <serverName>defaultServer</serverName>
-              <stripVersion>true</stripVersion>
-              <configFile>${basedir}/src/main/liberty/config/server.xml</configFile>
-              <appArchive>${project.build.directory}/${app.name}.war</appArchive>
-
-              <packageFile>${project.build.directory}/${app.name}.jar</packageFile>
-              <include>runnable</include>
-
-              <installAppPackages>project</installAppPackages>
-              <configDirectory>${project.basedir}/src/main/liberty/server</configDirectory>
-              <bootstrapProperties>
-                <default.http.port>${testServerHttpPort}</default.http.port>
-                <default.https.port>${testServerHttpsPort}</default.https.port>
-                <app.location>${project.artifactId}-${project.version}.war</app.location>
-
-                <project.name>${app.name}</project.name>
-                <jwt.issuer>https://server.example.com</jwt.issuer>
-              </bootstrapProperties>
-              <installAppPackages>project</installAppPackages>
-            </configuration>
-            <executions>
-              <execution>
-                <id>package-server</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>create-server</goal>
-                  <goal>install-apps</goal>
-                  <goal>package-server</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>target/wlp-package</outputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
