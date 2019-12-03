@@ -1,6 +1,7 @@
 apiVersion: appsody.dev/v1beta1
 kind: AppsodyApplication
 metadata:
+  namespace: dev-reo
   annotations:
     architecture: x86_64
     authoritative-source-url: registry.access.redhat.com
