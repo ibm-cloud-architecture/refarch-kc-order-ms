@@ -27,9 +27,9 @@ fi
 
 url="http://$hostn/orders"
 
-for ORDER in $(seq 0 $count)
+for ORDER in $(seq 1 $count)
 do
  echo "$ORDER"
  echo "Send $fname to $url"
- curl -v -X POST  -H "accept: */*" -H "Content-Type: application/json" -d @$fname $url
+ curl -v -H "accept: */*" -H "Content-Type: application/json" -d @$fname $url
 done
