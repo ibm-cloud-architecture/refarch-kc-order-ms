@@ -27,9 +27,32 @@ fi
 
 url="http://$hostn/orders"
 
+PRODUCTS=(
+ "Apples"
+ "Oranges"
+ "Carrots"
+ "Tomatoes"
+ "Kiwis"
+ "Pineapples"
+)
+
 for ORDER in $(seq 1 $count)
 do
+
+ IDX=$RANDOM
+ let "IDX %= 6"
+ PRODUCT=${PRODUCTS[$IDX]}
+
+ COUNT=$RANDOM
+ let "COUNT %= 500"
+
+ cat $fname | jq ".quantity=${COUNT} | .productID=\"${PRODUCT}\"" > tmpfile.json
+ 
  echo "$ORDER"
  echo "Send $fname to $url"
- curl -v -H "accept: */*" -H "Content-Type: application/json" -d @$fname $url
+ #curl -v -H "accept: */*" -H "Content-Type: application/json" -d @$fname $url
+ curl -v -H "accept: */*" -H "Content-Type: application/json" -d @tmpfile.json $url
+
+ rm tmpfile.json
+
 done
