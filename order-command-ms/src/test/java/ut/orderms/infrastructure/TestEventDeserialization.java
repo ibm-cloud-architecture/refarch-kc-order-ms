@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.CancellationPayload;
+import ibm.gse.orderms.infrastructure.events.OrderCancellationPayload;
 import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
@@ -90,7 +90,7 @@ public class TestEventDeserialization {
 	@Test
 	public void shouldDeserializeOrderCancelledEvent() {
 		OrderCancelledEvent event = new OrderCancelledEvent(new Date().getTime(),
-				"1", new CancellationPayload("O01","do not like this order"));
+				"1", new OrderCancellationPayload("O01","do not like this order"));
 		String eventAsStr = gson.toJson(event);
 		OrderEventBase oea = agent.deserialize(eventAsStr);
 		Assert.assertTrue(oea instanceof OrderCancelledEvent);

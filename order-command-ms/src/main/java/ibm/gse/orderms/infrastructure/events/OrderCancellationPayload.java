@@ -1,13 +1,13 @@
 package ibm.gse.orderms.infrastructure.events;
 
-public class CancellationPayload {
+public class OrderCancellationPayload {
 
     private String orderID;
     private String reason;
 
-    public CancellationPayload() {}
+    public OrderCancellationPayload() {}
 
-    public CancellationPayload(String orderID, String reason) {
+    public OrderCancellationPayload(String orderID, String reason) {
         this.orderID = orderID;
         this.reason = reason;
     }
