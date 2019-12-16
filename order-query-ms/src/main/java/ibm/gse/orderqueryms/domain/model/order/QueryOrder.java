@@ -126,7 +126,8 @@ public class QueryOrder {
     }
     
     public void reject(Rejection rejection){
-    	this.status = Order.REJECTED_STATUS;
+        this.status = Order.REJECTED_STATUS;
+        this.reason = rejection.getReason();
     }
     
     public void containerDelivered(ContainerAssignment container){

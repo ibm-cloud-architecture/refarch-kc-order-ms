@@ -20,7 +20,9 @@ import com.google.gson.Gson;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.OrderRejectEvent;
 import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
+import ibm.gse.orderms.infrastructure.events.OrderRejectPayload;
 
 /**
  * Emits order events as fact about the shipping order. 
@@ -55,17 +57,24 @@ public class OrderEventProducer implements EventEmitter {
     @Timeout(4000)
     public void emit(OrderEventBase event) throws InterruptedException, ExecutionException, TimeoutException {
         if (kafkaProducer == null) initProducer();
-    	OrderEvent orderEvent = (OrderEvent)event;
         String key;
-        switch (orderEvent.getType()) {
+        String value;
+        switch (event.getType()) {
         case OrderEvent.TYPE_ORDER_CREATED:
         case OrderEvent.TYPE_ORDER_UPDATED:
+            OrderEvent orderEvent = (OrderEvent)event;
             key = ((ShippingOrderPayload)orderEvent.getPayload()).getOrderID();
+            value = new Gson().toJson(orderEvent);
+            break;
+        case OrderEvent.TYPE_ORDER_REJECTED:
+            OrderRejectEvent orderRejected = (OrderRejectEvent) event;
+            key = ((OrderRejectPayload)orderRejected.getPayload()).getOrderID();
+            value = new Gson().toJson(orderRejected);
             break;
         default:
             key = null;
+            value = null;
         }
-        String value = new Gson().toJson(orderEvent);
         ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), key, value);
 
         Future<RecordMetadata> send = kafkaProducer.send(record);

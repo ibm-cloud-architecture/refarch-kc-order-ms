@@ -17,6 +17,8 @@ public class OrderEvent extends AbstractEvent {
     public static final String TYPE_SPOILT = "OrderSpoilt";
     
     public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated";
+    public static final String TYPE_CONTAINER_NOT_FOUND = "ContainerNotFound";
+    public static final String TYPE_VOYAGE_NOT_FOUND = "VoyageNotFound";
     public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";
     public static final String TYPE_CONTAINER_DELIVERED = "ContainerDelivered";   
 
@@ -40,7 +42,12 @@ public class OrderEvent extends AbstractEvent {
         case TYPE_REJECTED:
         	return gson.fromJson(json, RejectOrderEvent.class);
         case TYPE_CONTAINER_ALLOCATED:
-        	return gson.fromJson(json, AssignContainerEvent.class);
+            return gson.fromJson(json, AssignContainerEvent.class);
+        // The following dont need to be implemented yet. They do not bring any insight yet
+        // case TYPE_CONTAINER_NOT_FOUND:
+        //     return gson.fromJson(json, ContainerNotFoundEvent.class);
+        // case TYPE_VOYAGE_NOT_FOUND:
+        // 	return gson.fromJson(json, VoyageNotFoundEvent.class);
         case TYPE_CONTAINER_DELIVERED:
         	return gson.fromJson(json, ContainerDeliveredEvent.class);
         case TYPE_UPDATED:
