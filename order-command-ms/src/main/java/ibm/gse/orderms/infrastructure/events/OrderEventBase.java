@@ -15,7 +15,8 @@ public class OrderEventBase {
 	 public static final String TYPE_ORDER_IN_TRANSIT = "OrderInTransit";
 	 public static final String TYPE_ORDER_COMPLETED = "OrderCompleted";
 	 public static final String TYPE_ORDER_REJECTED = "OrderRejected";
-	 public static final String TYPE_ORDER_CANCELLED = "OrderCancelled";
+     public static final String TYPE_ORDER_CANCELLED = "OrderCancelled";
+     public static final String TYPE_ORDER_SPOILT = "OrderSpoilt"; // from containers ms
 	   
 	 public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated";
 	 public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";

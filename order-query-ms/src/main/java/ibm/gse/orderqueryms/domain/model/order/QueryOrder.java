@@ -8,6 +8,7 @@ import ibm.gse.orderqueryms.domain.model.Cancellation;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
 import ibm.gse.orderqueryms.domain.model.Order;
 import ibm.gse.orderqueryms.domain.model.Rejection;
+import ibm.gse.orderqueryms.domain.model.Spoil;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 
 public class QueryOrder {
@@ -134,6 +135,10 @@ public class QueryOrder {
     
     public void orderCompleted(Order order){
     	this.status = Order.ORDER_COMPLETED_STATUS;
+    }
+
+    public void spoilOrder(Spoil spoil){
+    	this.status = Order.SPOILT_STATUS;
     }
 
     public String getStatus() {

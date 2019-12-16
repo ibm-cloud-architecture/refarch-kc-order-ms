@@ -66,4 +66,36 @@ public class OrderQueryService {
 		return results;
 	}
 
+	public Collection<QueryOrder> getOrdersByContainerId(String containerId) {
+		logger.info("OrderQueryService:getOrdersByContainerId searching for order whose container allocated is (" + containerId + ")");
+		Collection<QueryOrder> results = new ArrayList<QueryOrder>();
+		
+		try {
+			results = orderDAO.getByContainerId(containerId);
+			logger.info("QueryOrderService:getOrdersByContainerId found " + results.size() + " orders for container (" + containerId + ")");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("OrderQueryService:getOrdersByContainerId encountered an error for container ("+containerId+")", e);
+
+		}
+
+		return results;
+	}
+
+	public Collection<QueryOrder> getOrders() {
+		logger.info("OrderQueryService:getOrders searching for all orders");
+		Collection<QueryOrder> results = new ArrayList<QueryOrder>();
+		
+		try {
+			results = orderDAO.getOrders();
+			logger.info("QueryOrderService:getOrders found " + results.size() + " orders");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("OrderQueryService:getOrders encountered an error searching for all orders", e);
+
+		}
+
+		return results;
+	}
+
 }

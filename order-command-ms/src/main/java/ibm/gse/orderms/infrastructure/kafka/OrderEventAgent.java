@@ -24,6 +24,8 @@ import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.OrderSpoiltEvent;
+import ibm.gse.orderms.infrastructure.events.OrderSpoiltPayload;
 import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignedEvent;
 import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignmentPayload;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
@@ -70,56 +72,6 @@ public class OrderEventAgent implements EventListener {
     	this.closeTimeOut = Duration.of(10, ChronoUnit.SECONDS);
     }
     
-    
-/*
-    public List<OrderEvent> pollForReload() {
-        if (!initDone) {
-            reloadConsumer.subscribe(
-                    Collections.singletonList(KafkaInfrastructureConfig.ORDER_TOPIC),
-                    new ConsumerRebalanceListener() {
-
-                        @Override
-                        public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-                            logger.info("Partitions revoked " + partitions);
-                        }
-
-                        @Override
-                        public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-                            logger.info("Partitions assigned " + partitions);
-                        }
-                    });
-
-
-            // blocking call !
-            // TODO - need to handle multiple partitions
-            reloadLimit = kafkaConsumer.committed(new TopicPartition(KafkaInfrastructureConfig.ORDER_TOPIC, 0));
-            logger.info("Reload limit " + reloadLimit);
-            initDone = true;
-        }
-
-        List<OrderEvent> result = new ArrayList<>();
-        if (reloadLimit==null) {
-            // no prior commits found
-            reloadCompleted = true;
-        } else {ConsumerRecords<String, String> recs = reloadConsumer.poll(KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT);
-            for (ConsumerRecord<String, String> rec : recs) {
-                if (rec.offset() <= reloadLimit.offset()) {
-                    OrderEvent event = OrderEvent.deserialize(rec.value());
-                    result.add(event);
-                } else {
-                    logger.info("Reload Completed");
-                    reloadCompleted = true;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    public boolean reloadCompleted() {
-        return reloadCompleted;
-    }
-*/
     public List<OrderEventBase> poll() {
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(this.pollTimeOut);
         List<OrderEventBase> result = new ArrayList<>();
@@ -131,21 +83,23 @@ public class OrderEventAgent implements EventListener {
     }
     
     public OrderEventBase deserialize(String eventAsString) {
-    	   OrderEventBase orderEvent = gson.fromJson(eventAsString, OrderEventBase.class);
-           switch (orderEvent.getType()) {
-           case OrderEventBase.TYPE_ORDER_CREATED:
-           case OrderEventBase.TYPE_ORDER_UPDATED:
-               return gson.fromJson(eventAsString, OrderEvent.class);
-           case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
-               return gson.fromJson(eventAsString, VoyageAssignedEvent.class);
-           case OrderEventBase.TYPE_ORDER_CANCELLED:
-               return gson.fromJson(eventAsString, OrderCancelledEvent.class);
-           case OrderEventBase.TYPE_CONTAINER_ALLOCATED:
-           	return gson.fromJson(eventAsString, ReeferAssignedEvent.class);
-           default:
-               logger.warn("Not supported event: " + eventAsString);
-               return null;
-           }
+    	OrderEventBase orderEvent = gson.fromJson(eventAsString, OrderEventBase.class);
+        switch (orderEvent.getType()) {
+            case OrderEventBase.TYPE_ORDER_CREATED:
+            case OrderEventBase.TYPE_ORDER_UPDATED:
+                return gson.fromJson(eventAsString, OrderEvent.class);
+            case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
+                return gson.fromJson(eventAsString, VoyageAssignedEvent.class);
+            case OrderEventBase.TYPE_ORDER_CANCELLED:
+                return gson.fromJson(eventAsString, OrderCancelledEvent.class);
+            case OrderEventBase.TYPE_CONTAINER_ALLOCATED:
+                return gson.fromJson(eventAsString, ReeferAssignedEvent.class);
+            case OrderEventBase.TYPE_ORDER_SPOILT:
+           	    return gson.fromJson(eventAsString, OrderSpoiltEvent.class);
+            default:
+                logger.warn("Not supported event: " + eventAsString);
+                return null;
+        }
     }
 
     public void safeClose() {
@@ -155,15 +109,7 @@ public class OrderEventAgent implements EventListener {
             logger.warn("Failed closing Consumer", e);
         }
     }
-/*
-    public void safeReloadClose() {
-        try {
-            reloadConsumer.close(KafkaInfrastructureConfig.CONSUMER_CLOSE_TIMEOUT);
-        } catch (Exception e) {
-            logger.warn("Failed closing reload Consumer",e);
-        }
-    }
-*/
+
 	@Override
 	public void handle(OrderEventBase orderEvent) {
 		 try {
@@ -203,10 +149,24 @@ public class OrderEventAgent implements EventListener {
 	            	synchronized (orderRepository) {
 	            		ReeferAssignmentPayload ca = ((ReeferAssignedEvent) orderEvent).getPayload();
 		            	String orderID = ca.getOrderID();
-		            	Optional<ShippingOrder>oco = orderRepository.getOrderByOrderID(orderID);
+		            	Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
 		            	if (oco.isPresent()) {
 		                     ShippingOrder shippingOrder = oco.get();
 		                     shippingOrder.assignContainer(ca);
+		                     orderRepository.updateShippingOrder(shippingOrder);
+		                } else {
+		                    throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+		                }
+	            	}
+                    break;
+                case OrderEventBase.TYPE_ORDER_SPOILT:
+	            	synchronized (orderRepository) {
+	            		OrderSpoiltPayload os = ((OrderSpoiltEvent) orderEvent).getPayload();
+		            	String orderID = os.getOrderID();
+		            	Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
+		            	if (oco.isPresent()) {
+		                     ShippingOrder shippingOrder = oco.get();
+		                     shippingOrder.spoilOrder();
 		                     orderRepository.updateShippingOrder(shippingOrder);
 		                } else {
 		                    throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
