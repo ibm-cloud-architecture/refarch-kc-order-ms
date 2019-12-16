@@ -81,4 +81,30 @@ public class OrderQueryResource {
         return Response.ok().entity(orders).build();
     }
 
+    @GET
+    @Path("byContainerId/{containerId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Query orders by containerId", description = "")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Orders found", content = @Content(mediaType = "application/json")) })
+    public Response getByContainerId(@PathParam("containerId") String containerId) {
+        logger.info("OrderQueryResource.getByContainerId(" + containerId + ")");
+
+        Collection<QueryOrder> orders = this.orderQueryService.getOrdersByContainerId(containerId);
+        return Response.ok().entity(orders).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get all orders", description = "")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "404", description = "Order not found", content = @Content(mediaType = "text/plain")),
+            @APIResponse(responseCode = "200", description = "Order found", content = @Content(mediaType = "application/json")) })
+    public Response getOrders() {
+        logger.info("OrderQueryResource.getOrders()");
+
+        Collection<QueryOrder> orders = this.orderQueryService.getOrders();
+        return Response.ok().entity(orders).build();
+    }
+
 }

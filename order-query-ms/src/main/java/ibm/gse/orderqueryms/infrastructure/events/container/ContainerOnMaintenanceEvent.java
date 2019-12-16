@@ -2,16 +2,16 @@ package ibm.gse.orderqueryms.infrastructure.events.container;
 
 import ibm.gse.orderqueryms.domain.model.Container;
 
-public class ContainerOnMaintainanceEvent extends ContainerEvent {
+public class ContainerOnMaintenanceEvent extends ContainerEvent {
 	
     private Container payload;
 	
-	public ContainerOnMaintainanceEvent(long timestampMillis, String version, Container payload) {
+	public ContainerOnMaintenanceEvent(long timestampMillis, String version, Container payload) {
         super(timestampMillis, ContainerEvent.TYPE_CONTAINER_ON_MAINTENANCE, version);
         this.payload = payload;
     }
 
-    public ContainerOnMaintainanceEvent() {
+    public ContainerOnMaintenanceEvent() {
     }
 
 	public Container getPayload() {

@@ -11,6 +11,7 @@ public class Order {
     public static final String BOOKED_STATUS = "booked";
     public static final String REJECTED_STATUS = "rejected";
     public static final String COMPLETED_STATUS = "completed";
+    public static final String SPOILT_STATUS = "spoilt";
     public static final String CONTAINER_ALLOCATED_STATUS = "container-allocated";
     public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
     public static final String CONTAINER_DELIVERED_STATUS = "container-delivered";

@@ -20,6 +20,7 @@ import ibm.gse.orderqueryms.domain.model.Cancellation;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
 import ibm.gse.orderqueryms.domain.model.Order;
 import ibm.gse.orderqueryms.domain.model.Rejection;
+import ibm.gse.orderqueryms.domain.model.Spoil;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
@@ -34,6 +35,7 @@ import ibm.gse.orderqueryms.infrastructure.events.order.CreateOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.OrderCompletedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.RejectOrderEvent;
+import ibm.gse.orderqueryms.infrastructure.events.order.SpoilOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.UpdateOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderDAO;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
@@ -199,6 +201,20 @@ public class OrderAgent implements EventListener {
 							}
 						}
 						break;
+					case OrderEvent.TYPE_SPOILT:
+						synchronized (orderRepository) {
+							Spoil spoil = ((SpoilOrderEvent) orderEvent).getPayload();
+							orderID = spoil.getOrderID();
+							orderQueryObject = orderRepository.getById(orderID);
+							if (orderQueryObject.isPresent()) {
+								QueryOrder qo = orderQueryObject.get();
+								qo.spoilOrder(spoil);
+								orderRepository.update(qo);
+							} else {
+								throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+							}
+						}
+						break;
 					default:
 						logger.warn("Unknown event type: " + orderEvent);
 					}
@@ -348,6 +364,25 @@ public class OrderAgent implements EventListener {
 						if (orderHistoryInfo.isPresent()) {
 							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.orderCompleted(order);
+							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
+									action);
+							orderHistoryRepository.updateOrder(orderAction);
+							orderHistoryRepository.orderHistory(orderAction);
+						} else {
+							throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
+						}
+					}
+					break;
+				case OrderEvent.TYPE_SPOILT:
+					synchronized (orderHistoryRepository) {
+						Spoil spoil = ((SpoilOrderEvent) orderEvent).getPayload();
+						long timestampMillis = ((SpoilOrderEvent) orderEvent).getTimestampMillis();
+						String action = ((SpoilOrderEvent) orderEvent).getType();
+						orderID = spoil.getOrderID();
+						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
+						if (orderHistoryInfo.isPresent()) {
+							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
+							orderActionItem.spoil(spoil);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
 							orderHistoryRepository.updateOrder(orderAction);

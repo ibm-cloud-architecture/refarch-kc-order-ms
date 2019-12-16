@@ -17,6 +17,7 @@ public class ShippingOrder {
     public static final String TRANSIT_STATUS = "transit";
     public static final String REJECTED_STATUS = "rejected";
     public static final String COMPLETED_STATUS = "completed";
+    public static final String SPOILT_STATUS = "spoilt";
 
     public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
     public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
@@ -103,6 +104,10 @@ public class ShippingOrder {
     			sop.getStatus()
     			);
     	return order;
+    }
+
+    public void spoilOrder(){
+        this.status = ShippingOrder.SPOILT_STATUS;
     }
     
     public String getOrderID() {

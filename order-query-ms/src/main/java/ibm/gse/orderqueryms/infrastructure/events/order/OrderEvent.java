@@ -14,6 +14,7 @@ public class OrderEvent extends AbstractEvent {
     public static final String TYPE_COMPLETED = "OrderCompleted";
     public static final String TYPE_REJECTED = "OrderRejected";
     public static final String TYPE_CANCELLED = "OrderCancelled";
+    public static final String TYPE_SPOILT = "OrderSpoilt";
     
     public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated";
     public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";
@@ -47,7 +48,9 @@ public class OrderEvent extends AbstractEvent {
         case TYPE_CANCELLED:
             return gson.fromJson(json, CancelOrderEvent.class);
         case TYPE_COMPLETED:
-        	return gson.fromJson(json, OrderCompletedEvent.class);
+            return gson.fromJson(json, OrderCompletedEvent.class);
+        case TYPE_SPOILT:
+        	return gson.fromJson(json, SpoilOrderEvent.class);
         default:
             //TODO handle
             return null;

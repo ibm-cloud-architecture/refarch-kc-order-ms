@@ -9,6 +9,7 @@ import ibm.gse.orderqueryms.domain.model.Container;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
 import ibm.gse.orderqueryms.domain.model.Order;
 import ibm.gse.orderqueryms.domain.model.Rejection;
+import ibm.gse.orderqueryms.domain.model.Spoil;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 
 public class OrderHistoryInfo {
@@ -159,11 +160,11 @@ public class OrderHistoryInfo {
     	this.status = Container.AT_LOCATION_STATUS;
     }
     
-    public void containerOnMaintainance(Container container){
+    public void containerOnMaintenance(Container container){
     	this.status = Container.ON_MAINTENANCE_STATUS;
     }
     
-    public void containerOffMaintainance(Container container){
+    public void containerOffMaintenance(Container container){
     	this.status = Container.OFF_MAINTENANCE_STATUS;
     }
     
@@ -205,6 +206,10 @@ public class OrderHistoryInfo {
     
     public void orderCompleted(Order order){
     	this.status = Order.ORDER_COMPLETED_STATUS;
+    }
+
+    public void spoil(Spoil spoil){
+    	this.status = Order.SPOILT_STATUS;
     }
 
     public String getStatus() {
