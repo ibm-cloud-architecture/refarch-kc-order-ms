@@ -149,7 +149,8 @@ public class OrderHistoryInfo {
     }
     
     public void reject(Rejection rejection){
-    	this.status = Order.REJECTED_STATUS;
+        this.status = Order.REJECTED_STATUS;
+        this.reason = rejection.getReason();
     }
     
     public void containerRemoved(Container container){

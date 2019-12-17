@@ -2,9 +2,9 @@ package ibm.gse.orderms.infrastructure.events;
 
 public class OrderCancelledEvent extends OrderEventBase {
 
-    private CancellationPayload payload;
+    private OrderCancellationPayload payload;
 
-    public OrderCancelledEvent(long timestampMillis, String version, CancellationPayload payload) {
+    public OrderCancelledEvent(long timestampMillis, String version, OrderCancellationPayload payload) {
         this.timestampMillis = timestampMillis;
     	this.version = version;
     	this.type = OrderEventBase.TYPE_ORDER_CANCELLED;
@@ -16,11 +16,11 @@ public class OrderCancelledEvent extends OrderEventBase {
     }
 
     
-    public CancellationPayload getPayload() {
+    public OrderCancellationPayload getPayload() {
         return payload;
     }
 
-    public void setPayload(CancellationPayload payload) {
+    public void setPayload(OrderCancellationPayload payload) {
         this.payload = payload;
     }
 

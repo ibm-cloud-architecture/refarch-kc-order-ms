@@ -187,7 +187,7 @@ public class QueryServiceIT {
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
        sendEvent("testNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
-       Rejection rejection = new Rejection(orderID, "custId");
+       Rejection rejection = new Rejection(orderID, "productId", "custId", "contId", "voyId", 2, addr, "2019-02-10T13:30Z", addr, "2019-02-10T13:30Z", "rejected", "A container was not found");
        OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
        sendEvent("testNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 

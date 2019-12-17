@@ -1,10 +1,12 @@
-package ibm.gse.orderqueryms.domain.model;
+package ibm.gse.orderms.infrastructure.events;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Rejection {
-	
+import ibm.gse.orderms.domain.model.order.Address;
+
+public class OrderRejectPayload {
+
     private String orderID;
     private String productID;
     private String customerID;
@@ -18,13 +20,13 @@ public class Rejection {
     private Address destinationAddress;
     private String expectedDeliveryDate;
 
-	private String status;
-	private String reason;
+    private String status;
+    private String reason;
 
-    public Rejection() {
+    public OrderRejectPayload() {
     }
 
-    public Rejection(String orderID, String productID, String customerID, String containerID, String voyageID, int quantity, Address pickupAddress,
+    public OrderRejectPayload(String orderID, String productID, String customerID, String containerID, String voyageID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String reason) {
         super();
         this.orderID = orderID;
@@ -37,8 +39,7 @@ public class Rejection {
         this.pickupDate = pickupDate;
         this.destinationAddress = destinationAddress;
         this.expectedDeliveryDate = expectedDeliveryDate;
-		this.status = status;
-		this.reason = reason;
+        this.status = status;
     }
 
     public String getOrderID() {
@@ -133,14 +134,13 @@ public class Rejection {
 
 	public void setVoyageID(String voyageID) {
 		this.voyageID = voyageID;
-	}
-
-	public String getReason() {
+    }
+    
+    public String getReason() {
 		return reason;
 	}
 
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
-    
 }
