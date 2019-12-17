@@ -8,8 +8,46 @@ on:
       - '**/chart/'
 
 jobs:
+  validate-docker-secrets:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Validate docker registry secrets are defined
+      id: validate-docker-secrets
+      run: |
+        echo "Validating docker registry secrets are defined on the repository"
+
+        FAIL=false
+
+        validate_secret(){
+          FIELD=$1
+          VALUE=$2
+
+          if [ -z "${VALUE}" ]; then
+            echo "The secret ${FIELD} needs to be set on this repository."
+            FAIL=true
+          else
+            echo "The secret ${FIELD} is set on this repository."
+          fi
+        }
+
+        validate_secret DOCKER_USERNAME ${DOCKER_USERNAME}
+        validate_secret DOCKER_PASSWORD ${DOCKER_PASSWORD}
+        validate_secret DOCKER_REPOSITORY ${DOCKER_REPOSITORY}
+        validate_secret DOCKER_IMAGE_COMMAND ${DOCKER_IMAGE_COMMAND}
+        validate_secret DOCKER_IMAGE_QUERY ${DOCKER_IMAGE_QUERY}
+
+        if [ "${FAIL}" = "true" ]; then
+          exit 1
+        fi
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+        DOCKER_IMAGE_COMMAND: ${{ secrets.DOCKER_IMAGE_COMMAND }}
+        DOCKER_IMAGE_QUERY: ${{ secrets.DOCKER_IMAGE_QUERY }}
   build-docker-images:
-    if: startsWith(github.repository, 'ibm-cloud-architecture/')
+    needs:
+      validate-docker-secrets
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -22,6 +60,8 @@ jobs:
     - name: Build the order-command docker image
       id: build-command-image
       run: |
+        echo "Build and push the docker image"
+        IMAGE_NAME="${DOCKER_R}/${DOCKER_I}"
         docker login -u ${DOCKER_U} -p ${DOCKER_P}
         cd ${WORKDIR}
         docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${IMAGE_TAG}
@@ -30,13 +70,16 @@ jobs:
       env:
         DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_R: ${{ secrets.DOCKER_REPOSITORY }}
+        DOCKER_I: ${{ secrets.DOCKER_IMAGE_COMMAND }}
         WORKDIR: order-command-ms
         DOCKERFILE: Dockerfile.multistage
-        IMAGE_NAME: ibmcase/kcontainer-order-command-ms
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
     - name: Build the order-query docker image
       id: build-query-image
       run: |
+        echo "Build and push the docker image"
+        IMAGE_NAME="${DOCKER_R}/${DOCKER_I}"
         docker login -u ${DOCKER_U} -p ${DOCKER_P}
         cd ${WORKDIR}
         docker build . --file ${DOCKERFILE} --tag ${IMAGE_NAME}:${IMAGE_TAG}
@@ -45,13 +88,15 @@ jobs:
       env:
         DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_R: ${{ secrets.DOCKER_REPOSITORY }}
+        DOCKER_I: ${{ secrets.DOCKER_IMAGE_QUERY }}
         WORKDIR: order-query-ms
         DOCKERFILE: Dockerfile.multistage
-        IMAGE_NAME: ibmcase/kcontainer-order-query-ms
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
     - name: Webhook to GitOps repo
       id: gitops-repo-webhook
       uses: osowski/repository-dispatch@v1
+      if: startsWith(github.repository, 'ibm-cloud-architecture/')
       with:
         token: ${{ secrets.WEBHOOK_TOKEN }}
         repository: ibm-cloud-architecture/refarch-kc-gitops
