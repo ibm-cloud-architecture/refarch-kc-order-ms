@@ -46,6 +46,8 @@ jobs:
         DOCKER_IMAGE_COMMAND: ${{ secrets.DOCKER_IMAGE_COMMAND }}
         DOCKER_IMAGE_QUERY: ${{ secrets.DOCKER_IMAGE_QUERY }}
   build-docker-images:
+    needs:
+      validate-docker-secrets
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
