@@ -33,7 +33,8 @@ jobs:
         validate_secret DOCKER_USERNAME ${DOCKER_USERNAME}
         validate_secret DOCKER_PASSWORD ${DOCKER_PASSWORD}
         validate_secret DOCKER_REPOSITORY ${DOCKER_REPOSITORY}
-        validate_secret DOCKER_IMAGE ${DOCKER_IMAGE}
+        validate_secret DOCKER_IMAGE_COMMAND ${DOCKER_IMAGE_COMMAND}
+        validate_secret DOCKER_IMAGE_QUERY ${DOCKER_IMAGE_QUERY}
 
         if [ "${FAIL}" = "true" ]; then
           exit 1
@@ -42,7 +43,8 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
-        DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+        DOCKER_IMAGE_COMMAND: ${{ secrets.DOCKER_IMAGE_COMMAND }}
+        DOCKER_IMAGE_QUERY: ${{ secrets.DOCKER_IMAGE_QUERY }}
   build-docker-images:
     runs-on: ubuntu-latest
     steps:
