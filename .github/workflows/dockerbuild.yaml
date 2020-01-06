@@ -53,7 +53,7 @@ jobs:
     - uses: actions/checkout@master
     - name: Bump version and push tag
       id: bump-version-action
-      uses: anothrNick/github-tag-action@master
+      uses: osowski/github-tag-action@master
       env:
         DEFAULT_BUMP: patch
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
