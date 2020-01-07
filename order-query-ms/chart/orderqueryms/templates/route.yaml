@@ -1,0 +1,19 @@
+{{- if .Values.route.enabled -}}
+{{- $routePath := .Values.route.path -}}
+{{- $chartName := .Chart.Name -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  #TODO Add default name overrides?
+  name: {{ .Values.route.urlPrefix }}
+  labels:
+    chart: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  path: {{ $routePath }}
+  to:
+    kind: Service
+    name: "{{ $chartName }}-service"
+    weight: 100
+  port:
+    targetPort: http
+{{- end }}
