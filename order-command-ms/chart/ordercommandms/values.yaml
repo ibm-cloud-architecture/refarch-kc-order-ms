@@ -31,6 +31,11 @@ istio:
   weight: 100
 generatedBindings:
   enabled: false
+# Individual Routes are preferred over Ingresses on OCP
+route:
+  enabled: false
+  path: /
+  urlPrefix: kcontainer-order-command
 kafka:
   brokersConfigMap: kafka-brokers
   orderTopicName: orders
