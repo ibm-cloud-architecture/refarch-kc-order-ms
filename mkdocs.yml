@@ -10,7 +10,7 @@ nav:
     - Deploy to Kubernetes cluster: deployments.md
   - Event sourcing pattern: https://ibm-cloud-architecture.github.io/refarch-eda/design-patterns/event-sourcing
   - CQRS pattern: https://ibm-cloud-architecture.github.io/refarch-eda/design-patterns/cqrs
-  - Integration tests: https://ibm-cloud-architecture.github.io/refarch-kc/itg-tests/
+  - Integration tests: https://ibm-cloud-architecture.github.io/refarch-kc/itg-tests/itgtests
 
 theme: 
   name: material
