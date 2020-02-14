@@ -46,5 +46,5 @@ eventstreams:
   truststorePath: /config/resources/security/es-ssl
   truststoreFile: es-cert.jks
   truststoreSecret: es-truststore-jks
-  truststorePassword: changeit
+  truststorePassword: password
 serviceAccountName: default
