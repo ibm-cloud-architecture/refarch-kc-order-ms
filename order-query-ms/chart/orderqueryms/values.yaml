@@ -38,9 +38,7 @@ route:
   urlPrefix: kcontainer-order-query
 kafka:
   brokersConfigMap: kafka-brokers
-  orderTopicName: orders
-  containerTopicName: containers
-  errorTopicName: errors
+  topicsConfigMap: kafka-topics
 eventstreams:
   enabled: true
   apikeyConfigMap: eventstreams-apikey
