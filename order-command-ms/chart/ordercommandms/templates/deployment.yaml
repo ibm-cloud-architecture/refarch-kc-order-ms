@@ -45,11 +45,20 @@ spec:
                 name: "{{ .Values.kafka.brokersConfigMap }}"
                 key: brokers
           - name: ORDER_TOPIC
-            value: "{{ .Values.kafka.orderTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: ordersTopic
           - name: ORDERCOMMAND_TOPIC
-            value: "{{ .Values.kafka.orderCommandTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: orderCommandsTopic
           - name: ERROR_TOPIC
-            value: "{{ .Values.kafka.errorTopicName }}"
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Values.kafka.topicsConfigMap }}"
+                key: errorsTopic
           {{- if .Values.eventstreams.enabled }}
           - name: KAFKA_APIKEY
             valueFrom:
