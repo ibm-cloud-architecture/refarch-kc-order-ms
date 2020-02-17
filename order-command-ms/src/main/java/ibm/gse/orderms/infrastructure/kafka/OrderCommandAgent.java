@@ -24,6 +24,7 @@ import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.OrderRejectEvent;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -121,7 +122,10 @@ public class OrderCommandAgent implements EventListener {
             break;
         case OrderCommandEvent.TYPE_UPDATE_ORDER:
         	processOrderUpdate(commandEvent);
-            break;
+			break;
+		case OrderCommandEvent.TYPE_REJECT_ORDER:
+        	processOrderRejection(commandEvent);
+			break;
 		}
 	}
 	
@@ -200,6 +204,36 @@ public class OrderCommandAgent implements EventListener {
         		logger.error("Cannot update order - Unknown order Id " + orderID);
         		generateErrorEvent(shippingOrder);
         	 }
+        } catch (OrderUpdateException oue) {
+        	generateErrorEvent(shippingOrder);
+        }
+	}
+
+	/**
+	 * For the order reject
+	 * @param commandEvent
+	 */
+	private void processOrderRejection(OrderCommandEvent commandEvent) {
+	    ShippingOrder shippingOrder = (ShippingOrder) commandEvent.getPayload();
+        String orderID = shippingOrder.getOrderID();
+        try {
+        	Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
+        	if (oco.isPresent()) {
+				shippingOrder.rejectOrder();
+				orderRepository.updateShippingOrder(shippingOrder);
+				OrderRejectEvent orderRejectedEvent = new OrderRejectEvent(new Date().getTime(), schemaVersion, shippingOrder.toOrderRejectPayload("Reject order command received"));
+        		try {
+	        		orderEventProducer.emit(orderRejectedEvent);
+	        		this.orderCommandsConsumer.commitSync();
+        		} catch (Exception e) {
+        			e.printStackTrace();
+        			running = false; // liveness may kill this app and restart it
+        		    return ;
+        		}
+        	} else {
+        		logger.error("Cannot reject order - Unknown order Id " + orderID);
+        		generateErrorEvent(shippingOrder);
+        	}
         } catch (OrderUpdateException oue) {
         	generateErrorEvent(shippingOrder);
         }
