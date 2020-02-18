@@ -15,6 +15,7 @@ import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
+import ibm.gse.orderms.infrastructure.repository.OrderRejectException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 public class ShippingOrderService {
@@ -78,6 +79,30 @@ public class ShippingOrderService {
             emitter.safeClose();
             throw new OrderUpdateException("Error while emitting update order command event");
         } 
+	}
+
+	public void rejectShippingOrder(String orderID) throws OrderRejectException {
+		logger.info("rejectShippingOrder " + orderID);
+		Optional<ShippingOrder> shippingOrder = this.orderRepository.getOrderByOrderID(orderID);
+		
+		if (shippingOrder.isPresent()){
+			ShippingOrder orderToReject = shippingOrder.get();
+			OrderCommandEvent rejectOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
+				KafkaInfrastructureConfig.SCHEMA_VERSION, 
+				orderToReject,
+				OrderCommandEvent.TYPE_REJECT_ORDER);
+			try {
+				emitter.emit(rejectOrderCommandEvent);
+			} catch (Exception e) {
+				logger.error("Fail to publish order reject event", e);
+				emitter.safeClose();
+				throw new OrderRejectException("Error while emitting reject order command event");
+			} 
+		}
+		else {
+			logger.error("[ERROR] - There is no order with orderID = " + orderID);
+		}
+      
 	}
 
 }

@@ -171,4 +171,30 @@ public class ShippingOrderResource {
             return Response.status(Status.NOT_FOUND).build();
         }
     }
+
+    @POST
+    @Path("/reject/{Id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Request to reject an order", description = "")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "404", description = "Unknown order ID", content = @Content(mediaType = "text/plain")),
+            @APIResponse(responseCode = "400", description = "Bad reject order request", content = @Content(mediaType = "text/plain")),
+            @APIResponse(responseCode = "200", description = "Order rejected", content = @Content(mediaType = "text/plain")) })
+	public Response rejectShippingOrder(@PathParam("Id") String orderId) {
+        if (orderId == null || orderId=="") {
+			return Response.status(400, "No parameter sent").build();
+        }
+        Optional<ShippingOrder> order = shippingOrderService.getOrderByOrderID(orderId);
+        if (order.isPresent()) {
+            try {
+                shippingOrderService.rejectShippingOrder(orderId);
+            } catch (Exception e) {
+                logger.error("[ERROR] - Failed to send reject order command event", e);
+                return Response.serverError().build();
+            }
+            return Response.status(200, "Reject order command sent").build();
+        } else {
+            return Response.status(404, "OrderID not found").build();
+        }
+    }
 }
