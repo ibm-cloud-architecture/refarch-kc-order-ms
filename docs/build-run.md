@@ -22,7 +22,7 @@ You can have the following software already installed on your computer or use [o
   * [Java 8 JDK from IBM (AIX, Linux, z/OS, IBM i)](http://www.ibm.com/developerworks/java/jdk/)
 * For IBMCLOUD, you need to be sure to have an Event Stream service defined (See [this note](https://ibm-cloud-architecture.github.io/refarch-kc/deployments/backing-services/#using-ibm-event-streams-hosted-on-ibm-cloud) for a simple summary of what to do).
 * If you run IBM Event Streams on openshift cluster on premise servers, be sure to get truststore certificates and API key.
-* Configure the following topics for both microservices: `orderCommands`, `errors`, `orders`. You can use the script `createTopics.sh` in the `refarch-kc` project for that or use the Event Streams user interface.
+* Configure the following topics for both microservices: `order-commands`, `errors`, `orders`. You can use the script `createTopics.sh` in the `refarch-kc` project for that or use the Event Streams user interface.
 
 
 ## Build
@@ -69,7 +69,7 @@ mvn integration-test
 docker images
 
 ibmcase/kcontainer-order-query-ms  latest b85b43980f35 531MB
-ibmcase/kcontainer-order-command-ms latest 
+ibmcase/kcontainer-order-command-ms latest
 ```
 
 ## Run

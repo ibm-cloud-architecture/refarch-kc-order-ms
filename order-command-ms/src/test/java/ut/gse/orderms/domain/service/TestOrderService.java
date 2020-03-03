@@ -28,16 +28,16 @@ import ut.ShippingOrderTestDataFactory;
 public class TestOrderService {
 
 	public static ShippingOrderRepository orderRepository = new ShippingOrderRepositoryMock();
-	
-	
+
+
 	@Test
 	public void shouldEmitEventOnOrderCreation() {
 		OrderCommandEventProducerMock commandEventProducer = new OrderCommandEventProducerMock(orderRepository);
-		
-		ShippingOrderService service = new ShippingOrderService(commandEventProducer, 
+
+		ShippingOrderService service = new ShippingOrderService(commandEventProducer,
 				orderRepository);
 		Assert.assertFalse(commandEventProducer.eventEmitted);
-		
+
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		try {
 			service.createOrder(order);
@@ -45,23 +45,23 @@ public class TestOrderService {
 			e.printStackTrace();
 			Assert.fail();
 		}
-		
+
 		Assert.assertTrue(commandEventProducer.eventEmitted);
 		OrderEventBase createOrderEvent = commandEventProducer.getEventEmitted();
-		
+
 		Assert.assertNotNull(createOrderEvent);
 		Assert.assertTrue(OrderCommandEvent.TYPE_CREATE_ORDER.equals(createOrderEvent.getType()));
 		OrderCommandEvent  orderCommand = (OrderCommandEvent)createOrderEvent;
 		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)orderCommand.getPayload()).getOrderID()));
-		
+
 	}
-	
+
 	@Test
 	public void shouldEmitEventOnOrderUpdate() {
 		OrderCommandEventProducerMock commandEventProducer = new OrderCommandEventProducerMock(orderRepository);
-		ShippingOrderService service = new ShippingOrderService(commandEventProducer, 
+		ShippingOrderService service = new ShippingOrderService(commandEventProducer,
 				orderRepository);
-		
+
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		try {
 			service.createOrder(order);
@@ -83,15 +83,15 @@ public class TestOrderService {
 		OrderCommandEvent  orderCommand = (OrderCommandEvent)orderUpdatedEvent;
 		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)orderCommand.getPayload()).getOrderID()));
 	}
-	
+
 
 	// ATTENTION this test just validates the mockup as the update in the repository is done by the agent
 	@Test
 	public void shouldGetCreatedOrder() {
 		OrderCommandEventProducerMock commandEventProducer = new OrderCommandEventProducerMock(orderRepository);
-		ShippingOrderService service = new ShippingOrderService(commandEventProducer, 
+		ShippingOrderService service = new ShippingOrderService(commandEventProducer,
 				orderRepository);
-		
+
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		try {
 			service.createOrder(order);
@@ -102,9 +102,9 @@ public class TestOrderService {
 		Optional<ShippingOrder> persistedOrder = service.getOrderByOrderID(order.getOrderID());
 		Assert.assertTrue(persistedOrder.isPresent());
 	}
-	
+
 	/**
-	 * The following test is more complex in settings. 
+	 * The following test is more complex in settings.
 	 * The service will publish event so we use a command event producer mock
 	 * The mock uses the repository as a mean to share data with consumer
 	 * The Agent uses an command event consumer, which is also a mock
@@ -127,18 +127,18 @@ public class TestOrderService {
 		properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.put(ConsumerConfig.CLIENT_ID_CONFIG, "test-clientID");
 
-		KafkaConsumerMockup<String,String> kcm = new KafkaConsumerMockup<String,String>(properties,"orderCommands");	
+		KafkaConsumerMockup<String,String> kcm = new KafkaConsumerMockup<String,String>(properties,"order-commands");	
 		OrderEventEmitterMock orderEventEmitter = new OrderEventEmitterMock();
 		OrderEventEmitterMock errorEventEmitter = new OrderEventEmitterMock();
 		// agent consume command events and generate order event
 		OrderCommandAgent orderCommandAgent = new OrderCommandAgent(orderRepository,kcm,orderEventEmitter,errorEventEmitter);
-		
+
 		// need mockup emitter
 		OrderCommandEventProducerMock eventEmitter = new OrderCommandEventProducerMock(orderRepository);
 		// inject emitter and repo on the service to test
-		ShippingOrderService service = new ShippingOrderService(eventEmitter, 
+		ShippingOrderService service = new ShippingOrderService(eventEmitter,
 				orderRepository);
-		
+
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		try {
 			service.createOrder(order);
@@ -148,20 +148,20 @@ public class TestOrderService {
 		}
 		// well the repository was updated by the mockup command event emmitter, so let trick it by reset
 		orderRepository.reset();
-		
+
 		// now mockup the event going to message broker
 		kcm.setKey(order.getOrderID());
 		String eventAsString = new Gson().toJson(eventEmitter.getEventEmitted());
 		kcm.setValue(eventAsString);
-		
+
 		// the next 3 lines are simulating the runnable thread polling command events and processing them
 		List<OrderCommandEvent> results = orderCommandAgent.poll();
 		for (OrderCommandEvent event : results) {
            	orderCommandAgent.handle(event);
         }
-		// the handle persists in the repo... so following should work 
+		// the handle persists in the repo... so following should work
 		Optional<ShippingOrder> persistedOrder = service.getOrderByOrderID(order.getOrderID());
 		Assert.assertTrue(persistedOrder.isPresent());
-	
+
 	}
 }

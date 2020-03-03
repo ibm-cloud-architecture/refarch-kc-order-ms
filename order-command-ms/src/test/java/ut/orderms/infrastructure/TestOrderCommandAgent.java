@@ -24,30 +24,30 @@ import ut.ShippingOrderTestDataFactory;
 
 /**
  * Test order command agent with consumer mock
- * 
+ *
  * When a POST operation is done to create an order, the commmand microservice
- * creates a create order command, and posts it to the orderCommands topic.
- * 
+ * creates a create order command, and posts it to the 'order-commands' topic.
+ *
  * As an agent it listen to command events. So validate the processing of those command events
- * 
+ *
  * Two types of event implemented so far: create order and update order
- *  
+ *
  * @author jerome boyer
  *
  */
 public class TestOrderCommandAgent {
-	
+
 	static OrderCommandAgent agent = null;
 	static ShippingOrderRepositoryMock repository = null ;
 	static KafkaConsumerMockup<String,String> orderCommandsConsumerMock = null;
 	static OrderEventEmitterMock orderEventProducerMock = null;
 	static OrderEventEmitterMock errorEventProducerMock = null;
-	
+
 	@BeforeClass
 	public static void createMockups() {
 		if (orderCommandsConsumerMock == null) {
 			Properties properties = ShippingOrderTestDataFactory.buildConsumerKafkaProperties();
-			orderCommandsConsumerMock = new KafkaConsumerMockup<String,String>(properties,"orderCommands");	
+			orderCommandsConsumerMock = new KafkaConsumerMockup<String,String>(properties,"order-commands");
 		}
 		if ( orderEventProducerMock == null) {
 			orderEventProducerMock = new OrderEventEmitterMock();
@@ -57,12 +57,12 @@ public class TestOrderCommandAgent {
 		}
 		repository = new ShippingOrderRepositoryMock();
 	}
-	
+
 	@Before
-	public void createAgent() {		
+	public void createAgent() {
 		agent = new OrderCommandAgent(repository,orderCommandsConsumerMock,orderEventProducerMock,errorEventProducerMock);
 	}
-	
+
 	@After
 	public void resetMockups() {
 		orderEventProducerMock.emittedEvent = null;
@@ -72,10 +72,10 @@ public class TestOrderCommandAgent {
 		orderEventProducerMock.failure = false;
 		errorEventProducerMock.failure = false;
 	}
-	
+
 	/**
 	 * Validate the agent is consuming command event for create order, persist
-	 * and generate event 
+	 * and generate event
 	 */
 
 	@Test
@@ -95,7 +95,7 @@ public class TestOrderCommandAgent {
 		OrderCommandEvent createOrderEvent = results.get(0);
 		assertNotNull(createOrderEvent);
 		Assert.assertTrue(OrderCommandEvent.TYPE_CREATE_ORDER.contentEquals(createOrderEvent.getType()));
-		
+
 		ShippingOrder shippingOrder = (ShippingOrder)results.get(0).getPayload();
 		Assert.assertTrue("FreshCarrots".equals(shippingOrder.getProductID()));
 		// should persist the order via the handler
@@ -107,9 +107,9 @@ public class TestOrderCommandAgent {
 		// now verify it generates event
 		Assert.assertTrue(orderEventProducerMock.eventEmitted);
 		Assert.assertTrue(orderEventProducerMock.emittedEvent.getType().equals(OrderEvent.TYPE_ORDER_CREATED));
-	
+
 	}
-	
+
 	@Test
 	public void shouldUpdateOrderAndEmitEvent() {
 		orderCommandsConsumerMock.setValue("{\"payload\":{\"orderID\":\"Order01\",\"productID\":\"FreshCarrots\""
@@ -149,7 +149,7 @@ public class TestOrderCommandAgent {
 		Assert.assertTrue(orderEventProducerMock.emittedEvent.getType().equals(OrderEvent.TYPE_ORDER_UPDATED));
 
 	}
-	
+
 	@Test
 	// not very useful as we test the mockup here. but it is cool to test the mockup too
 	public void shouldTimeOutOnPoll() {
@@ -157,9 +157,9 @@ public class TestOrderCommandAgent {
 		List<OrderCommandEvent> results = agent.poll();
 		Assert.assertTrue(results.isEmpty());
 		orderCommandsConsumerMock.resetTimeOut();
-		
+
 	}
-	
+
 	@Test
 	/**
 	 * when repository is not saving. No orderCreated event is generated
@@ -246,8 +246,8 @@ public class TestOrderCommandAgent {
 		Assert.assertFalse(errorEventProducerMock.eventEmitted);
 		Assert.assertFalse(agent.isRunning());
 	}
-	
-	
+
+
 	@Test
 	public void shouldStopRunningWhenItCouldNotEmitEventOnOrderUpdate() {
 		Assert.assertTrue(agent.isRunning());

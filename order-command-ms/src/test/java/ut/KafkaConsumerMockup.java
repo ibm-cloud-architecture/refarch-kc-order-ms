@@ -15,21 +15,21 @@ import org.apache.kafka.common.TopicPartition;
 public class KafkaConsumerMockup<K,V> extends KafkaConsumer<K,V>  {
 	 protected V value;
 	 protected K key;
-	 protected String topicName = "orderCommands";
+	 protected String topicName = "order-commands";
 	 protected int partitionNumber = 0;
 	 protected int lastCommittedOffet = 0;
 	private boolean enforceTimeOut = false;
-	 
+
 	 public KafkaConsumerMockup(Properties properties ,String topicName) {
 		super(properties);
 		this.topicName = topicName;
 	}
-	 
+
 	 @SuppressWarnings("unchecked")
 	public void setValue(String v) {
 		 this.value = (V)v;
 	 }
-	 
+
 	@SuppressWarnings("unchecked")
 	public void setKey(String k) {
 		 this.key = (K)k;
@@ -37,12 +37,12 @@ public class KafkaConsumerMockup<K,V> extends KafkaConsumer<K,V>  {
 
 	@Override
 	 public ConsumerRecords<K,V> poll(final Duration timeout) {
-		
-		
+
+
 		List<ConsumerRecord<K,V>> l = new ArrayList<ConsumerRecord<K,V>>();
-		ConsumerRecord<K,V> cs = new ConsumerRecord<K,V>(this.topicName, 
-				this.partitionNumber, 
-				this.lastCommittedOffet, 
+		ConsumerRecord<K,V> cs = new ConsumerRecord<K,V>(this.topicName,
+				this.partitionNumber,
+				this.lastCommittedOffet,
 				(K)this.key, (V)this.value);
 		l.add(cs);
 		TopicPartition tp = new TopicPartition(this.topicName,0);
@@ -50,16 +50,15 @@ public class KafkaConsumerMockup<K,V> extends KafkaConsumer<K,V>  {
 		if (enforceTimeOut) return  new ConsumerRecords<K,V>(m);
 		m.put(tp, l);
 		ConsumerRecords<K,V> records = new ConsumerRecords<K,V>(m);
-		return records; 
+		return records;
 	 }
 
 	public void enforceTimeOut() {
 		this.enforceTimeOut = true;
 	}
-     
+
 	public void resetTimeOut() {
 		this.enforceTimeOut = false;
 	}
-     
-}
 
+}
