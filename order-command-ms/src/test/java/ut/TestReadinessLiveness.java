@@ -21,15 +21,15 @@ public class TestReadinessLiveness {
 
 	static OrderEventEmitterMock orderEventProducerMock;
 	static KafkaConsumerMockup consumerMock;
-	
+
 	static StarterLivenessCheck liveness;
 	static StarterReadinessCheck readiness;
 	static OrderCommandAgent commandAgent;
-	
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		Properties properties = ShippingOrderTestDataFactory.buildConsumerKafkaProperties();
-		consumerMock = new KafkaConsumerMockup<String,String>(properties,"orderCommands");	
+		consumerMock = new KafkaConsumerMockup<String,String>(properties,"order-commands");	
 		orderEventProducerMock = new OrderEventEmitterMock();
 		ShippingOrderRepository repository = new ShippingOrderRepositoryMock();
 		EventEmitter errorEventProducerMock = new OrderEventEmitterMock();
@@ -41,17 +41,17 @@ public class TestReadinessLiveness {
 
 	@Test
 	public void testAppIsReady() {
-		
+
 		boolean ready =  readiness.isReady();
 		Assert.assertTrue(ready );
 	}
-	
+
 	@Test
 	public void testAppIsALive() {
 		boolean ready =  liveness.isAlive();
 		Assert.assertTrue(ready );
 	}
-	
+
 	/**
 	 * Mock failure on communication while processing a command event
 	 */
@@ -60,8 +60,8 @@ public class TestReadinessLiveness {
 		orderEventProducerMock.failure=true;
 		Assert.assertTrue(liveness.isAlive());
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
-		OrderCommandEvent commandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
-				"v1", 
+		OrderCommandEvent commandEvent = new OrderCommandEvent(System.currentTimeMillis(),
+				"v1",
 				order,
 				OrderCommandEvent.TYPE_CREATE_ORDER);
 		try {
