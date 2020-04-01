@@ -36,12 +36,8 @@ public class OrderCommandProducer implements EventEmitter  {
     	properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-command-producer");
 		properties.put(ProducerConfig.ACKS_CONFIG, "all");
 		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-		properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "order-cmd-1");
 	    kafkaProducer = new KafkaProducer<String, String>(properties);
 	    logger.debug(properties.toString());
-        // registers the producer with the broker as one that can use transactions, 
-        // identifying it by its transactional.id and a sequence number
-        kafkaProducer.initTransactions();
     }
     
 	/**
@@ -64,14 +60,11 @@ public class OrderCommandProducer implements EventEmitter  {
         String value = new Gson().toJson(orderCommandEvent);
         
         try {
-	        kafkaProducer.beginTransaction();
 	        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderCommandTopic(), key, value);
-	        Future<RecordMetadata> send = kafkaProducer.send(record);
+			Future<RecordMetadata> send = kafkaProducer.send(record);
 	        logger.info("Command event sent: " + value);
 	        send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);
-	        kafkaProducer.commitTransaction();
         } catch (KafkaException e){
-        	kafkaProducer.abortTransaction();
         	logger.error(e.getMessage());
         	throw new KafkaException(e);
         }

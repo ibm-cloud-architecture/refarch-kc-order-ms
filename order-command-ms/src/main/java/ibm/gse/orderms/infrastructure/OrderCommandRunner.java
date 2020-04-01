@@ -1,12 +1,9 @@
 package ibm.gse.orderms.infrastructure;
 
-import java.util.List;
-
 import org.apache.kafka.common.KafkaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 
 /**
@@ -36,11 +33,8 @@ public class OrderCommandRunner implements Runnable {
         try {
             while (running && orderCommandAgent.isRunning()) {
                 try {
-                    List<OrderCommandEvent> events = orderCommandAgent.poll();
-                    // in case of timeout the list is empty.
-                    for (OrderCommandEvent event : events) {
-                       	orderCommandAgent.handle(event);
-                    }
+                    // poll for orderCommand events from the order-commands topic
+                    orderCommandAgent.poll();
                 } catch (KafkaException ke) {
                     // Treat a Kafka exception as unrecoverable
                     // stop this task and queue a new one

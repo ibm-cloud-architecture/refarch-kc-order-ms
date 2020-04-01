@@ -1,19 +1,25 @@
 package ut;
 
-import ibm.gse.orderms.infrastructure.events.EventEmitter;
+import java.util.Map;
+
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.common.TopicPartition;
+
+import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 
 /**
  * Use this mockup class to emit order events
  *
  */
-public class OrderEventEmitterMock implements EventEmitter{
-	public OrderEventEmitterMock() {}
-	
+public class OrderEventEmitterMock implements EventEmitterTransactional {
+	public OrderEventEmitterMock() {
+	}
+
 	public boolean eventEmitted = false;
 	public OrderEventBase emittedEvent = null;
 	public boolean failure = false;
-	
+
 	@Override
 	public void emit(OrderEventBase event) throws Exception {
 		if (this.failure) {
@@ -24,13 +30,20 @@ public class OrderEventEmitterMock implements EventEmitter{
 			this.eventEmitted = true;
 			this.emittedEvent = event;
 		}
- 			
+
+	}
+
+	@Override
+	public void emitWithOffsets(OrderEventBase event, Map<TopicPartition, OffsetAndMetadata> offsetToCommit,
+			String groupID) throws Exception {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void safeClose() {
-		//this.eventEmitted = false;
-		//this.emittedEvent = null;	
+		// this.eventEmitted = false;
+		// this.emittedEvent = null;
 	}
 
 	public OrderEventBase getEventEmitted() {
@@ -39,7 +52,7 @@ public class OrderEventEmitterMock implements EventEmitter{
 
 	public void timeOutEvent() {
 		// TODO Auto-generated method stub
-		
+
 	}
 	
 }
