@@ -155,11 +155,12 @@ public class TestOrderService {
 		kcm.setValue(eventAsString);
 
 		// the next 3 lines are simulating the runnable thread polling command events and processing them
-		List<OrderCommandEvent> results = orderCommandAgent.poll();
-		for (OrderCommandEvent event : results) {
-           	orderCommandAgent.handle(event);
-        }
+		// List<OrderCommandEvent> results = orderCommandAgent.poll();
+		// for (OrderCommandEvent event : results) {
+        //    	orderCommandAgent.handle(event);
+        // }
 		// the handle persists in the repo... so following should work
+		orderCommandAgent.poll();
 		Optional<ShippingOrder> persistedOrder = service.getOrderByOrderID(order.getOrderID());
 		Assert.assertTrue(persistedOrder.isPresent());
 

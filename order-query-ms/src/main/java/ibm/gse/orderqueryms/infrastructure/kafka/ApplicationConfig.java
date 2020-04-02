@@ -61,6 +61,9 @@ public class ApplicationConfig {
 
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,"true");
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        // Since create order is now transactional, we need to make aware any reader of it so that
+        // it only reads committed transactions
+        properties.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
 //        properties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,"1000");
 //        properties.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
 

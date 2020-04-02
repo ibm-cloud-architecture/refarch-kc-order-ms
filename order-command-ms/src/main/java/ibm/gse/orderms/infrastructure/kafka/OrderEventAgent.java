@@ -59,7 +59,10 @@ public class OrderEventAgent implements EventListener {
     private boolean running = true;
 
     public OrderEventAgent() {
-        Properties properties = KafkaInfrastructureConfig.getConsumerProperties("ordercmd-event-consumer-grp", "OrderEventAgent",	true,"earliest");
+		Properties properties = KafkaInfrastructureConfig.getConsumerProperties("ordercmd-event-consumer-grp", "OrderEventAgent", true,"earliest");
+		// Using a value of read_committed ensures that we don't read any transactional
+		// messages before the transaction from OrderCommandAgent to create, update or reject an order completes.
+		properties.put("isolation.level", "read_committed");
         kafkaConsumer = new KafkaConsumer<String, String>(properties);
         this.kafkaConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.getOrderTopic()));
         orderRepository = AppRegistry.getInstance().shippingOrderRepository();	
