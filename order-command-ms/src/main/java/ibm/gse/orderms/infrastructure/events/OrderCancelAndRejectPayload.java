@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ibm.gse.orderms.domain.model.order.Address;
 
-public class OrderRejectPayload {
+public class OrderCancelAndRejectPayload {
 
     private String orderID;
     private String productID;
@@ -23,10 +23,10 @@ public class OrderRejectPayload {
     private String status;
     private String reason;
 
-    public OrderRejectPayload() {
+    public OrderCancelAndRejectPayload() {
     }
 
-    public OrderRejectPayload(String orderID, String productID, String customerID, String containerID, String voyageID, int quantity, Address pickupAddress,
+    public OrderCancelAndRejectPayload(String orderID, String productID, String customerID, String containerID, String voyageID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String reason) {
         super();
         this.orderID = orderID;

@@ -4,11 +4,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import ibm.gse.orderqueryms.domain.model.Address;
-import ibm.gse.orderqueryms.domain.model.Cancellation;
+import ibm.gse.orderqueryms.domain.model.CancelAndRejectPayload;
 import ibm.gse.orderqueryms.domain.model.Container;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
 import ibm.gse.orderqueryms.domain.model.Order;
-import ibm.gse.orderqueryms.domain.model.Rejection;
 import ibm.gse.orderqueryms.domain.model.Spoil;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 
@@ -143,12 +142,12 @@ public class OrderHistoryInfo {
     	this.status = Order.CONTAINER_ALLOCATED_STATUS;
     }
     
-    public void cancel(Cancellation cancellation) {
+    public void cancel(CancelAndRejectPayload cancellation) {
         this.status = Order.CANCELLED_STATUS;
         this.reason = cancellation.getReason();
     }
     
-    public void reject(Rejection rejection){
+    public void reject(CancelAndRejectPayload rejection){
         this.status = Order.REJECTED_STATUS;
         this.reason = rejection.getReason();
     }

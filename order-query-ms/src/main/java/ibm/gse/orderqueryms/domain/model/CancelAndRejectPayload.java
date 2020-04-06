@@ -3,7 +3,7 @@ package ibm.gse.orderqueryms.domain.model;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Rejection {
+public class CancelAndRejectPayload {
 	
     private String orderID;
     private String productID;
@@ -21,10 +21,10 @@ public class Rejection {
 	private String status;
 	private String reason;
 
-    public Rejection() {
+    public CancelAndRejectPayload() {
     }
 
-    public Rejection(String orderID, String productID, String customerID, String containerID, String voyageID, int quantity, Address pickupAddress,
+    public CancelAndRejectPayload(String orderID, String productID, String customerID, String containerID, String voyageID, int quantity, Address pickupAddress,
             String pickupDate, Address destinationAddress, String expectedDeliveryDate, String status, String reason) {
         super();
         this.orderID = orderID;

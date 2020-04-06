@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 import ibm.gse.orderqueryms.domain.model.Address;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
 import ibm.gse.orderqueryms.domain.model.Order;
-import ibm.gse.orderqueryms.domain.model.Rejection;
+import ibm.gse.orderqueryms.domain.model.CancelAndRejectPayload;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignContainerEvent;
@@ -187,12 +187,12 @@ public class QueryServiceIT {
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
        sendEvent("testNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
-       Rejection rejection = new Rejection(orderID, "productId", "custId", "contId", "voyId", 2, addr, "2019-02-10T13:30Z", addr, "2019-02-10T13:30Z", "rejected", "A container was not found");
-       OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
+       CancelAndRejectPayload rejectionPayload = new CancelAndRejectPayload(orderID, "productId", "custId", "contId", "voyId", 2, addr, "2019-02-10T13:30Z", addr, "2019-02-10T13:30Z", "rejected", "A container was not found");
+       OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejectionPayload);
        sendEvent("testNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-       expectedOrder.reject(rejection);
+       expectedOrder.reject(rejectionPayload);
        int maxattempts = 10;
        boolean ok = false;
        outer: for(int i=0; i<maxattempts; i++) {

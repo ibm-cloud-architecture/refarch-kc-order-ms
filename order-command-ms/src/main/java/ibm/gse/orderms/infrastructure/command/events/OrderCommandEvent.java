@@ -9,7 +9,7 @@ public class OrderCommandEvent extends OrderEventBase {
 
     public static final String TYPE_CREATE_ORDER = "CreateOrderCommand";
 	public static final String TYPE_UPDATE_ORDER = "UpdateOrderCommand";
-	public static final String TYPE_REJECT_ORDER = "RejectOrderCommand";
+	public static final String TYPE_CANCEL_ORDER = "CancelOrderCommand";
     private static final Gson gson = new Gson();
     private ShippingOrder payload;
 	

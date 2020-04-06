@@ -26,7 +26,7 @@ import ibm.gse.orderqueryms.domain.model.Address;
 import ibm.gse.orderqueryms.domain.model.Container;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
 import ibm.gse.orderqueryms.domain.model.Order;
-import ibm.gse.orderqueryms.domain.model.Rejection;
+import ibm.gse.orderqueryms.domain.model.CancelAndRejectPayload;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistory;
 import ibm.gse.orderqueryms.domain.model.order.history.OrderHistoryInfo;
@@ -71,13 +71,13 @@ public class OrderActionServiceIT {
     	OrderEvent ord_event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
     	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(ord_event));
 
-        Rejection rejection = new Rejection(orderID, "productId", "custId", "contId", "voyId", 2, addr, "2019-02-10T13:30Z", addr, "2019-02-10T13:30Z", "rejected", "A container was not found");
+        CancelAndRejectPayload rejectionPayload = new CancelAndRejectPayload(orderID, "productId", "custId", "contId", "voyId", 2, addr, "2019-02-10T13:30Z", addr, "2019-02-10T13:30Z", "rejected", "A container was not found");
 
-    	OrderEvent ord_event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejection);
+    	OrderEvent ord_event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejectionPayload);
     	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(ord_event2));
 
     	OrderHistoryInfo expectedOrder = OrderHistoryInfo.newFromOrder(order);
-    	expectedOrder.reject(rejection);
+    	expectedOrder.reject(rejectionPayload);
     	OrderHistory expectedComplexQueryOrder = OrderHistory.newFromHistoryOrder(expectedOrder, ord_event2.getTimestampMillis(), ord_event2.getType());
 
         Thread.sleep(10000L);

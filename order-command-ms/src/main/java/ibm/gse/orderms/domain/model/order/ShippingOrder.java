@@ -3,8 +3,7 @@ package ibm.gse.orderms.domain.model.order;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ibm.gse.orderms.infrastructure.events.OrderCancellationPayload;
-import ibm.gse.orderms.infrastructure.events.OrderRejectPayload;
+import ibm.gse.orderms.infrastructure.events.OrderCancelAndRejectPayload;
 import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
 import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignmentPayload;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
@@ -72,13 +71,6 @@ public class ShippingOrder {
     	setAssignStatus();
     }
     
-    public void cancel(OrderCancellationPayload cancellation) {
-        this.status = ShippingOrder.CANCELLED_STATUS;
-        this.reeferID = "";
-        this.voyageID = "";
-    }
-    
-    
     public ShippingOrderPayload toShippingOrderPayload() {
     	ShippingOrderPayload sop = new ShippingOrderPayload(this.getOrderID(),
     			this.getProductID(),
@@ -107,8 +99,8 @@ public class ShippingOrder {
     	return order;
     }
 
-    public OrderRejectPayload toOrderRejectPayload(String reason) {
-    	OrderRejectPayload sop = new OrderRejectPayload(this.getOrderID(),
+    public OrderCancelAndRejectPayload toOrderCancelAndRejectPayload(String reason) {
+    	OrderCancelAndRejectPayload ocrp = new OrderCancelAndRejectPayload(this.getOrderID(),
     			this.getProductID(),
                 this.getCustomerID(),
                 this.getReeferID(),
@@ -121,7 +113,7 @@ public class ShippingOrder {
                 this.getStatus(),
                 reason
     			);
-    	return sop;
+    	return ocrp;
     }
 
     public void spoilOrder(){
@@ -130,6 +122,10 @@ public class ShippingOrder {
 
     public void rejectOrder(){
         this.status = ShippingOrder.REJECTED_STATUS;
+    }
+
+    public void cancelOrder(){
+        this.status = ShippingOrder.CANCELLED_STATUS;
     }
     
     public String getOrderID() {

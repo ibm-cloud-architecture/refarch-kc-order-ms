@@ -19,7 +19,6 @@ import com.google.gson.Gson;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.AppRegistry;
-import ibm.gse.orderms.infrastructure.events.OrderCancellationPayload;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.EventListener;
 import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
@@ -151,20 +150,6 @@ public class OrderEventAgent implements EventListener {
 	                    }
 	                }
 	                break;
-	            case OrderEventBase.TYPE_ORDER_CANCELLED:
-	                synchronized (orderRepository) {
-	                    OrderCancellationPayload cancellation = ((OrderCancelledEvent) orderEvent).getPayload();
-	                    String orderID = cancellation.getOrderID();
-	                    Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
-	                    if (oco.isPresent()) {
-	                        ShippingOrder shippingOrder = oco.get();
-	                        shippingOrder.cancel(cancellation);
-	                        orderRepository.updateShippingOrder(shippingOrder);
-	                    } else {
-	                        throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-	                    }
-	                }
-	                break;
 	            case OrderEventBase.TYPE_CONTAINER_ALLOCATED:
 	            	synchronized (orderRepository) {
 	            		ReeferAssignmentPayload ca = ((ReeferAssignedEvent) orderEvent).getPayload();
@@ -225,6 +210,7 @@ public class OrderEventAgent implements EventListener {
 	            	break;
 	            case OrderEventBase.TYPE_ORDER_CREATED:
 				case OrderEventBase.TYPE_ORDER_UPDATED:
+				case OrderEventBase.TYPE_ORDER_CANCELLED:
 				case OrderEventBase.TYPE_ORDER_REJECTED:
 	            	break;
 	            default:
@@ -241,7 +227,7 @@ public class OrderEventAgent implements EventListener {
 	}
 	
 	public void sendOrderRejectEvent (ShippingOrder shippingOrder, String reason){
-		OrderRejectEvent orderRejectedEvent = new OrderRejectEvent(new Date().getTime(), schemaVersion, shippingOrder.toOrderRejectPayload(reason));
+		OrderRejectEvent orderRejectedEvent = new OrderRejectEvent(new Date().getTime(), schemaVersion, shippingOrder.toOrderCancelAndRejectPayload(reason));
 		try {
 			orderEventProducer.emit(orderRejectedEvent);
 		} catch (Exception e) {

@@ -24,8 +24,9 @@ import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.events.OrderRejectEvent;
+import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
 import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
-import ibm.gse.orderms.infrastructure.events.OrderRejectPayload;
+import ibm.gse.orderms.infrastructure.events.OrderCancelAndRejectPayload;
 
 /**
  * Emits order events as fact about the shipping order. 
@@ -77,8 +78,13 @@ public class OrderEventProducer implements EventEmitterTransactional {
             break;
         case OrderEvent.TYPE_ORDER_REJECTED:
             OrderRejectEvent orderRejected = (OrderRejectEvent) event;
-            key = ((OrderRejectPayload)orderRejected.getPayload()).getOrderID();
+            key = ((OrderCancelAndRejectPayload)orderRejected.getPayload()).getOrderID();
             value = new Gson().toJson(orderRejected);
+            break;
+        case OrderEvent.TYPE_ORDER_CANCELLED:
+            OrderCancelledEvent orderCancelled = (OrderCancelledEvent) event;
+            key = ((OrderCancelAndRejectPayload)orderCancelled.getPayload()).getOrderID();
+            value = new Gson().toJson(orderCancelled);
             break;
         default:
             key = null;
@@ -113,8 +119,13 @@ public class OrderEventProducer implements EventEmitterTransactional {
             break;
         case OrderEvent.TYPE_ORDER_REJECTED:
             OrderRejectEvent orderRejected = (OrderRejectEvent) event;
-            key = ((OrderRejectPayload)orderRejected.getPayload()).getOrderID();
+            key = ((OrderCancelAndRejectPayload)orderRejected.getPayload()).getOrderID();
             value = new Gson().toJson(orderRejected);
+            break;
+        case OrderEvent.TYPE_ORDER_CANCELLED:
+            OrderCancelledEvent orderCancelled = (OrderCancelledEvent) event;
+            key = ((OrderCancelAndRejectPayload)orderCancelled.getPayload()).getOrderID();
+            value = new Gson().toJson(orderCancelled);
             break;
         default:
             key = null;

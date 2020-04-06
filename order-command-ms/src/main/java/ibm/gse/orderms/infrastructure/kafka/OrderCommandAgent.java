@@ -13,8 +13,8 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,7 @@ import ibm.gse.orderms.infrastructure.events.EventListenerTransactional;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
 import ibm.gse.orderms.infrastructure.events.OrderRejectEvent;
+import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -134,8 +135,8 @@ public class OrderCommandAgent implements EventListenerTransactional {
 		case OrderCommandEvent.TYPE_UPDATE_ORDER:
 			processOrderUpdate(commandEvent,offsetToCommit);
 			break;
-		case OrderCommandEvent.TYPE_REJECT_ORDER:
-			processOrderRejection(commandEvent,offsetToCommit);
+		case OrderCommandEvent.TYPE_CANCEL_ORDER:
+			processOrderCancellation(commandEvent,offsetToCommit);
 			break;
 		}
 	}
@@ -230,29 +231,29 @@ public class OrderCommandAgent implements EventListenerTransactional {
 	 * For the order reject
 	 * @param commandEvent
 	 */
-	private void processOrderRejection(OrderCommandEvent commandEvent, Map<TopicPartition, OffsetAndMetadata> offsetToCommit) {
+	private void processOrderCancellation(OrderCommandEvent commandEvent, Map<TopicPartition, OffsetAndMetadata> offsetToCommit) {
 	    ShippingOrder shippingOrder = (ShippingOrder) commandEvent.getPayload();
         String orderID = shippingOrder.getOrderID();
         try {
         	Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
         	if (oco.isPresent()) {
-				shippingOrder.rejectOrder();
+				shippingOrder.cancelOrder();
 				// UPDATE the order in the DB.
 				// This action MUST support repetition given that the order update process might get repeated
 				// if all the actions to perform do not succeed.
 				orderRepository.updateShippingOrder(shippingOrder);
 				// Create the event to be sent to the orders topic
-				OrderRejectEvent orderRejectedEvent = new OrderRejectEvent(new Date().getTime(), schemaVersion, shippingOrder.toOrderRejectPayload("Reject order command received"));
+				OrderCancelledEvent orderCancelledEvent = new OrderCancelledEvent(new Date().getTime(), schemaVersion, shippingOrder.toOrderCancelAndRejectPayload("Cancel order command received"));
         		try {
 					// Emit the event and consumer offsets as a transaction
-	        		orderEventProducer.emitWithOffsets(orderRejectedEvent,offsetToCommit,"ordercmd-command-consumer-grp");
+	        		orderEventProducer.emitWithOffsets(orderCancelledEvent,offsetToCommit,"ordercmd-command-consumer-grp");
         		} catch (Exception e) {
         			e.printStackTrace();
         			running = false; // liveness may kill this app and restart it
         		    return ;
         		}
         	} else {
-        		logger.error("Cannot reject order - Unknown order Id " + orderID);
+        		logger.error("Cannot cancel order - Unknown order Id " + orderID);
         		generateErrorEvent(shippingOrder,offsetToCommit);
         	}
         } catch (OrderUpdateException oue) {
