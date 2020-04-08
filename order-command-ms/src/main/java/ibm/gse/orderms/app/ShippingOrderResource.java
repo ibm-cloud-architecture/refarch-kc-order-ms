@@ -173,26 +173,31 @@ public class ShippingOrderResource {
     }
 
     @POST
-    @Path("/reject/{Id}")
+    @Path("/cancel/{Id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Request to reject an order", description = "")
+    @Operation(summary = "Request to cancel an order", description = "")
     @APIResponses(value = {
             @APIResponse(responseCode = "404", description = "Unknown order ID", content = @Content(mediaType = "text/plain")),
-            @APIResponse(responseCode = "400", description = "Bad reject order request", content = @Content(mediaType = "text/plain")),
-            @APIResponse(responseCode = "200", description = "Order rejected", content = @Content(mediaType = "text/plain")) })
-	public Response rejectShippingOrder(@PathParam("Id") String orderId) {
+            @APIResponse(responseCode = "400", description = "Bad cancel order request", content = @Content(mediaType = "text/plain")),
+            @APIResponse(responseCode = "200", description = "Order cancelled", content = @Content(mediaType = "text/plain")) })
+	public Response cancelShippingOrder(@PathParam("Id") String orderId) {
         if (orderId == null || orderId=="") {
 			return Response.status(400, "No parameter sent").build();
         }
         Optional<ShippingOrder> order = shippingOrderService.getOrderByOrderID(orderId);
         if (order.isPresent()) {
+            ShippingOrder orderToCancel = order.get();
+            if (orderToCancel.getStatus() != ShippingOrder.ASSIGNED_STATUS){
+                logger.error("[WARNING] - Order with id: " + orderId + " is not in assigned status. Therefore, it can not be canceled.");
+                return Response.status(400, "Order with id: " + orderId + " is not in assigned status. Therefore, it can not be canceled.").build();
+            }
             try {
-                shippingOrderService.rejectShippingOrder(orderId);
+                shippingOrderService.cancelShippingOrder(orderId);
             } catch (Exception e) {
-                logger.error("[ERROR] - Failed to send reject order command event", e);
+                logger.error("[ERROR] - Failed to send cancel order command event", e);
                 return Response.serverError().build();
             }
-            return Response.status(200, "Reject order command sent").build();
+            return Response.status(200, "Cancel order command sent").build();
         } else {
             return Response.status(404, "OrderID not found").build();
         }

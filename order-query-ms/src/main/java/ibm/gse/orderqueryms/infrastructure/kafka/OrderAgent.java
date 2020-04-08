@@ -16,10 +16,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import ibm.gse.orderqueryms.app.AppRegistry;
-import ibm.gse.orderqueryms.domain.model.Cancellation;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
 import ibm.gse.orderqueryms.domain.model.Order;
-import ibm.gse.orderqueryms.domain.model.Rejection;
+import ibm.gse.orderqueryms.domain.model.CancelAndRejectPayload;
 import ibm.gse.orderqueryms.domain.model.Spoil;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
@@ -133,12 +132,12 @@ public class OrderAgent implements EventListener {
 						break;
 					case OrderEvent.TYPE_REJECTED:
 						synchronized (orderRepository) {
-							Rejection rejection = ((RejectOrderEvent) orderEvent).getPayload();
-							orderID = rejection.getOrderID();
+							CancelAndRejectPayload rejectionPayload = ((RejectOrderEvent) orderEvent).getPayload();
+							orderID = rejectionPayload.getOrderID();
 							orderQueryObject = orderRepository.getById(orderID);
 							if (orderQueryObject.isPresent()) {
 								QueryOrder qo = orderQueryObject.get();
-								qo.reject(rejection);
+								qo.reject(rejectionPayload);
 								orderRepository.update(qo);
 							} else {
 								throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
@@ -175,12 +174,12 @@ public class OrderAgent implements EventListener {
 						break;
 					case OrderEvent.TYPE_CANCELLED:
 						synchronized (orderRepository) {
-							Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
-							orderID = cancellation.getOrderID();
+							CancelAndRejectPayload cancellationPayload = ((CancelOrderEvent) orderEvent).getPayload();
+							orderID = cancellationPayload.getOrderID();
 							orderQueryObject = orderRepository.getById(orderID);
 							if (orderQueryObject.isPresent()) {
 								QueryOrder qo = orderQueryObject.get();
-								qo.cancel(cancellation);
+								qo.cancel(cancellationPayload);
 								orderRepository.update(qo);
 							} else {
 								throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
@@ -280,14 +279,14 @@ public class OrderAgent implements EventListener {
 					break;
 				case OrderEvent.TYPE_REJECTED:
 					synchronized (orderHistoryRepository) {
-						Rejection rejection = ((RejectOrderEvent) orderEvent).getPayload();
+						CancelAndRejectPayload rejectionPayload = ((RejectOrderEvent) orderEvent).getPayload();
 						long timestampMillis = ((RejectOrderEvent) orderEvent).getTimestampMillis();
 						String action = ((RejectOrderEvent) orderEvent).getType();
-						orderID = rejection.getOrderID();
+						orderID = rejectionPayload.getOrderID();
 						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
 						if (orderHistoryInfo.isPresent()) {
 							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
-							orderActionItem.reject(rejection);
+							orderActionItem.reject(rejectionPayload);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
 							orderHistoryRepository.updateOrder(orderAction);
@@ -337,14 +336,14 @@ public class OrderAgent implements EventListener {
 					break;
 				case OrderEvent.TYPE_CANCELLED:
 					synchronized (orderHistoryRepository) {
-						Cancellation cancellation = ((CancelOrderEvent) orderEvent).getPayload();
+						CancelAndRejectPayload cancellationPayload = ((CancelOrderEvent) orderEvent).getPayload();
 						long timestampMillis = ((CancelOrderEvent) orderEvent).getTimestampMillis();
 						String action = ((CancelOrderEvent) orderEvent).getType();
-						orderID = cancellation.getOrderID();
+						orderID = cancellationPayload.getOrderID();
 						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
 						if (orderHistoryInfo.isPresent()) {
 							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
-							orderActionItem.cancel(cancellation);
+							orderActionItem.cancel(cancellationPayload);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
 							orderHistoryRepository.updateOrder(orderAction);

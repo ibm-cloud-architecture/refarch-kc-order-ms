@@ -1,12 +1,12 @@
 package ibm.gse.orderqueryms.infrastructure.events.order;
 
-import ibm.gse.orderqueryms.domain.model.Cancellation;
+import ibm.gse.orderqueryms.domain.model.CancelAndRejectPayload;
 
 public class CancelOrderEvent extends OrderEvent {
 
-    private Cancellation payload;
+    private CancelAndRejectPayload payload;
 
-    public CancelOrderEvent(long timestampMillis, String version, Cancellation payload) {
+    public CancelOrderEvent(long timestampMillis, String version, CancelAndRejectPayload payload) {
         super(timestampMillis, OrderEvent.TYPE_CANCELLED, version);
         this.setPayload(payload);
     }
@@ -15,11 +15,11 @@ public class CancelOrderEvent extends OrderEvent {
     }
 
     @Override
-    public Cancellation getPayload() {
+    public CancelAndRejectPayload getPayload() {
         return payload;
     }
 
-    public void setPayload(Cancellation payload) {
+    public void setPayload(CancelAndRejectPayload payload) {
         this.payload = payload;
     }
 

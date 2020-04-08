@@ -1,8 +1,8 @@
 package ibm.gse.orderms.infrastructure.repository;
 
-public class OrderRejectException extends Exception {
+public class OrderCancelException extends Exception {
 
-	public OrderRejectException(String msg) {
+	public OrderCancelException(String msg) {
 		super(msg);
 	}
 

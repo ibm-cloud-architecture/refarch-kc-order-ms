@@ -15,7 +15,7 @@ import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
-import ibm.gse.orderms.infrastructure.repository.OrderRejectException;
+import ibm.gse.orderms.infrastructure.repository.OrderCancelException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 public class ShippingOrderService {
@@ -81,22 +81,22 @@ public class ShippingOrderService {
         } 
 	}
 
-	public void rejectShippingOrder(String orderID) throws OrderRejectException {
-		logger.info("rejectShippingOrder " + orderID);
+	public void cancelShippingOrder(String orderID) throws OrderCancelException {
+		logger.info("cancelShippingOrder " + orderID);
 		Optional<ShippingOrder> shippingOrder = this.orderRepository.getOrderByOrderID(orderID);
 		
 		if (shippingOrder.isPresent()){
-			ShippingOrder orderToReject = shippingOrder.get();
-			OrderCommandEvent rejectOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
+			ShippingOrder orderToCancel = shippingOrder.get();
+			OrderCommandEvent cancelOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
 				KafkaInfrastructureConfig.SCHEMA_VERSION, 
-				orderToReject,
-				OrderCommandEvent.TYPE_REJECT_ORDER);
+				orderToCancel,
+				OrderCommandEvent.TYPE_CANCEL_ORDER);
 			try {
-				emitter.emit(rejectOrderCommandEvent);
+				emitter.emit(cancelOrderCommandEvent);
 			} catch (Exception e) {
-				logger.error("Fail to publish order reject event", e);
+				logger.error("Fail to publish order cancel event", e);
 				emitter.safeClose();
-				throw new OrderRejectException("Error while emitting reject order command event");
+				throw new OrderCancelException("Error while emitting cancel order command event");
 			} 
 		}
 		else {
