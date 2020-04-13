@@ -26,7 +26,6 @@ import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
 import ibm.gse.orderms.infrastructure.events.EventListenerTransactional;
 import ibm.gse.orderms.infrastructure.events.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.OrderRejectEvent;
 import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
@@ -167,8 +166,8 @@ public class OrderCommandAgent implements EventListenerTransactional {
 	 * @param offsetToCommit
 	 */
 	private void processOrderCreation(OrderCommandEvent commandEvent,Map<TopicPartition, OffsetAndMetadata> offsetToCommit) {
-		ShippingOrder shippingOrder = (ShippingOrder) commandEvent.getPayload();
-		// Set the status on the shippingOrder to PENDING
+		// CREATE THE ORDER
+		ShippingOrder shippingOrder = new ShippingOrder(commandEvent.getPayload());
 		shippingOrder.setStatus(ShippingOrder.PENDING_STATUS);
 		try {
 			// SAVE the newly created order into the DB.
@@ -199,12 +198,14 @@ public class OrderCommandAgent implements EventListenerTransactional {
 	 * @param commandEvent
 	 */
 	private void processOrderUpdate(OrderCommandEvent commandEvent, Map<TopicPartition, OffsetAndMetadata> offsetToCommit) {
-	    ShippingOrder shippingOrder = (ShippingOrder) commandEvent.getPayload();
+	    ShippingOrder shippingOrder = new ShippingOrder(commandEvent.getPayload());
         String orderID = shippingOrder.getOrderID();
         try {
         	 Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
         	 if (oco.isPresent()) {
-				// UPDATE the order in the DB.
+				// UPDATE the order
+				shippingOrder.update(oco.get());
+				// SAVE the updated order in the DB.
 				// This action MUST support repetition given that the order update process might get repeated
 				// if all the actions to perform do not succeed.
 				 orderRepository.updateShippingOrder(shippingOrder);
@@ -232,13 +233,16 @@ public class OrderCommandAgent implements EventListenerTransactional {
 	 * @param commandEvent
 	 */
 	private void processOrderCancellation(OrderCommandEvent commandEvent, Map<TopicPartition, OffsetAndMetadata> offsetToCommit) {
-	    ShippingOrder shippingOrder = (ShippingOrder) commandEvent.getPayload();
+	    ShippingOrder shippingOrder = new ShippingOrder(commandEvent.getPayload());
         String orderID = shippingOrder.getOrderID();
         try {
         	Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
         	if (oco.isPresent()) {
+				// Update the order so that containerID and voyageID are preserved
+				shippingOrder.update(oco.get());
+				// Set status to cancelled
 				shippingOrder.cancelOrder();
-				// UPDATE the order in the DB.
+				// SAVE the updated order in the DB.
 				// This action MUST support repetition given that the order update process might get repeated
 				// if all the actions to perform do not succeed.
 				orderRepository.updateShippingOrder(shippingOrder);

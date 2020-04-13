@@ -27,7 +27,7 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 	public void emit(OrderEventBase event) throws Exception {
 		this.eventEmitted = true;
 		this.emittedEvent = (OrderCommandEvent)event;
-		ShippingOrder shippingOrder = emittedEvent.getPayload();
+		ShippingOrder shippingOrder = new ShippingOrder(emittedEvent.getPayload());
 		// this is the mockup part: use the repo to move the data to consumer
         switch (emittedEvent.getType()) {
         case OrderCommandEvent.TYPE_CREATE_ORDER:

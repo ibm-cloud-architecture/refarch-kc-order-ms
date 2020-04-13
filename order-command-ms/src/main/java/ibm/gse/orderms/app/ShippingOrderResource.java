@@ -28,6 +28,7 @@ import ibm.gse.orderms.app.dto.ShippingOrderReference;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
+import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
 
 /**
  * Expose the commands and APIs used by external clients
@@ -56,25 +57,25 @@ public class ShippingOrderResource {
     @APIResponses(value = {
             @APIResponse(responseCode = "400", description = "Bad create order request", content = @Content(mediaType = "text/plain")),
             @APIResponse(responseCode = "200", description = "Order created, return order unique identifier", content = @Content(mediaType = "text/plain")) })
-	public Response createShippingOrder(ShippingOrderCreateParameters orderParameters) {
-		if (orderParameters == null ) {
+	public Response createShippingOrder(ShippingOrderCreateParameters createOrderParameters) {
+		if (createOrderParameters == null ) {
 			return Response.status(400, "No parameter sent").build();
 		}
 		try {
-		   ShippingOrderCreateParameters.validateInputData(orderParameters);
+		   ShippingOrderCreateParameters.validateInputData(createOrderParameters);
 
 		} catch(IllegalArgumentException iae) {
 			return Response.status(400, iae.getMessage()).build();
 		}
-		ShippingOrder order = ShippingOrderFactory.createNewShippingOrder(orderParameters);
+        ShippingOrderPayload shippingOrderPayload = new ShippingOrderPayload(createOrderParameters);
 		try {
-			shippingOrderService.createOrder(order);
+			shippingOrderService.createOrder(shippingOrderPayload);
 		} catch(Exception e) {
 			return Response.serverError().build();
 		}
 	    //return Response.ok().entity(order.getOrderID()).build();
 	    //API contract expects a JSON Object and not just a plaintext string
-	    return Response.ok().entity(order).build();
+	    return Response.ok().entity(shippingOrderPayload).build();
 	}
 
 
@@ -94,31 +95,25 @@ public class ShippingOrderResource {
      * @param orderParameters
      * @return
      */
-    public Response updateExistingOrder(@PathParam("Id") String orderID, ShippingOrderUpdateParameters orderParameters) {
+    public Response updateExistingOrder(@PathParam("Id") String orderID, ShippingOrderUpdateParameters updateOrderParameters) {
     	   logger.info("updateExistingOrder: " + orderID);
 
-    	if (orderParameters == null ) {
+    	if (updateOrderParameters == null ) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 
-        if(! Objects.equals(orderID, orderParameters.getOrderID())) {
-        	logger.error(orderID + " does not match " + orderParameters.getOrderID());
+        if(! Objects.equals(orderID, updateOrderParameters.getOrderID())) {
+        	logger.error(orderID + " does not match " + updateOrderParameters.getOrderID());
             return Response.status(Status.BAD_REQUEST).build();
         }
 
         Optional<ShippingOrder> existingOrder = shippingOrderService.getOrderByOrderID(orderID);
         if (existingOrder.isPresent()) {
         	try {
-	            ShippingOrderUpdateParameters.validate(orderParameters, existingOrder.get());
-	            ShippingOrder updatedOrder = new ShippingOrder(orderID,
-	                    orderParameters.getProductID(),
-	                    orderParameters.getCustomerID(),
-	                    orderParameters.getQuantity(),
-	                    orderParameters.getPickupAddress(), orderParameters.getPickupDate(),
-	                    orderParameters.getDestinationAddress(), orderParameters.getExpectedDeliveryDate(),
-	                    orderParameters.getStatus());
+	            ShippingOrderUpdateParameters.validate(updateOrderParameters, existingOrder.get());
+	            ShippingOrderPayload shippingOrderPayload = new ShippingOrderPayload(updateOrderParameters);
 		            try {
-		            	shippingOrderService.updateShippingOrder(updatedOrder);
+		            	shippingOrderService.updateShippingOrder(shippingOrderPayload);
 		            } catch (Exception e) {
 		                logger.error("Fail to publish order updated event", e);
 		                return Response.serverError().build();
@@ -192,7 +187,7 @@ public class ShippingOrderResource {
                 return Response.status(400, "Order with id: " + orderId + " is not in assigned status. Therefore, it can not be canceled.").build();
             }
             try {
-                shippingOrderService.cancelShippingOrder(orderId);
+                shippingOrderService.cancelShippingOrder(orderToCancel.toShippingOrderPayload());
             } catch (Exception e) {
                 logger.error("[ERROR] - Failed to send cancel order command event", e);
                 return Response.serverError().build();

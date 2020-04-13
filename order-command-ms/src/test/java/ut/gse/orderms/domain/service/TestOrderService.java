@@ -16,6 +16,7 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -38,9 +39,9 @@ public class TestOrderService {
 				orderRepository);
 		Assert.assertFalse(commandEventProducer.eventEmitted);
 
-		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
+		ShippingOrderPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
 		try {
-			service.createOrder(order);
+			service.createOrder(orderPayload);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
@@ -52,7 +53,7 @@ public class TestOrderService {
 		Assert.assertNotNull(createOrderEvent);
 		Assert.assertTrue(OrderCommandEvent.TYPE_CREATE_ORDER.equals(createOrderEvent.getType()));
 		OrderCommandEvent  orderCommand = (OrderCommandEvent)createOrderEvent;
-		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)orderCommand.getPayload()).getOrderID()));
+		Assert.assertTrue(orderPayload.getOrderID().equals(((ShippingOrderPayload)orderCommand.getPayload()).getOrderID()));
 
 	}
 
@@ -62,16 +63,16 @@ public class TestOrderService {
 		ShippingOrderService service = new ShippingOrderService(commandEventProducer,
 				orderRepository);
 
-		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
+		ShippingOrderPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
 		try {
-			service.createOrder(order);
+			service.createOrder(orderPayload);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
 		}
-		order.setQuantity(100);
+		orderPayload.setQuantity(100);
 		try {
-			service.updateShippingOrder(order);
+			service.updateShippingOrder(orderPayload);
 		} catch (OrderUpdateException e) {
 			e.printStackTrace();
 			Assert.fail();
@@ -81,7 +82,7 @@ public class TestOrderService {
 		Assert.assertNotNull(orderUpdatedEvent);
 		Assert.assertTrue(OrderCommandEvent.TYPE_UPDATE_ORDER.equals(orderUpdatedEvent.getType()));
 		OrderCommandEvent  orderCommand = (OrderCommandEvent)orderUpdatedEvent;
-		Assert.assertTrue(order.getOrderID().equals(((ShippingOrder)orderCommand.getPayload()).getOrderID()));
+		Assert.assertTrue(orderPayload.getOrderID().equals(((ShippingOrderPayload)orderCommand.getPayload()).getOrderID()));
 	}
 
 
@@ -92,14 +93,14 @@ public class TestOrderService {
 		ShippingOrderService service = new ShippingOrderService(commandEventProducer,
 				orderRepository);
 
-		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
+		ShippingOrderPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
 		try {
-			service.createOrder(order);
+			service.createOrder(orderPayload);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
 		}
-		Optional<ShippingOrder> persistedOrder = service.getOrderByOrderID(order.getOrderID());
+		Optional<ShippingOrder> persistedOrder = service.getOrderByOrderID(orderPayload.getOrderID());
 		Assert.assertTrue(persistedOrder.isPresent());
 	}
 
@@ -139,9 +140,9 @@ public class TestOrderService {
 		ShippingOrderService service = new ShippingOrderService(eventEmitter,
 				orderRepository);
 
-		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
+		ShippingOrderPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
 		try {
-			service.createOrder(order);
+			service.createOrder(orderPayload);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
@@ -150,7 +151,7 @@ public class TestOrderService {
 		orderRepository.reset();
 
 		// now mockup the event going to message broker
-		kcm.setKey(order.getOrderID());
+		kcm.setKey(orderPayload.getOrderID());
 		String eventAsString = new Gson().toJson(eventEmitter.getEventEmitted());
 		kcm.setValue(eventAsString);
 
@@ -161,7 +162,7 @@ public class TestOrderService {
         // }
 		// the handle persists in the repo... so following should work
 		orderCommandAgent.poll();
-		Optional<ShippingOrder> persistedOrder = service.getOrderByOrderID(order.getOrderID());
+		Optional<ShippingOrder> persistedOrder = service.getOrderByOrderID(orderPayload.getOrderID());
 		Assert.assertTrue(persistedOrder.isPresent());
 
 	}

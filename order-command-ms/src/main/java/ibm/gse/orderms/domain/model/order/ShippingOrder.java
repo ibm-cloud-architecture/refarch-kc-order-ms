@@ -1,5 +1,7 @@
 package ibm.gse.orderms.domain.model.order;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -13,16 +15,8 @@ public class ShippingOrder {
     public static final String PENDING_STATUS = "pending";
     public static final String CANCELLED_STATUS = "cancelled";
     public static final String ASSIGNED_STATUS = "assigned";
-    public static final String BOOKED_STATUS = "booked";
-    public static final String TRANSIT_STATUS = "transit";
     public static final String REJECTED_STATUS = "rejected";
-    public static final String COMPLETED_STATUS = "completed";
     public static final String SPOILT_STATUS = "spoilt";
-
-    public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
-    public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
-    public static final String CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
-    public static final String CONTAINER_DELIVERED_STATUS = "container-delivered";
     
     private String orderID;
     private String productID;
@@ -56,6 +50,19 @@ public class ShippingOrder {
         this.status = status;
     }
 
+    public ShippingOrder(ShippingOrderPayload sop) {
+        super();
+        this.orderID = sop.getOrderID();
+    	this.productID = sop.getProductID();
+    	this.customerID = sop.getCustomerID();
+    	this.quantity = sop.getQuantity();
+    	this.pickupAddress = sop.getPickupAddress();
+    	this.pickupDate = sop.getPickupDate();
+    	this.destinationAddress = sop.getDestinationAddress();
+        this.expectedDeliveryDate = sop.getExpectedDeliveryDate();
+        this.status = sop.getStatus();
+    }
+
     public void assign(VoyageAssignmentPayload voyageAssignment) {
         this.voyageID = voyageAssignment.getVoyageID();
         setAssignStatus();
@@ -84,20 +91,6 @@ public class ShippingOrder {
     			);
     	return sop;
     }
-    
-    public ShippingOrder fromShippingOrderPayload(ShippingOrderPayload sop) {
-    	ShippingOrder order = new ShippingOrder(sop.getOrderID(),
-    			sop.getProductID(),
-    			sop.getCustomerID(),
-    			sop.getQuantity(),
-    			sop.getPickupAddress(),
-    			sop.getPickupDate(),
-    			sop.getDestinationAddress(),
-    			sop.getExpectedDeliveryDate(),
-    			sop.getStatus()
-    			);
-    	return order;
-    }
 
     public OrderCancelAndRejectPayload toOrderCancelAndRejectPayload(String reason) {
     	OrderCancelAndRejectPayload ocrp = new OrderCancelAndRejectPayload(this.getOrderID(),
@@ -115,6 +108,13 @@ public class ShippingOrder {
     			);
     	return ocrp;
     }
+
+    // Implement what can be updated in an order from the customer update order command.
+    // For now, we are updating an existing order with whatever comes from the update order command.
+    public void update(ShippingOrder oco) {
+        this.reeferID = oco.getReeferID();
+        this.voyageID = oco.getVoyageID();
+	}
 
     public void spoilOrder(){
         this.status = ShippingOrder.SPOILT_STATUS;

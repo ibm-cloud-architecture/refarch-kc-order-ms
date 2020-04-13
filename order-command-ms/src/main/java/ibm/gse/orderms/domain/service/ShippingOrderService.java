@@ -12,6 +12,7 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
+import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
@@ -35,11 +36,8 @@ public class ShippingOrderService {
 	}
 	
 	
-	public void createOrder(ShippingOrder order) throws OrderCreationException {
-		OrderCommandEvent createOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
-				KafkaInfrastructureConfig.SCHEMA_VERSION, 
-				order,
-				OrderCommandEvent.TYPE_CREATE_ORDER);	
+	public void createOrder(ShippingOrderPayload shippingOrderPayload) throws OrderCreationException {
+		OrderCommandEvent createOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, shippingOrderPayload, OrderCommandEvent.TYPE_CREATE_ORDER);	
 		try {
             emitter.emit(createOrderCommandEvent);
 		} catch (Exception e) {
@@ -65,14 +63,11 @@ public class ShippingOrderService {
 		return this.orderRepository.getOrderByOrderID(orderId);
 	}
 
-	public void updateShippingOrder(ShippingOrder updatedOrder) throws OrderUpdateException {
-		logger.info("updateShippingOrder "+ updatedOrder.getOrderID());
+	public void updateShippingOrder(ShippingOrderPayload shippingOrderPayload) throws OrderUpdateException {
+		logger.info("updateShippingOrder "+ shippingOrderPayload.getOrderID());
          
-		OrderCommandEvent updateOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
-				KafkaInfrastructureConfig.SCHEMA_VERSION, 
-				updatedOrder,
-				OrderCommandEvent.TYPE_UPDATE_ORDER);	
-      try {
+		OrderCommandEvent updateOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, shippingOrderPayload, OrderCommandEvent.TYPE_UPDATE_ORDER);	
+      	try {
             emitter.emit(updateOrderCommandEvent);
         } catch (Exception e) {
             logger.error("Fail to publish order update event", e);
@@ -81,28 +76,17 @@ public class ShippingOrderService {
         } 
 	}
 
-	public void cancelShippingOrder(String orderID) throws OrderCancelException {
-		logger.info("cancelShippingOrder " + orderID);
-		Optional<ShippingOrder> shippingOrder = this.orderRepository.getOrderByOrderID(orderID);
+	public void cancelShippingOrder(ShippingOrderPayload shippingOrderPayload) throws OrderCancelException {
+		logger.info("cancelShippingOrder " + shippingOrderPayload.getOrderID());
 		
-		if (shippingOrder.isPresent()){
-			ShippingOrder orderToCancel = shippingOrder.get();
-			OrderCommandEvent cancelOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), 
-				KafkaInfrastructureConfig.SCHEMA_VERSION, 
-				orderToCancel,
-				OrderCommandEvent.TYPE_CANCEL_ORDER);
-			try {
-				emitter.emit(cancelOrderCommandEvent);
-			} catch (Exception e) {
-				logger.error("Fail to publish order cancel event", e);
-				emitter.safeClose();
-				throw new OrderCancelException("Error while emitting cancel order command event");
-			} 
+		OrderCommandEvent cancelOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, shippingOrderPayload, OrderCommandEvent.TYPE_CANCEL_ORDER);
+		try {
+			emitter.emit(cancelOrderCommandEvent);
+		} catch (Exception e) {
+			logger.error("Fail to publish order cancel event", e);
+			emitter.safeClose();
+			throw new OrderCancelException("Error while emitting cancel order command event");
 		}
-		else {
-			logger.error("[ERROR] - There is no order with orderID = " + orderID);
-		}
-      
 	}
 
 }

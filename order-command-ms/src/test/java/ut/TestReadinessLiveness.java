@@ -61,7 +61,7 @@ public class TestReadinessLiveness {
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		OrderCommandEvent commandEvent = new OrderCommandEvent(System.currentTimeMillis(),
 				"v1",
-				order,
+				order.toShippingOrderPayload(),
 				OrderCommandEvent.TYPE_CREATE_ORDER);
 		try {
 			commandAgent.handleTransaction(commandEvent,null);

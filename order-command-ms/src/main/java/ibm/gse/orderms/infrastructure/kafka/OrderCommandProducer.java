@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
 
 public class OrderCommandProducer implements EventEmitter  {
 	private static final Logger logger = LoggerFactory.getLogger(OrderCommandProducer.class);
@@ -56,7 +56,7 @@ public class OrderCommandProducer implements EventEmitter  {
 	public void emit(OrderEventBase event) throws Exception {
     	if (kafkaProducer == null) initProducer();
 		OrderCommandEvent orderCommandEvent = (OrderCommandEvent)event;
-        String key = ((ShippingOrder)orderCommandEvent.getPayload()).getOrderID();
+        String key = ((ShippingOrderPayload)orderCommandEvent.getPayload()).getOrderID();
         String value = new Gson().toJson(orderCommandEvent);
         
         try {
