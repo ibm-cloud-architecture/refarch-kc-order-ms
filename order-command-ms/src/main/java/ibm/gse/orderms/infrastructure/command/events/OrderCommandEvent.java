@@ -2,18 +2,18 @@ package ibm.gse.orderms.infrastructure.command.events;
 
 import com.google.gson.Gson;
 
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
+import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 
-public class OrderCommandEvent extends OrderEventBase {
+public class OrderCommandEvent extends EventBase {
 
     public static final String TYPE_CREATE_ORDER = "CreateOrderCommand";
 	public static final String TYPE_UPDATE_ORDER = "UpdateOrderCommand";
 	public static final String TYPE_CANCEL_ORDER = "CancelOrderCommand";
     private static final Gson gson = new Gson();
-    private ShippingOrderPayload payload;
+    private OrderEventPayload payload;
 	
-	public OrderCommandEvent(long currentTimeMillis, String version, ShippingOrderPayload order, String orderEventType) {
+	public OrderCommandEvent(long currentTimeMillis, String version, OrderEventPayload order, String orderEventType) {
 		this.timestampMillis = currentTimeMillis;
 		this.version = version;
 		this.payload = order;
@@ -26,7 +26,7 @@ public class OrderCommandEvent extends OrderEventBase {
 	}
 	
 	
-	public ShippingOrderPayload getPayload() {
+	public OrderEventPayload getPayload() {
 		return payload;
 	}
 

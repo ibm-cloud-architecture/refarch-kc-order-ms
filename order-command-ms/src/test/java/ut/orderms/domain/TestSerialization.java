@@ -1,19 +1,14 @@
 package ut.orderms.domain;
 
-import java.lang.reflect.Type;
-
 import org.junit.Test;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
 
 public class TestSerialization {
 

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.EventBase;
 
 
 public class ErrorEventProducer implements EventEmitterTransactional {
@@ -53,7 +53,7 @@ public class ErrorEventProducer implements EventEmitterTransactional {
     // }
 
     @Override
-    public void emit(OrderEventBase event) throws InterruptedException, ExecutionException, TimeoutException {
+    public void emit(EventBase event) throws InterruptedException, ExecutionException, TimeoutException {
         logger.error("[ERROR] - The emit method in the ErrorEventProducer class has been called for the event: " + event.toString());
         logger.error("[ERROR] - This producer is TRANSACTIONAL. Please, check the code and use the transactional method");
     }
@@ -66,7 +66,7 @@ public class ErrorEventProducer implements EventEmitterTransactional {
     jitter = 100,
     abortOn=InterruptedException.class)
     @Timeout(4000)
-    public void emitWithOffsets(OrderEventBase event, Map<TopicPartition, OffsetAndMetadata> offsetToCommit, String groupID) throws InterruptedException, ExecutionException, TimeoutException {
+    public void emitWithOffsets(EventBase event, Map<TopicPartition, OffsetAndMetadata> offsetToCommit, String groupID) throws InterruptedException, ExecutionException, TimeoutException {
         if (kafkaProducer == null) initProducer();
 
         ErrorEvent errorEvent = (ErrorEvent) event;

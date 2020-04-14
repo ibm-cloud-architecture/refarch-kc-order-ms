@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderms.infrastructure.kafka.ErrorEvent;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;

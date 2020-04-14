@@ -28,7 +28,7 @@ import ibm.gse.orderms.app.dto.ShippingOrderReference;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
-import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 
 /**
  * Expose the commands and APIs used by external clients
@@ -67,15 +67,15 @@ public class ShippingOrderResource {
 		} catch(IllegalArgumentException iae) {
 			return Response.status(400, iae.getMessage()).build();
 		}
-        ShippingOrderPayload shippingOrderPayload = new ShippingOrderPayload(createOrderParameters);
+        OrderEventPayload orderEventPayload = new OrderEventPayload(createOrderParameters);
 		try {
-			shippingOrderService.createOrder(shippingOrderPayload);
+			shippingOrderService.createOrder(orderEventPayload);
 		} catch(Exception e) {
 			return Response.serverError().build();
 		}
 	    //return Response.ok().entity(order.getOrderID()).build();
 	    //API contract expects a JSON Object and not just a plaintext string
-	    return Response.ok().entity(shippingOrderPayload).build();
+	    return Response.ok().entity(orderEventPayload).build();
 	}
 
 
@@ -111,9 +111,9 @@ public class ShippingOrderResource {
         if (existingOrder.isPresent()) {
         	try {
 	            ShippingOrderUpdateParameters.validate(updateOrderParameters, existingOrder.get());
-	            ShippingOrderPayload shippingOrderPayload = new ShippingOrderPayload(updateOrderParameters);
+	            OrderEventPayload orderEventPayload = new OrderEventPayload(updateOrderParameters);
 		            try {
-		            	shippingOrderService.updateShippingOrder(shippingOrderPayload);
+		            	shippingOrderService.updateShippingOrder(orderEventPayload);
 		            } catch (Exception e) {
 		                logger.error("Fail to publish order updated event", e);
 		                return Response.serverError().build();

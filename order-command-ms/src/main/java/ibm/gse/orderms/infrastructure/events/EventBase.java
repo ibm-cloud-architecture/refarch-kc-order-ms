@@ -6,7 +6,7 @@ package ibm.gse.orderms.infrastructure.events;
  * @author jerome boyer
  *
  */
-public class OrderEventBase {
+public class EventBase {
 
 	 public static final String TYPE_ORDER_CREATED = "OrderCreated";
 	 public static final String TYPE_ORDER_UPDATED = "OrderUpdated";
@@ -25,10 +25,10 @@ public class OrderEventBase {
     protected String type;
     protected String version;
 
-    public OrderEventBase() {
+    public EventBase() {
     }
 
-    public OrderEventBase(long timestampMillis, String type, String version) {
+    public EventBase(long timestampMillis, String type, String version) {
         this.timestampMillis = timestampMillis;
         this.type = type;
         this.version = version;

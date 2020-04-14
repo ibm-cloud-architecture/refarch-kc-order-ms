@@ -15,8 +15,8 @@ import com.google.gson.Gson;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
+import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -39,7 +39,7 @@ public class TestOrderService {
 				orderRepository);
 		Assert.assertFalse(commandEventProducer.eventEmitted);
 
-		ShippingOrderPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEventPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
 		try {
 			service.createOrder(orderPayload);
 		} catch (Exception e) {
@@ -48,12 +48,12 @@ public class TestOrderService {
 		}
 
 		Assert.assertTrue(commandEventProducer.eventEmitted);
-		OrderEventBase createOrderEvent = commandEventProducer.getEventEmitted();
+		EventBase createOrderEvent = commandEventProducer.getEventEmitted();
 
 		Assert.assertNotNull(createOrderEvent);
 		Assert.assertTrue(OrderCommandEvent.TYPE_CREATE_ORDER.equals(createOrderEvent.getType()));
 		OrderCommandEvent  orderCommand = (OrderCommandEvent)createOrderEvent;
-		Assert.assertTrue(orderPayload.getOrderID().equals(((ShippingOrderPayload)orderCommand.getPayload()).getOrderID()));
+		Assert.assertTrue(orderPayload.getOrderID().equals(((OrderEventPayload)orderCommand.getPayload()).getOrderID()));
 
 	}
 
@@ -63,7 +63,7 @@ public class TestOrderService {
 		ShippingOrderService service = new ShippingOrderService(commandEventProducer,
 				orderRepository);
 
-		ShippingOrderPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEventPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
 		try {
 			service.createOrder(orderPayload);
 		} catch (Exception e) {
@@ -78,11 +78,11 @@ public class TestOrderService {
 			Assert.fail();
 		}
 		Assert.assertTrue(commandEventProducer.eventEmitted);
-		OrderEventBase orderUpdatedEvent = commandEventProducer.getEventEmitted();
+		EventBase orderUpdatedEvent = commandEventProducer.getEventEmitted();
 		Assert.assertNotNull(orderUpdatedEvent);
 		Assert.assertTrue(OrderCommandEvent.TYPE_UPDATE_ORDER.equals(orderUpdatedEvent.getType()));
 		OrderCommandEvent  orderCommand = (OrderCommandEvent)orderUpdatedEvent;
-		Assert.assertTrue(orderPayload.getOrderID().equals(((ShippingOrderPayload)orderCommand.getPayload()).getOrderID()));
+		Assert.assertTrue(orderPayload.getOrderID().equals(((OrderEventPayload)orderCommand.getPayload()).getOrderID()));
 	}
 
 
@@ -93,7 +93,7 @@ public class TestOrderService {
 		ShippingOrderService service = new ShippingOrderService(commandEventProducer,
 				orderRepository);
 
-		ShippingOrderPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEventPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
 		try {
 			service.createOrder(orderPayload);
 		} catch (Exception e) {
@@ -140,7 +140,7 @@ public class TestOrderService {
 		ShippingOrderService service = new ShippingOrderService(eventEmitter,
 				orderRepository);
 
-		ShippingOrderPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEventPayload orderPayload = ShippingOrderTestDataFactory.orderPayloadFixture();
 		try {
 			service.createOrder(orderPayload);
 		} catch (Exception e) {

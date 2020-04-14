@@ -1,4 +1,4 @@
-package ibm.gse.orderms.infrastructure.events;
+package ibm.gse.orderms.infrastructure.events.order;
 
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import ibm.gse.orderms.domain.model.order.Address;
  * @author jerome boyer
  *
  */
-public class ShippingOrderPayload {
+public class OrderEventPayload {
 	private String orderID;
     private String productID;
     private String customerID;
@@ -30,7 +30,7 @@ public class ShippingOrderPayload {
     
     
 
-	public ShippingOrderPayload(String orderID, String productID, String customerID, int quantity,
+	public OrderEventPayload(String orderID, String productID, String customerID, int quantity,
 			Address pickupAddress, String pickupDate, Address destinationAddress, String expectedDeliveryDate,
 			String status) {
 		super();
@@ -45,7 +45,7 @@ public class ShippingOrderPayload {
 		this.status = status;
 	}
 
-	public ShippingOrderPayload(ShippingOrderCreateParameters createParams) {
+	public OrderEventPayload(ShippingOrderCreateParameters createParams) {
 		super();
 		this.orderID = UUID.randomUUID().toString();
 		this.productID = createParams.getProductID();
@@ -58,7 +58,7 @@ public class ShippingOrderPayload {
 		this.status = "toBeCreated";
 	}
 
-	public ShippingOrderPayload(ShippingOrderUpdateParameters updateParams) {
+	public OrderEventPayload(ShippingOrderUpdateParameters updateParams) {
 		super();
 		this.orderID = updateParams.getOrderID();
 		this.productID = updateParams.getProductID();

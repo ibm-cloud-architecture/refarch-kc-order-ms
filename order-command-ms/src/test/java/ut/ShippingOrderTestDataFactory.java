@@ -11,7 +11,7 @@ import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 
 /**
  * A factory to generate test fixtures
@@ -67,9 +67,9 @@ public class ShippingOrderTestDataFactory {
 		return updateParameters;
 	}
 
-	public static ShippingOrderPayload orderPayloadFixture() {
+	public static OrderEventPayload orderPayloadFixture() {
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
-		ShippingOrderPayload payload = new ShippingOrderPayload(order.getOrderID(), 
+		OrderEventPayload payload = new OrderEventPayload(order.getOrderID(), 
 				order.getProductID(),
 				order.getCustomerID(),
 				order.getQuantity(), 

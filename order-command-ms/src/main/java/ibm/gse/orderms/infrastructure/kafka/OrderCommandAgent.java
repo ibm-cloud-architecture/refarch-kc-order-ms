@@ -24,9 +24,9 @@ import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
 import ibm.gse.orderms.infrastructure.events.EventListenerTransactional;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
+import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -122,7 +122,7 @@ public class OrderCommandAgent implements EventListenerTransactional {
 	}
 
 	@Override
-	public void handleTransaction(OrderEventBase event,Map<TopicPartition, OffsetAndMetadata> offsetToCommit) {
+	public void handleTransaction(EventBase event,Map<TopicPartition, OffsetAndMetadata> offsetToCommit) {
 
 		OrderCommandEvent commandEvent = (OrderCommandEvent) event;
 		logger.info("handle command event : " + commandEvent.getType());
@@ -143,7 +143,7 @@ public class OrderCommandAgent implements EventListenerTransactional {
 	/**
 	 * Handle create order command: persist order into repository and emit event
 	 * 'order created' for others to consume. The order is in pending mode until
-	 * others services responded with a Voyage and a Reefer assignment events. When
+	 * others services responded with a Voyage and a Container assignment events. When
 	 * the 'order created` event is generated, the read from command topic can be
 	 * committed. It commits the offset only when both save to the repository and
 	 * send order created events succeed.

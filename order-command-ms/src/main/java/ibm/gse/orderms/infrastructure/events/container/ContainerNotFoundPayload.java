@@ -1,10 +1,10 @@
-package ibm.gse.orderms.infrastructure.events.reefer;
+package ibm.gse.orderms.infrastructure.events.container;
 
-public class ReeferNotFoundPayload {
+public class ContainerNotFoundPayload {
 	 private String orderID;
 	 private String reason;
 	 
-	 public ReeferNotFoundPayload(String oid, String reason) {
+	 public ContainerNotFoundPayload(String oid, String reason) {
 		 this.orderID = oid;
 		 this.reason = reason;
 	 }

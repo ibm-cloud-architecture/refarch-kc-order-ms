@@ -12,9 +12,9 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
+import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -59,30 +59,30 @@ public class TestOrderEventAgent {
 	 * This function simulates sending the OrderCreated event.
 	 */
 	public void shouldDoNothingOnOrderCreatedEvent() {
-		ShippingOrderPayload order = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEventPayload order = ShippingOrderTestDataFactory.orderPayloadFixture();
 		OrderEvent orderCreatedEvent = new OrderEvent(); 
-		orderCreatedEvent.setType(OrderEventBase.TYPE_ORDER_CREATED);
+		orderCreatedEvent.setType(EventBase.TYPE_ORDER_CREATED);
 		orderEventsConsumerMock.setValue(parser.toJson(orderCreatedEvent));
 		orderEventsConsumerMock.setKey(order.getOrderID());
-		List<OrderEventBase> events = agent.poll();
-		OrderEventBase orderCreatedEventReceived = events.get(0);
+		List<EventBase> events = agent.poll();
+		EventBase orderCreatedEventReceived = events.get(0);
 		Assert.assertNotNull(orderCreatedEventReceived);
-		for (OrderEventBase event : events) {
+		for (EventBase event : events) {
 			agent.handle(event);
 		}
 	}
 	
 	@Test
 	public void shouldDoNothingOnOrderUpdatedEvent() {
-		ShippingOrderPayload order = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEventPayload order = ShippingOrderTestDataFactory.orderPayloadFixture();
 		OrderEvent orderCreatedEvent = new OrderEvent(); 
-		orderCreatedEvent.setType(OrderEventBase.TYPE_ORDER_UPDATED);
+		orderCreatedEvent.setType(EventBase.TYPE_ORDER_UPDATED);
 		orderEventsConsumerMock.setValue(parser.toJson(orderCreatedEvent));
 		orderEventsConsumerMock.setKey(order.getOrderID());
-		List<OrderEventBase> events = agent.poll();
-		OrderEventBase orderUpdatedEventReceived = events.get(0);
+		List<EventBase> events = agent.poll();
+		EventBase orderUpdatedEventReceived = events.get(0);
 		Assert.assertNotNull(orderUpdatedEventReceived);
-		for (OrderEventBase event : events) {
+		for (EventBase event : events) {
 			agent.handle(event);
 		}
 	}
@@ -104,8 +104,8 @@ public class TestOrderEventAgent {
 		orderEventsConsumerMock.setValue(voyageEvent);
 		orderEventsConsumerMock.setKey(order.getOrderID());
 		
-		List<OrderEventBase> events = agent.poll();
-		for (OrderEventBase event : events) {
+		List<EventBase> events = agent.poll();
+		for (EventBase event : events) {
 			agent.handle(event);
 		}
 		// verify the repository is update with the voyage id
@@ -117,23 +117,23 @@ public class TestOrderEventAgent {
 	/**
 	 * Send order created events ...
 	 */
-	public void shouldAllocateAReeferIDToOrder() throws OrderCreationException {
+	public void shouldAllocateAContainerIDToOrder() throws OrderCreationException {
 		// prepare data for the test
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		repository.addOrUpdateNewShippingOrder(order);
 		String voyageEvent = "{\"timestamp\": " + new Date().getTime() 
-		    		+ ",\"type\": \"ReeferAssigned\", \"version\": \"1\"," 
+		    		+ ",\"type\": \"ContainerAssigned\", \"version\": \"1\"," 
 		    		+ " \"payload\": { \"containerID\": \"C01\",\"orderID\": \"" + order.getOrderID()
 		    		+ "\"}}";
 		orderEventsConsumerMock.setValue(voyageEvent);
 		orderEventsConsumerMock.setKey(order.getOrderID());
 		
-		List<OrderEventBase> events = agent.poll();
-		for (OrderEventBase event : events) {
+		List<EventBase> events = agent.poll();
+		for (EventBase event : events) {
 			agent.handle(event);
 		}
 		Optional<ShippingOrder> orderOption = repository.getOrderByOrderID(order.getOrderID());
-		Assert.assertTrue("C01".equals(orderOption.get().getReeferID()));	
+		Assert.assertTrue("C01".equals(orderOption.get().getContainerID()));	
 	}
 
 }

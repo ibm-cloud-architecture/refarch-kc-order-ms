@@ -1,8 +1,8 @@
 package ibm.gse.orderms.infrastructure.events.voyage;
 
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.EventBase;
 
-public class VoyageNotFoundEvent extends OrderEventBase {
+public class VoyageNotFoundEvent extends EventBase {
 
   
 	VoyageNotFoundPayload payload;
@@ -10,7 +10,7 @@ public class VoyageNotFoundEvent extends OrderEventBase {
     public VoyageNotFoundEvent(long timestampMillis, String version, VoyageNotFoundPayload payload) {
     	this.timestampMillis = timestampMillis;
     	this.version = version;
-    	this.type = OrderEventBase.TYPE_VOYAGE_NOT_FOUND;
+    	this.type = EventBase.TYPE_VOYAGE_NOT_FOUND;
     	this.payload = payload;
     }
 

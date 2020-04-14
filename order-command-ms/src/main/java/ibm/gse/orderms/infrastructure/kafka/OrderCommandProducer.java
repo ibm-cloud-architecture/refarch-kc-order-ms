@@ -19,8 +19,8 @@ import com.google.gson.Gson;
 
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
+import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 
 public class OrderCommandProducer implements EventEmitter  {
 	private static final Logger logger = LoggerFactory.getLogger(OrderCommandProducer.class);
@@ -53,10 +53,10 @@ public class OrderCommandProducer implements EventEmitter  {
     jitter = 100,
     abortOn=InterruptedException.class)
     @Timeout(4000)
-	public void emit(OrderEventBase event) throws Exception {
+	public void emit(EventBase event) throws Exception {
     	if (kafkaProducer == null) initProducer();
 		OrderCommandEvent orderCommandEvent = (OrderCommandEvent)event;
-        String key = ((ShippingOrderPayload)orderCommandEvent.getPayload()).getOrderID();
+        String key = ((OrderEventPayload)orderCommandEvent.getPayload()).getOrderID();
         String value = new Gson().toJson(orderCommandEvent);
         
         try {

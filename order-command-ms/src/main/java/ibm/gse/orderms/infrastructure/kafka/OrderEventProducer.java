@@ -21,12 +21,12 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.OrderRejectEvent;
-import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
-import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
-import ibm.gse.orderms.infrastructure.events.OrderCancelAndRejectPayload;
+import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderRejectEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
+import ibm.gse.orderms.infrastructure.events.order.OrderCancelAndRejectPayload;
 
 /**
  * Emits order events as fact about the shipping order. 
@@ -65,7 +65,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
     jitter = 100,
     abortOn=InterruptedException.class)
     @Timeout(4000)
-    public void emit(OrderEventBase event) throws InterruptedException, ExecutionException, TimeoutException {
+    public void emit(EventBase event) throws InterruptedException, ExecutionException, TimeoutException {
         if (kafkaProducer == null) initProducer();
         String key;
         String value;
@@ -73,7 +73,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
         case OrderEvent.TYPE_ORDER_CREATED:
         case OrderEvent.TYPE_ORDER_UPDATED:
             OrderEvent orderEvent = (OrderEvent)event;
-            key = ((ShippingOrderPayload)orderEvent.getPayload()).getOrderID();
+            key = ((OrderEventPayload)orderEvent.getPayload()).getOrderID();
             value = new Gson().toJson(orderEvent);
             break;
         case OrderEvent.TYPE_ORDER_REJECTED:
@@ -106,7 +106,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
     jitter = 100,
     abortOn=InterruptedException.class)
     @Timeout(4000)
-    public void emitWithOffsets(OrderEventBase event, Map<TopicPartition, OffsetAndMetadata> offsetToCommit, String groupID) throws InterruptedException, ExecutionException, TimeoutException {
+    public void emitWithOffsets(EventBase event, Map<TopicPartition, OffsetAndMetadata> offsetToCommit, String groupID) throws InterruptedException, ExecutionException, TimeoutException {
         if (kafkaProducer == null) initProducer();
         String key;
         String value;
@@ -114,7 +114,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
         case OrderEvent.TYPE_ORDER_CREATED:
         case OrderEvent.TYPE_ORDER_UPDATED:
             OrderEvent orderEvent = (OrderEvent)event;
-            key = ((ShippingOrderPayload)orderEvent.getPayload()).getOrderID();
+            key = ((OrderEventPayload)orderEvent.getPayload()).getOrderID();
             value = new Gson().toJson(orderEvent);
             break;
         case OrderEvent.TYPE_ORDER_REJECTED:

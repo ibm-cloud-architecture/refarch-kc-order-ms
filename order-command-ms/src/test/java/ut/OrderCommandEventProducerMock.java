@@ -3,7 +3,7 @@ package ut;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.EventBase;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 
@@ -24,7 +24,7 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 	}
 	
 	@Override
-	public void emit(OrderEventBase event) throws Exception {
+	public void emit(EventBase event) throws Exception {
 		this.eventEmitted = true;
 		this.emittedEvent = (OrderCommandEvent)event;
 		ShippingOrder shippingOrder = new ShippingOrder(emittedEvent.getPayload());
@@ -46,7 +46,7 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 		//this.emittedEvent = null;	
 	}
 
-	public OrderEventBase getEventEmitted() {
+	public EventBase getEventEmitted() {
 		return emittedEvent;
 	}
 	

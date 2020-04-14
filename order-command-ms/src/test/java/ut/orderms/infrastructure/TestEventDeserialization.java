@@ -10,11 +10,11 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignedEvent;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignmentPayload;
+import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAssignedEvent;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAssignmentPayload;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
@@ -44,10 +44,10 @@ public class TestEventDeserialization {
 		// prepare test data
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity(); 
 		OrderEvent o = new OrderEvent(new Date().getTime(),
-				OrderEventBase.TYPE_ORDER_CREATED,
+				EventBase.TYPE_ORDER_CREATED,
 				"1",order.toShippingOrderPayload());
 		String orderCreateAsString = gson.toJson(o);
-		OrderEventBase oea = agent.deserialize(orderCreateAsString);
+		EventBase oea = agent.deserialize(orderCreateAsString);
 		Assert.assertTrue(oea instanceof OrderEvent);
 		OrderEvent oeOut = (OrderEvent) oea;
 		Assert.assertTrue(oeOut.getPayload().getCustomerID().equals(order.getCustomerID()));
@@ -57,14 +57,14 @@ public class TestEventDeserialization {
 	public void shouldDeserializeVoyageAssignedEvent() {
 		// prepare test data
 		
-		ReeferAssignedEvent reeferAssignedEvent = new ReeferAssignedEvent(new Date().getTime(),
+		ContainerAssignedEvent containerAssignedEvent = new ContainerAssignedEvent(new Date().getTime(),
 				"1",
-				new ReeferAssignmentPayload("O01","C01")); 
-		String reeferAssignedEventAsString = gson.toJson(reeferAssignedEvent);
+				new ContainerAssignmentPayload("O01","C01")); 
+		String containerAssignedEventAsString = gson.toJson(containerAssignedEvent);
 
-		OrderEventBase oea = agent.deserialize(reeferAssignedEventAsString);
-		Assert.assertTrue(oea instanceof ReeferAssignedEvent);
-		ReeferAssignedEvent oeOut = (ReeferAssignedEvent) oea;
+		EventBase oea = agent.deserialize(containerAssignedEventAsString);
+		Assert.assertTrue(oea instanceof ContainerAssignedEvent);
+		ContainerAssignedEvent oeOut = (ContainerAssignedEvent) oea;
 		Assert.assertTrue(oeOut.getPayload().getContainerID().equals("C01"));
 	}
 	
@@ -80,7 +80,7 @@ public class TestEventDeserialization {
 		System.out.println(voyageAssignedEventAsString);
 		
 		
-		OrderEventBase oea = agent.deserialize(voyageAssignedEventAsString);
+		EventBase oea = agent.deserialize(voyageAssignedEventAsString);
 		Assert.assertTrue(oea instanceof VoyageAssignedEvent);
 		VoyageAssignedEvent oeOut = (VoyageAssignedEvent) oea;
 		Assert.assertTrue(oeOut.getPayload().getVoyageID().equals("V01"));
@@ -93,7 +93,7 @@ public class TestEventDeserialization {
 		OrderCancelledEvent event = new OrderCancelledEvent(new Date().getTime(),
 				"1", order.toOrderCancelAndRejectPayload("testing deserialize"));
 		String eventAsStr = gson.toJson(event);
-		OrderEventBase oea = agent.deserialize(eventAsStr);
+		EventBase oea = agent.deserialize(eventAsStr);
 		Assert.assertTrue(oea instanceof OrderCancelledEvent);
 		OrderCancelledEvent oeOut = (OrderCancelledEvent) oea;
 		Assert.assertTrue(oeOut.getPayload().getOrderID().equals(orderID));
