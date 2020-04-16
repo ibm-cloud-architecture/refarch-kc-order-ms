@@ -7,6 +7,6 @@ import org.apache.kafka.common.TopicPartition;
 
 public interface EventListenerTransactional {
 
-    public void handleTransaction(OrderEventBase event,Map<TopicPartition, OffsetAndMetadata> offsetToCommit);
+    public void handleTransaction(EventBase event,Map<TopicPartition, OffsetAndMetadata> offsetToCommit);
 
 }

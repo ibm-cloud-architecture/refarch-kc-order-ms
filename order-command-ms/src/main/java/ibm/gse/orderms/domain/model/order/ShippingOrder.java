@@ -3,9 +3,9 @@ package ibm.gse.orderms.domain.model.order;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import ibm.gse.orderms.infrastructure.events.OrderCancelAndRejectPayload;
-import ibm.gse.orderms.infrastructure.events.ShippingOrderPayload;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignmentPayload;
+import ibm.gse.orderms.infrastructure.events.order.OrderCancelAndRejectPayload;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAssignmentPayload;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
 
 public class ShippingOrder {
@@ -13,16 +13,8 @@ public class ShippingOrder {
     public static final String PENDING_STATUS = "pending";
     public static final String CANCELLED_STATUS = "cancelled";
     public static final String ASSIGNED_STATUS = "assigned";
-    public static final String BOOKED_STATUS = "booked";
-    public static final String TRANSIT_STATUS = "transit";
     public static final String REJECTED_STATUS = "rejected";
-    public static final String COMPLETED_STATUS = "completed";
     public static final String SPOILT_STATUS = "spoilt";
-
-    public static final String FULL_CONTAINER_VOYAGE_READY_STATUS = "full-container-voyage-ready";
-    public static final String CONTAINER_ON_SHIP_STATUS = "container-on-ship";
-    public static final String CONTAINER_OFF_SHIP_STATUS = "container-off-ship";
-    public static final String CONTAINER_DELIVERED_STATUS = "container-delivered";
     
     private String orderID;
     private String productID;
@@ -37,7 +29,7 @@ public class ShippingOrder {
 
     private String status;
 	private String voyageID;
-	private String reeferID;
+	private String containerID;
 
     public ShippingOrder() {
     }
@@ -56,23 +48,36 @@ public class ShippingOrder {
         this.status = status;
     }
 
+    public ShippingOrder(OrderEventPayload sop) {
+        super();
+        this.orderID = sop.getOrderID();
+    	this.productID = sop.getProductID();
+    	this.customerID = sop.getCustomerID();
+    	this.quantity = sop.getQuantity();
+    	this.pickupAddress = sop.getPickupAddress();
+    	this.pickupDate = sop.getPickupDate();
+    	this.destinationAddress = sop.getDestinationAddress();
+        this.expectedDeliveryDate = sop.getExpectedDeliveryDate();
+        this.status = sop.getStatus();
+    }
+
     public void assign(VoyageAssignmentPayload voyageAssignment) {
         this.voyageID = voyageAssignment.getVoyageID();
         setAssignStatus();
     }
 
     public void setAssignStatus() {
-    	if (this.voyageID != null && this.reeferID != null) {
+    	if (this.voyageID != null && this.containerID != null) {
     		this.status = ShippingOrder.ASSIGNED_STATUS;
     	}
     }
-    public void assignContainer(ReeferAssignmentPayload reeferAssignment) {
-    	this.reeferID = reeferAssignment.getContainerID();
+    public void assignContainer(ContainerAssignmentPayload containerAssignment) {
+    	this.containerID = containerAssignment.getContainerID();
     	setAssignStatus();
     }
     
-    public ShippingOrderPayload toShippingOrderPayload() {
-    	ShippingOrderPayload sop = new ShippingOrderPayload(this.getOrderID(),
+    public OrderEventPayload toShippingOrderPayload() {
+    	OrderEventPayload sop = new OrderEventPayload(this.getOrderID(),
     			this.getProductID(),
     			this.getCustomerID(),
     			this.getQuantity(),
@@ -84,26 +89,12 @@ public class ShippingOrder {
     			);
     	return sop;
     }
-    
-    public ShippingOrder fromShippingOrderPayload(ShippingOrderPayload sop) {
-    	ShippingOrder order = new ShippingOrder(sop.getOrderID(),
-    			sop.getProductID(),
-    			sop.getCustomerID(),
-    			sop.getQuantity(),
-    			sop.getPickupAddress(),
-    			sop.getPickupDate(),
-    			sop.getDestinationAddress(),
-    			sop.getExpectedDeliveryDate(),
-    			sop.getStatus()
-    			);
-    	return order;
-    }
 
     public OrderCancelAndRejectPayload toOrderCancelAndRejectPayload(String reason) {
     	OrderCancelAndRejectPayload ocrp = new OrderCancelAndRejectPayload(this.getOrderID(),
     			this.getProductID(),
                 this.getCustomerID(),
-                this.getReeferID(),
+                this.getContainerID(),
                 this.getVoyageID(),
     			this.getQuantity(),
     			this.getPickupAddress(),
@@ -115,6 +106,13 @@ public class ShippingOrder {
     			);
     	return ocrp;
     }
+
+    // Implement what can be updated in an order from the customer update order command.
+    // For now, we are updating an existing order with whatever comes from the update order command.
+    public void update(ShippingOrder oco) {
+        this.containerID = oco.getContainerID();
+        this.voyageID = oco.getVoyageID();
+	}
 
     public void spoilOrder(){
         this.status = ShippingOrder.SPOILT_STATUS;
@@ -206,7 +204,7 @@ public class ShippingOrder {
 		return voyageID;
 	}
 
-	public String getReeferID() {
-		return reeferID;
+	public String getContainerID() {
+		return containerID;
 	}
 }

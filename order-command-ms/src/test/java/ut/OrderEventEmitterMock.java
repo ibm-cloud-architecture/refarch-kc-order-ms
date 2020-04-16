@@ -6,7 +6,7 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 
 import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.EventBase;
 
 /**
  * Use this mockup class to emit order events
@@ -17,11 +17,11 @@ public class OrderEventEmitterMock implements EventEmitterTransactional {
 	}
 
 	public boolean eventEmitted = false;
-	public OrderEventBase emittedEvent = null;
+	public EventBase emittedEvent = null;
 	public boolean failure = false;
 
 	@Override
-	public void emit(OrderEventBase event) throws Exception {
+	public void emit(EventBase event) throws Exception {
 		if (this.failure) {
 			this.eventEmitted = false;
 			this.emittedEvent = null;
@@ -34,7 +34,7 @@ public class OrderEventEmitterMock implements EventEmitterTransactional {
 	}
 
 	@Override
-	public void emitWithOffsets(OrderEventBase event, Map<TopicPartition, OffsetAndMetadata> offsetToCommit,
+	public void emitWithOffsets(EventBase event, Map<TopicPartition, OffsetAndMetadata> offsetToCommit,
 			String groupID) throws Exception {
 		// TODO Auto-generated method stub
 
@@ -46,7 +46,7 @@ public class OrderEventEmitterMock implements EventEmitterTransactional {
 		// this.emittedEvent = null;
 	}
 
-	public OrderEventBase getEventEmitted() {
+	public EventBase getEventEmitted() {
 		return emittedEvent;
 	}
 

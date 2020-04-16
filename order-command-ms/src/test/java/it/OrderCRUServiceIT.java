@@ -24,7 +24,7 @@ import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ut.ShippingOrderTestDataFactory;
 

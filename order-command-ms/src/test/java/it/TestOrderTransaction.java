@@ -30,7 +30,7 @@ import com.google.gson.Gson;
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
+import ibm.gse.orderms.infrastructure.events.EventBase;
 
 /**
  * This test is to validate SAGA pattern among the order, voyage and container services
@@ -105,7 +105,7 @@ public class TestOrderTransaction extends CommonITTest {
 	    //KafkaInfrastructureConfig.getProducerProperties("test-event-producer");
 	    KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(properties);
 	    String voyageEvent = "{\"timestamp\": " + new Date().getTime() 
-	    		+ ",\"type\": \"" + OrderEventBase.TYPE_VOYAGE_ASSIGNED + "\", \"version\": \""
+	    		+ ",\"type\": \"" + EventBase.TYPE_VOYAGE_ASSIGNED + "\", \"version\": \""
 	    		+ "1" + "\"," 
 	    		+ " \"payload\": { \"voyageID\": \"V101\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
@@ -139,7 +139,7 @@ public class TestOrderTransaction extends CommonITTest {
         // ###############################
         kafkaProducer = new KafkaProducer<String, String>(properties);
 	    String containerEvent = "{\"timestamp\": " + new Date().getTime() 
-	    		+ ",\"type\": \"" + OrderEventBase.TYPE_CONTAINER_ALLOCATED + "\", \"version\": \"1\"," 
+	    		+ ",\"type\": \"" + EventBase.TYPE_CONTAINER_ALLOCATED + "\", \"version\": \"1\"," 
 	    		+ " \"payload\": { \"containerID\": \"c02\",\"orderID\": \"" + orderID
 	    		+ "\"}}";
 	    record = new ProducerRecord<>("orders", orderID, containerEvent);
@@ -154,7 +154,7 @@ public class TestOrderTransaction extends CommonITTest {
 			kafkaProducer.close();
 		}
         Thread.sleep(10000);
-        // 5 verify the status is now assigned as there is a reefer container assigned
+        // 5 verify the status is now assigned as there is a container assigned
         // ###############################
         res = makeGetRequest(url + "/" + orderID);
         o = new Gson().fromJson(res.readEntity(String.class), ShippingOrder.class);

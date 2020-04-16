@@ -1,10 +1,10 @@
-package ibm.gse.orderms.infrastructure.events.reefer;
+package ibm.gse.orderms.infrastructure.events.container;
 
-public class ReeferAssignmentPayload {
+public class ContainerAssignmentPayload {
 	 private String orderID;
 	 private String containerID;
 	 
-	 public ReeferAssignmentPayload(String oid, String cid) {
+	 public ContainerAssignmentPayload(String oid, String cid) {
 		 this.orderID = oid;
 		 this.containerID = cid;
 	 }

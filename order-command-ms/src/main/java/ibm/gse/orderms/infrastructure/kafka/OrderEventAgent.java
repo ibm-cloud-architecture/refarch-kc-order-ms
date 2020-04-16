@@ -21,16 +21,16 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
 import ibm.gse.orderms.infrastructure.events.EventListener;
-import ibm.gse.orderms.infrastructure.events.OrderCancelledEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.OrderEventBase;
-import ibm.gse.orderms.infrastructure.events.OrderRejectEvent;
-import ibm.gse.orderms.infrastructure.events.OrderSpoiltEvent;
-import ibm.gse.orderms.infrastructure.events.OrderSpoiltPayload;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignedEvent;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferNotFoundEvent;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferNotFoundPayload;
-import ibm.gse.orderms.infrastructure.events.reefer.ReeferAssignmentPayload;
+import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderRejectEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderSpoiltEvent;
+import ibm.gse.orderms.infrastructure.events.order.OrderSpoiltPayload;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAssignedEvent;
+import ibm.gse.orderms.infrastructure.events.container.ContainerNotFoundEvent;
+import ibm.gse.orderms.infrastructure.events.container.ContainerNotFoundPayload;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAssignmentPayload;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageNotFoundEvent;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageNotFoundPayload;
@@ -85,35 +85,35 @@ public class OrderEventAgent implements EventListener {
 		this.orderEventProducer = null; // TBD: create orderEventProducer attribute. Will need to adjust unit test
     }
     
-    public List<OrderEventBase> poll() {
+    public List<EventBase> poll() {
         ConsumerRecords<String, String> recs = kafkaConsumer.poll(this.pollTimeOut);
-        List<OrderEventBase> result = new ArrayList<>();
+        List<EventBase> result = new ArrayList<>();
         for (ConsumerRecord<String, String> rec : recs) {
-        	OrderEventBase event = deserialize(rec.value());
+        	EventBase event = deserialize(rec.value());
             result.add(event);
         }
         return result;
     }
     
-    public OrderEventBase deserialize(String eventAsString) {
-    	OrderEventBase orderEvent = gson.fromJson(eventAsString, OrderEventBase.class);
+    public EventBase deserialize(String eventAsString) {
+    	EventBase orderEvent = gson.fromJson(eventAsString, EventBase.class);
         switch (orderEvent.getType()) {
-            case OrderEventBase.TYPE_ORDER_CREATED:
-			case OrderEventBase.TYPE_ORDER_UPDATED:
+            case EventBase.TYPE_ORDER_CREATED:
+			case EventBase.TYPE_ORDER_UPDATED:
 				return gson.fromJson(eventAsString, OrderEvent.class);
-			case OrderEventBase.TYPE_ORDER_REJECTED:
+			case EventBase.TYPE_ORDER_REJECTED:
 				return gson.fromJson(eventAsString, OrderRejectEvent.class);
-            case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
+            case EventBase.TYPE_VOYAGE_ASSIGNED:
 				return gson.fromJson(eventAsString, VoyageAssignedEvent.class);
-			case OrderEventBase.TYPE_CONTAINER_NOT_FOUND:
-				return gson.fromJson(eventAsString, ReeferNotFoundEvent.class);
-			case OrderEventBase.TYPE_VOYAGE_NOT_FOUND:
+			case EventBase.TYPE_CONTAINER_NOT_FOUND:
+				return gson.fromJson(eventAsString, ContainerNotFoundEvent.class);
+			case EventBase.TYPE_VOYAGE_NOT_FOUND:
                 return gson.fromJson(eventAsString, VoyageNotFoundEvent.class);
-            case OrderEventBase.TYPE_ORDER_CANCELLED:
+            case EventBase.TYPE_ORDER_CANCELLED:
                 return gson.fromJson(eventAsString, OrderCancelledEvent.class);
-            case OrderEventBase.TYPE_CONTAINER_ALLOCATED:
-                return gson.fromJson(eventAsString, ReeferAssignedEvent.class);
-            case OrderEventBase.TYPE_ORDER_SPOILT:
+            case EventBase.TYPE_CONTAINER_ALLOCATED:
+                return gson.fromJson(eventAsString, ContainerAssignedEvent.class);
+            case EventBase.TYPE_ORDER_SPOILT:
            	    return gson.fromJson(eventAsString, OrderSpoiltEvent.class);
             default:
                 logger.warn("Not supported event: " + eventAsString);
@@ -130,13 +130,13 @@ public class OrderEventAgent implements EventListener {
     }
 
 	@Override
-	public void handle(OrderEventBase orderEvent) {
+	public void handle(EventBase orderEvent) {
 		 try {
 	  
 	            logger.info("@@@@ in handle " + new Gson().toJson(orderEvent));
 	            if (orderEvent == null) return;
 	            switch (orderEvent.getType()) {
-	            case OrderEventBase.TYPE_VOYAGE_ASSIGNED:
+	            case EventBase.TYPE_VOYAGE_ASSIGNED:
 	                synchronized (orderRepository) {
 	                	VoyageAssignmentPayload voyageAssignment = (VoyageAssignmentPayload)((VoyageAssignedEvent) orderEvent).getPayload();
 	                    String orderID = voyageAssignment.getOrderID();
@@ -150,9 +150,9 @@ public class OrderEventAgent implements EventListener {
 	                    }
 	                }
 	                break;
-	            case OrderEventBase.TYPE_CONTAINER_ALLOCATED:
+	            case EventBase.TYPE_CONTAINER_ALLOCATED:
 	            	synchronized (orderRepository) {
-	            		ReeferAssignmentPayload ca = ((ReeferAssignedEvent) orderEvent).getPayload();
+	            		ContainerAssignmentPayload ca = ((ContainerAssignedEvent) orderEvent).getPayload();
 		            	String orderID = ca.getOrderID();
 		            	Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
 		            	if (oco.isPresent()) {
@@ -164,7 +164,7 @@ public class OrderEventAgent implements EventListener {
 		                }
 	            	}
                     break;
-                case OrderEventBase.TYPE_ORDER_SPOILT:
+                case EventBase.TYPE_ORDER_SPOILT:
 	            	synchronized (orderRepository) {
 	            		OrderSpoiltPayload os = ((OrderSpoiltEvent) orderEvent).getPayload();
 		            	String orderID = os.getOrderID();
@@ -178,9 +178,9 @@ public class OrderEventAgent implements EventListener {
 		                }
 	            	}
 					break;
-				case OrderEventBase.TYPE_CONTAINER_NOT_FOUND:
+				case EventBase.TYPE_CONTAINER_NOT_FOUND:
 	            	synchronized (orderRepository) {
-	            		ReeferNotFoundPayload payload = ((ReeferNotFoundEvent) orderEvent).getPayload();
+	            		ContainerNotFoundPayload payload = ((ContainerNotFoundEvent) orderEvent).getPayload();
 		            	String orderID = payload.getOrderID();
 		            	Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
 		            	if (oco.isPresent()) {
@@ -193,7 +193,7 @@ public class OrderEventAgent implements EventListener {
 		                }
 	            	}
 	            	break;
-				case OrderEventBase.TYPE_VOYAGE_NOT_FOUND:
+				case EventBase.TYPE_VOYAGE_NOT_FOUND:
 	            	synchronized (orderRepository) {
 	            		VoyageNotFoundPayload payload = ((VoyageNotFoundEvent) orderEvent).getPayload();
 		            	String orderID = payload.getOrderID();
@@ -208,10 +208,10 @@ public class OrderEventAgent implements EventListener {
 		                }
 	            	}
 	            	break;
-	            case OrderEventBase.TYPE_ORDER_CREATED:
-				case OrderEventBase.TYPE_ORDER_UPDATED:
-				case OrderEventBase.TYPE_ORDER_CANCELLED:
-				case OrderEventBase.TYPE_ORDER_REJECTED:
+	            case EventBase.TYPE_ORDER_CREATED:
+				case EventBase.TYPE_ORDER_UPDATED:
+				case EventBase.TYPE_ORDER_CANCELLED:
+				case EventBase.TYPE_ORDER_REJECTED:
 	            	break;
 	            default:
 	                logger.warn("Not yet implemented event type: " + orderEvent.getType());

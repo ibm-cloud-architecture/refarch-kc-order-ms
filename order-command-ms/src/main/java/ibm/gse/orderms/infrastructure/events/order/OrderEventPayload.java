@@ -1,5 +1,9 @@
-package ibm.gse.orderms.infrastructure.events;
+package ibm.gse.orderms.infrastructure.events.order;
 
+import java.util.UUID;
+
+import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
+import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 
 /**
@@ -10,7 +14,7 @@ import ibm.gse.orderms.domain.model.order.Address;
  * @author jerome boyer
  *
  */
-public class ShippingOrderPayload {
+public class OrderEventPayload {
 	private String orderID;
     private String productID;
     private String customerID;
@@ -26,7 +30,7 @@ public class ShippingOrderPayload {
     
     
 
-	public ShippingOrderPayload(String orderID, String productID, String customerID, int quantity,
+	public OrderEventPayload(String orderID, String productID, String customerID, int quantity,
 			Address pickupAddress, String pickupDate, Address destinationAddress, String expectedDeliveryDate,
 			String status) {
 		super();
@@ -39,6 +43,32 @@ public class ShippingOrderPayload {
 		this.destinationAddress = destinationAddress;
 		this.expectedDeliveryDate = expectedDeliveryDate;
 		this.status = status;
+	}
+
+	public OrderEventPayload(ShippingOrderCreateParameters createParams) {
+		super();
+		this.orderID = UUID.randomUUID().toString();
+		this.productID = createParams.getProductID();
+		this.customerID = createParams.getCustomerID();
+		this.quantity = createParams.getQuantity();
+		this.pickupAddress = createParams.getPickupAddress();
+		this.pickupDate = createParams.getPickupDate();
+		this.destinationAddress = createParams.getDestinationAddress();
+		this.expectedDeliveryDate = createParams.getExpectedDeliveryDate();
+		this.status = "toBeCreated";
+	}
+
+	public OrderEventPayload(ShippingOrderUpdateParameters updateParams) {
+		super();
+		this.orderID = updateParams.getOrderID();
+		this.productID = updateParams.getProductID();
+		this.customerID = updateParams.getCustomerID();
+		this.quantity = updateParams.getQuantity();
+		this.pickupAddress = updateParams.getPickupAddress();
+		this.pickupDate = updateParams.getPickupDate();
+		this.destinationAddress = updateParams.getDestinationAddress();
+		this.expectedDeliveryDate = updateParams.getExpectedDeliveryDate();
+		this.status = updateParams.getStatus();
 	}
 
 	public String getStatus() {
@@ -64,6 +94,11 @@ public class ShippingOrderPayload {
 	public int getQuantity() {
 		return quantity;
 	}
+	
+	// This method is created for the unit test
+	public void setQuantity(int quantity){
+		this.quantity = quantity;
+	}
 
 	public Address getPickupAddress() {
 		return pickupAddress;
@@ -80,6 +115,5 @@ public class ShippingOrderPayload {
 	public String getExpectedDeliveryDate() {
 		return expectedDeliveryDate;
 	}
-    
     
 }
