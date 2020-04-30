@@ -13,8 +13,8 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.events.EventBase;
 import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
 import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.container.ContainerAssignedEvent;
-import ibm.gse.orderms.infrastructure.events.container.ContainerAssignmentPayload;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAllocatedEvent;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAllocatedPayload;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
@@ -57,19 +57,20 @@ public class TestEventDeserialization {
 	public void shouldDeserializeVoyageAssignedEvent() {
 		// prepare test data
 		
-		ContainerAssignedEvent containerAssignedEvent = new ContainerAssignedEvent(new Date().getTime(),
+		ContainerAllocatedEvent containerAssignedEvent = new ContainerAllocatedEvent(new Date().getTime(),
 				"1",
-				new ContainerAssignmentPayload("O01","C01")); 
+				"O01",
+				new ContainerAllocatedPayload("O01","C01")); 
 		String containerAssignedEventAsString = gson.toJson(containerAssignedEvent);
 
 		EventBase oea = agent.deserialize(containerAssignedEventAsString);
-		Assert.assertTrue(oea instanceof ContainerAssignedEvent);
-		ContainerAssignedEvent oeOut = (ContainerAssignedEvent) oea;
+		Assert.assertTrue(oea instanceof ContainerAllocatedEvent);
+		ContainerAllocatedEvent oeOut = (ContainerAllocatedEvent) oea;
 		Assert.assertTrue(oeOut.getPayload().getContainerID().equals("C01"));
 	}
 	
 	@Test
-	public void shouldDeserializeContainerAssignedEvent() {
+	public void shouldDeserializeContainerAllocatedEvent() {
 		// prepare test data
 		
 		VoyageAssignedEvent voyageAssignedEvent = new VoyageAssignedEvent(new Date().getTime(),
