@@ -29,9 +29,7 @@ import ibm.gse.orderqueryms.infrastructure.events.EventListener;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignContainerEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.CancelOrderEvent;
-import ibm.gse.orderqueryms.infrastructure.events.order.ContainerDeliveredEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.CreateOrderEvent;
-import ibm.gse.orderqueryms.infrastructure.events.order.OrderCompletedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.RejectOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.SpoilOrderEvent;
@@ -123,7 +121,7 @@ public class OrderAgent implements EventListener {
 							orderQueryObject = orderRepository.getById(orderID);
 							if (orderQueryObject.isPresent()) {
 								QueryOrder qo = orderQueryObject.get();
-								qo.assign(voyageAssignment);
+								qo.assignVoyage(voyageAssignment);
 								orderRepository.update(qo);
 							} else {
 								throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
@@ -158,20 +156,6 @@ public class OrderAgent implements EventListener {
 							}
 						}
 						break;
-					case OrderEvent.TYPE_CONTAINER_DELIVERED:
-						synchronized (orderRepository) {
-							ContainerAssignment container = ((ContainerDeliveredEvent) orderEvent).getPayload();
-							orderID = container.getOrderID();
-							orderQueryObject = orderRepository.getById(orderID);
-							if (orderQueryObject.isPresent()) {
-								QueryOrder qo = orderQueryObject.get();
-								qo.containerDelivered(container);
-								orderRepository.update(qo);
-							} else {
-								throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-							}
-						}
-						break;
 					case OrderEvent.TYPE_CANCELLED:
 						synchronized (orderRepository) {
 							CancelAndRejectPayload cancellationPayload = ((CancelOrderEvent) orderEvent).getPayload();
@@ -180,20 +164,6 @@ public class OrderAgent implements EventListener {
 							if (orderQueryObject.isPresent()) {
 								QueryOrder qo = orderQueryObject.get();
 								qo.cancel(cancellationPayload);
-								orderRepository.update(qo);
-							} else {
-								throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-							}
-						}
-						break;
-					case OrderEvent.TYPE_COMPLETED:
-						synchronized (orderRepository) {
-							Order order = ((OrderCompletedEvent) orderEvent).getPayload();
-							orderID = order.getOrderID();
-							orderQueryObject = orderRepository.getById(orderID);
-							if (orderQueryObject.isPresent()) {
-								QueryOrder qo = orderQueryObject.get();
-								qo.orderCompleted(order);
 								orderRepository.update(qo);
 							} else {
 								throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
@@ -267,7 +237,7 @@ public class OrderAgent implements EventListener {
 						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
 						if (orderHistoryInfo.isPresent()) {
 							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
-							orderActionItem.assign(voyageAssignment);
+							orderActionItem.assignVoyage(voyageAssignment);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
 							orderHistoryRepository.updateOrder(orderAction);
@@ -315,25 +285,6 @@ public class OrderAgent implements EventListener {
 						}
 					}
 					break;
-				case OrderEvent.TYPE_CONTAINER_DELIVERED:
-					synchronized (orderHistoryRepository) {
-						ContainerAssignment container = ((ContainerDeliveredEvent) orderEvent).getPayload();
-						long timestampMillis = ((ContainerDeliveredEvent) orderEvent).getTimestampMillis();
-						String action = ((ContainerDeliveredEvent) orderEvent).getType();
-						orderID = container.getOrderID();
-						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
-							orderActionItem.containerDelivered(container);
-							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
-									action);
-							orderHistoryRepository.updateOrder(orderAction);
-							orderHistoryRepository.orderHistory(orderAction);
-						} else {
-							throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-						}
-					}
-					break;
 				case OrderEvent.TYPE_CANCELLED:
 					synchronized (orderHistoryRepository) {
 						CancelAndRejectPayload cancellationPayload = ((CancelOrderEvent) orderEvent).getPayload();
@@ -344,25 +295,6 @@ public class OrderAgent implements EventListener {
 						if (orderHistoryInfo.isPresent()) {
 							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
 							orderActionItem.cancel(cancellationPayload);
-							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
-									action);
-							orderHistoryRepository.updateOrder(orderAction);
-							orderHistoryRepository.orderHistory(orderAction);
-						} else {
-							throw new IllegalStateException("Cannot update - Unknown order Id " + orderID);
-						}
-					}
-					break;
-				case OrderEvent.TYPE_COMPLETED:
-					synchronized (orderHistoryRepository) {
-						Order order = ((OrderCompletedEvent) orderEvent).getPayload();
-						long timestampMillis = ((OrderCompletedEvent) orderEvent).getTimestampMillis();
-						String action = ((OrderCompletedEvent) orderEvent).getType();
-						orderID = order.getOrderID();
-						orderHistoryInfo = orderHistoryRepository.getByOrderId(orderID);
-						if (orderHistoryInfo.isPresent()) {
-							OrderHistoryInfo orderActionItem = orderHistoryInfo.get();
-							orderActionItem.orderCompleted(order);
 							OrderHistory orderAction = OrderHistory.newFromOrder(orderActionItem, timestampMillis,
 									action);
 							orderHistoryRepository.updateOrder(orderAction);

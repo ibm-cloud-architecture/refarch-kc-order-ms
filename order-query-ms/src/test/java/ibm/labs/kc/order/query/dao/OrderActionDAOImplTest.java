@@ -29,7 +29,7 @@ public class OrderActionDAOImplTest {
         
         VoyageAssignment va1 = new VoyageAssignment("orderID1", "myVoyage");
         OrderEvent event1 = new AssignOrderEvent(System.currentTimeMillis(), "1", va1);
-        orderAction1.assign(va1);
+        orderAction1.assignVoyage(va1);
         
         OrderHistoryInfo orderAction2 = OrderHistoryInfo.newFromOrder(new Order("orderID2", "productId", "custId1", 2,
                 addr, "2019-01-10T13:30Z",
@@ -37,7 +37,7 @@ public class OrderActionDAOImplTest {
         
         VoyageAssignment va2 = new VoyageAssignment("orderID2", "myVoyage");
         OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va2);
-        orderAction2.assign(va2);
+        orderAction2.assignVoyage(va2);
         
         OrderHistory expectedOrderAction1 = OrderHistory.newFromOrder(orderAction1, event1.getTimestampMillis(), event1.getType());
         OrderHistory expectedQueryAction2 = OrderHistory.newFromOrder(orderAction2, event2.getTimestampMillis(), event2.getType());

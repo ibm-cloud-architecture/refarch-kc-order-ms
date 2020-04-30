@@ -21,19 +21,10 @@ import ibm.gse.orderqueryms.domain.model.order.history.OrderHistoryInfo;
 import ibm.gse.orderqueryms.infrastructure.events.AbstractEvent;
 import ibm.gse.orderqueryms.infrastructure.events.EventListener;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerAddedEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerAtLocationEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerGoodsLoadedEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerGoodsUnLoadedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffMaintenanceEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffShipEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOffTruckEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnMaintenanceEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnShipEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOnTruckEvent;
 import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOrderAssignedEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerOrderReleasedEvent;
-import ibm.gse.orderqueryms.infrastructure.events.container.ContainerRemovedEvent;
 import ibm.gse.orderqueryms.infrastructure.repository.OrderHistoryDAO;
 
 public class ContainerAgent implements EventListener {
@@ -96,42 +87,6 @@ public class ContainerAgent implements EventListener {
                     orderHistoryRepository.containerHistory(orderAction);
                 }
                 break;
-            case ContainerEvent.TYPE_CONTAINER_REMOVED:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerRemovedEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerRemovedEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerRemovedEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerRemoved(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
-            case ContainerEvent.TYPE_CONTAINER_AT_LOCATION:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerAtLocationEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerAtLocationEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerAtLocationEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerAtLocation(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
             case ContainerEvent.TYPE_CONTAINER_ON_MAINTENANCE:
                 synchronized (orderHistoryRepository) {
                 	Container container = ((ContainerOnMaintenanceEvent) containerEvent).getPayload();
@@ -178,132 +133,6 @@ public class ContainerAgent implements EventListener {
                     if (oqc.isPresent()) {
                     	OrderHistoryInfo orderActionItem = oqc.get();
                     	orderActionItem.containerOrderAssignment(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
-            case ContainerEvent.TYPE_CONTAINER_ORDER_RELEASED:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerOrderReleasedEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerOrderReleasedEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerOrderReleasedEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerOrderReleased(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
-            case ContainerEvent.TYPE_GOODS_LOADED:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerGoodsLoadedEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerGoodsLoadedEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerGoodsLoadedEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerGoodsLoaded(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
-            case ContainerEvent.TYPE_CONTAINER_GOOD_UNLOADED:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerGoodsUnLoadedEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerGoodsUnLoadedEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerGoodsUnLoadedEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerGoodsUnloaded(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
-            case ContainerEvent.TYPE_CONTAINER_ON_SHIP:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerOnShipEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerOnShipEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerOnShipEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerOnShip(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
-            case ContainerEvent.TYPE_CONTAINER_OFF_SHIP:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerOffShipEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerOffShipEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerOffShipEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerOffShip(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
-            case ContainerEvent.TYPE_CONTAINER_ON_TRUCK:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerOnTruckEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerOnTruckEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerOnTruckEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerOnTruck(container);
-                    	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
-                    	orderHistoryRepository.updateContainer(orderAction);
-                    	orderHistoryRepository.containerHistory(orderAction);
-                    } else {
-                        throw new IllegalStateException("Cannot update - Unknown order Id " + containerID);
-                    }
-                }
-                break;
-            case ContainerEvent.TYPE_CONTAINER_OFF_TRUCK:
-                synchronized (orderHistoryRepository) {
-                	Container container = ((ContainerOffTruckEvent) containerEvent).getPayload();
-                	long timestampMillis = ((ContainerOffTruckEvent) containerEvent).getTimestampMillis();
-                	String action = ((ContainerOffTruckEvent) containerEvent).getType();
-                    containerID = container.getContainerID();
-                    oqc = orderHistoryRepository.getByContainerId(containerID);
-                    if (oqc.isPresent()) {
-                    	OrderHistoryInfo orderActionItem = oqc.get();
-                    	orderActionItem.containerOffTruck(container);
                     	OrderHistory orderAction = OrderHistory.newFromContainer(orderActionItem, timestampMillis, action);
                     	orderHistoryRepository.updateContainer(orderAction);
                     	orderHistoryRepository.containerHistory(orderAction);
