@@ -1,10 +1,10 @@
 package ibm.gse.orderms.infrastructure.events.container;
 
-public class ContainerAssignmentPayload {
+public class ContainerAllocatedPayload {
 	 private String orderID;
 	 private String containerID;
 	 
-	 public ContainerAssignmentPayload(String oid, String cid) {
+	 public ContainerAllocatedPayload(String oid, String cid) {
 		 this.orderID = oid;
 		 this.containerID = cid;
 	 }

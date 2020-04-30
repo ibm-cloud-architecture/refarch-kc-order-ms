@@ -29,9 +29,7 @@ import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignContainerEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignOrderEvent;
-import ibm.gse.orderqueryms.infrastructure.events.order.ContainerDeliveredEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.CreateOrderEvent;
-import ibm.gse.orderqueryms.infrastructure.events.order.OrderCompletedEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderqueryms.infrastructure.events.order.RejectOrderEvent;
 import ibm.gse.orderqueryms.infrastructure.kafka.ApplicationConfig;
@@ -153,7 +151,7 @@ public class QueryServiceIT {
        sendEvent("testHandleVoyageAssignment", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-       expectedOrder.assign(va);
+       expectedOrder.assignVoyage(va);
        int maxattempts = 10;
        boolean ok = false;
        outer: for(int i=0; i<maxattempts; i++) {
@@ -227,7 +225,7 @@ public class QueryServiceIT {
        sendEvent("testAllocatedContainer", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
 
        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
-       OrderEvent event2 = new AssignContainerEvent(System.currentTimeMillis(), "1", container);
+       OrderEvent event2 = new AssignContainerEvent(System.currentTimeMillis(), "1", orderID, container);
        sendEvent("testAllocatedContainer", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
@@ -253,87 +251,6 @@ public class QueryServiceIT {
        }
        assertTrue(ok);
 
-   }
-
-   @Test
-   public void testContainerDelivered() throws Exception {
-
-       String orderID = UUID.randomUUID().toString();
-
-   	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-       Order order = new Order(orderID, "productId", "custId", 2,
-               addr, "2019-01-10T13:30Z",
-               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testContainerDelivered", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
-
-       ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
-       OrderEvent event2 = new ContainerDeliveredEvent(System.currentTimeMillis(), "1", container);
-       sendEvent("testContainerDelivered", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
-
-       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-       expectedOrder.containerDelivered(container);
-       int maxattempts = 10;
-       boolean ok = false;
-       outer: for(int i=0; i<maxattempts; i++) {
-           Response response = makeGetRequest(url + "byStatus/container-delivered");
-           if(response.getStatus() == 200) {
-               String responseString = response.readEntity(String.class);
-               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-               for (QueryOrder o : orders) {
-                   if (orderID.equals(o.getOrderID())) {
-                       assertEquals(expectedOrder, o);
-                       ok = true;
-                       break outer;
-                   }
-               }
-               Thread.sleep(1000L);
-           } else {
-               Thread.sleep(1000L);
-           }
-       }
-       assertTrue(ok);
-
-   }
-
-   @Test
-   public void testOrderCompleted() throws Exception {
-
-       String orderID = UUID.randomUUID().toString();
-
-   	Address addr = new Address("myStreet", "myCity", "myCountry", "myState", "myZipcode");
-       Order order = new Order(orderID, "productId", "custId", 2,
-               addr, "2019-01-10T13:30Z",
-               addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
-       OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testOrderCompleted", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
-
-       Order order1 = new Order(orderID);
-       OrderEvent event2 = new OrderCompletedEvent(System.currentTimeMillis(), "1", order1);
-       sendEvent("testOrderCompleted", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
-
-       QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
-       expectedOrder.orderCompleted(order1);
-       int maxattempts = 10;
-       boolean ok = false;
-       outer: for(int i=0; i<maxattempts; i++) {
-           Response response = makeGetRequest(url + "byStatus/order-completed");
-           if(response.getStatus() == 200) {
-               String responseString = response.readEntity(String.class);
-               QueryOrder[] orders = new Gson().fromJson(responseString, QueryOrder[].class);
-               for (QueryOrder o : orders) {
-                   if (orderID.equals(o.getOrderID())) {
-                       assertEquals(expectedOrder, o);
-                       ok = true;
-                       break outer;
-                   }
-               }
-               Thread.sleep(1000L);
-           } else {
-               Thread.sleep(1000L);
-           }
-       }
-       assertTrue(ok);
    }
 
     @Test

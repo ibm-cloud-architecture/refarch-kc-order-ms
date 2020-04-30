@@ -108,15 +108,20 @@ public class QueryOrder {
         	containerID = order.getContainerID();
         }
     }
+    public void setAssignStatus() {
+    	if (this.voyageID != null && this.containerID != null) {
+    		this.status = Order.ASSIGNED_STATUS;
+    	}
+    }
 
-    public void assign(VoyageAssignment voyageAssignment) {
+    public void assignVoyage(VoyageAssignment voyageAssignment) {
         this.voyageID = voyageAssignment.getVoyageID();
-        this.status = Order.ASSIGNED_STATUS;
+        setAssignStatus();
     }
 
     public void assignContainer(ContainerAssignment ca) {
-    	this.containerID = ca.getContainerID();
-    	this.status = Order.CONTAINER_ALLOCATED_STATUS;
+        this.containerID = ca.getContainerID();
+        setAssignStatus();
     }
     
     public void cancel(CancelAndRejectPayload cancellation) {
@@ -127,14 +132,6 @@ public class QueryOrder {
     public void reject(CancelAndRejectPayload rejection){
         this.status = Order.REJECTED_STATUS;
         this.reason = rejection.getReason();
-    }
-    
-    public void containerDelivered(ContainerAssignment container){
-    	this.status = Order.CONTAINER_DELIVERED_STATUS;
-    }
-    
-    public void orderCompleted(Order order){
-    	this.status = Order.ORDER_COMPLETED_STATUS;
     }
 
     public void spoilOrder(Spoil spoil){

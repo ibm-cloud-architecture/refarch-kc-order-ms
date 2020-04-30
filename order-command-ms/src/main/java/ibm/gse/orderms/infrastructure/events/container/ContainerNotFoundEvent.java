@@ -4,13 +4,15 @@ import ibm.gse.orderms.infrastructure.events.EventBase;
 
 public class ContainerNotFoundEvent extends EventBase {
 
+	private String orderID;
 	private ContainerNotFoundPayload payload;
 
-	public ContainerNotFoundEvent(long timestampMillis, String version, ContainerNotFoundPayload payload) {
+	public ContainerNotFoundEvent(long timestampMillis, String version, String orderID, ContainerNotFoundPayload payload) {
 		this.timestampMillis = timestampMillis;
     	this.version = version;
     	this.type = EventBase.TYPE_CONTAINER_NOT_FOUND;
-    	this.payload = payload;
+		this.payload = payload;
+		this.orderID = orderID;
 	}
 
 	public ContainerNotFoundEvent() {
@@ -26,5 +28,8 @@ public class ContainerNotFoundEvent extends EventBase {
 		this.payload = payload;
 	}
 	
+	public String getOrderId() {
+		return orderID;
+	}
 	
 }

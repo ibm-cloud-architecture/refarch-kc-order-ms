@@ -8,10 +8,7 @@ public class OrderEvent extends AbstractEvent {
 
     public static final String TYPE_CREATED = "OrderCreated";
     public static final String TYPE_UPDATED = "OrderUpdated";
-    public static final String TYPE_BOOKED = "OrderBooked";
     public static final String TYPE_ASSIGNED = "VoyageAssigned";
-    public static final String TYPE_TRANSIT = "OrderInTransit";
-    public static final String TYPE_COMPLETED = "OrderCompleted";
     public static final String TYPE_REJECTED = "OrderRejected";
     public static final String TYPE_CANCELLED = "OrderCancelled";
     public static final String TYPE_SPOILT = "OrderSpoilt";
@@ -19,8 +16,6 @@ public class OrderEvent extends AbstractEvent {
     public static final String TYPE_CONTAINER_ALLOCATED = "ContainerAllocated";
     public static final String TYPE_CONTAINER_NOT_FOUND = "ContainerNotFound";
     public static final String TYPE_VOYAGE_NOT_FOUND = "VoyageNotFound";
-    public static final String TYPE_FULL_CONTAINER_VOYAGE_READY = "FullContainerVoyageReady";
-    public static final String TYPE_CONTAINER_DELIVERED = "ContainerDelivered";   
 
     private static final Gson gson = new Gson();
 
@@ -48,14 +43,8 @@ public class OrderEvent extends AbstractEvent {
         //     return gson.fromJson(json, ContainerNotFoundEvent.class);
         // case TYPE_VOYAGE_NOT_FOUND:
         // 	return gson.fromJson(json, VoyageNotFoundEvent.class);
-        case TYPE_CONTAINER_DELIVERED:
-        	return gson.fromJson(json, ContainerDeliveredEvent.class);
-        case TYPE_UPDATED:
-            return gson.fromJson(json, UpdateOrderEvent.class);
         case TYPE_CANCELLED:
             return gson.fromJson(json, CancelOrderEvent.class);
-        case TYPE_COMPLETED:
-            return gson.fromJson(json, OrderCompletedEvent.class);
         case TYPE_SPOILT:
         	return gson.fromJson(json, SpoilOrderEvent.class);
         default:

@@ -27,10 +27,10 @@ import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderms.infrastructure.events.order.OrderRejectEvent;
 import ibm.gse.orderms.infrastructure.events.order.OrderSpoiltEvent;
 import ibm.gse.orderms.infrastructure.events.order.OrderSpoiltPayload;
-import ibm.gse.orderms.infrastructure.events.container.ContainerAssignedEvent;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAllocatedEvent;
 import ibm.gse.orderms.infrastructure.events.container.ContainerNotFoundEvent;
 import ibm.gse.orderms.infrastructure.events.container.ContainerNotFoundPayload;
-import ibm.gse.orderms.infrastructure.events.container.ContainerAssignmentPayload;
+import ibm.gse.orderms.infrastructure.events.container.ContainerAllocatedPayload;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageNotFoundEvent;
 import ibm.gse.orderms.infrastructure.events.voyage.VoyageNotFoundPayload;
@@ -112,7 +112,7 @@ public class OrderEventAgent implements EventListener {
             case EventBase.TYPE_ORDER_CANCELLED:
                 return gson.fromJson(eventAsString, OrderCancelledEvent.class);
             case EventBase.TYPE_CONTAINER_ALLOCATED:
-                return gson.fromJson(eventAsString, ContainerAssignedEvent.class);
+                return gson.fromJson(eventAsString, ContainerAllocatedEvent.class);
             case EventBase.TYPE_ORDER_SPOILT:
            	    return gson.fromJson(eventAsString, OrderSpoiltEvent.class);
             default:
@@ -152,7 +152,7 @@ public class OrderEventAgent implements EventListener {
 	                break;
 	            case EventBase.TYPE_CONTAINER_ALLOCATED:
 	            	synchronized (orderRepository) {
-	            		ContainerAssignmentPayload ca = ((ContainerAssignedEvent) orderEvent).getPayload();
+	            		ContainerAllocatedPayload ca = ((ContainerAllocatedEvent) orderEvent).getPayload();
 		            	String orderID = ca.getOrderID();
 		            	Optional<ShippingOrder> oco = orderRepository.getOrderByOrderID(orderID);
 		            	if (oco.isPresent()) {

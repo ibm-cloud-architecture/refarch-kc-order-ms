@@ -131,15 +131,20 @@ public class OrderHistoryInfo {
         	containerID = order.getContainerID();
         }
     }
+    public void setAssignStatus() {
+    	if (this.voyageID != null && this.containerID != null) {
+    		this.status = Order.ASSIGNED_STATUS;
+    	}
+    }
 
-    public void assign(VoyageAssignment voyageAssignment) {
+    public void assignVoyage(VoyageAssignment voyageAssignment) {
         this.voyageID = voyageAssignment.getVoyageID();
-        this.status = Order.ASSIGNED_STATUS;
+        setAssignStatus();
     }
 
     public void assignContainer(ContainerAssignment ca) {
-    	this.containerID = ca.getContainerID();
-    	this.status = Order.CONTAINER_ALLOCATED_STATUS;
+        this.containerID = ca.getContainerID();
+        setAssignStatus();
     }
     
     public void cancel(CancelAndRejectPayload cancellation) {
@@ -152,14 +157,6 @@ public class OrderHistoryInfo {
         this.reason = rejection.getReason();
     }
     
-    public void containerRemoved(Container container){
-    	this.status = Container.REMOVED_STATUS;
-    }
-    
-    public void containerAtLocation(Container container){
-    	this.status = Container.AT_LOCATION_STATUS;
-    }
-    
     public void containerOnMaintenance(Container container){
     	this.status = Container.ON_MAINTENANCE_STATUS;
     }
@@ -170,42 +167,6 @@ public class OrderHistoryInfo {
     
     public void containerOrderAssignment(Container container){
     	this.status = Container.ORDER_ASSIGNED_STATUS;
-    }
-    
-    public void containerOrderReleased(Container container){
-    	this.status = Container.ORDER_RELEASED_STATUS;
-    }
-    
-    public void containerGoodsLoaded(Container container){
-    	this.status = Container.GOODS_LOADED_STATUS;
-    }
-    
-    public void containerGoodsUnloaded(Container container){
-    	this.status = Container.GOOD_UNLOADED_STATUS;
-    }
-    
-    public void containerOnShip(Container container){
-    	this.status = Container.ON_SHIP_STATUS;
-    }
-    
-    public void containerOffShip(Container container){
-    	this.status = Container.OFF_SHIP_STATUS;
-    }
-    
-    public void containerOnTruck(Container container){
-    	this.status = Container.ON_TRUCK_STATUS;
-    }
-    
-    public void containerOffTruck(Container container){
-    	this.status = Container.OFF_TRUCK_STATUS;
-    }
-    
-    public void containerDelivered(ContainerAssignment container){
-    	this.status = Order.CONTAINER_DELIVERED_STATUS;
-    }
-    
-    public void orderCompleted(Order order){
-    	this.status = Order.ORDER_COMPLETED_STATUS;
     }
 
     public void spoil(Spoil spoil){
