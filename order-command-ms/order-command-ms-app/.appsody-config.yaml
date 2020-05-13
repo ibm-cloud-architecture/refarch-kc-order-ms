@@ -1,0 +1,3 @@
+id: "20200513165712.90760400"
+project-name: order-command-ms-app
+stack: docker.io/appsody/java-openliberty:0.2
