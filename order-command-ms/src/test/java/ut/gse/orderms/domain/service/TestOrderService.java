@@ -17,6 +17,7 @@ import ibm.gse.orderms.domain.service.ShippingOrderService;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.EventBase;
 import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
+import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -25,6 +26,8 @@ import ut.KafkaConsumerMockup;
 import ut.OrderCommandEventProducerMock;
 import ut.OrderEventEmitterMock;
 import ut.ShippingOrderTestDataFactory;
+
+import static org.mockito.Mockito.*; 
 
 public class TestOrderService {
 
@@ -132,7 +135,9 @@ public class TestOrderService {
 		OrderEventEmitterMock orderEventEmitter = new OrderEventEmitterMock();
 		OrderEventEmitterMock errorEventEmitter = new OrderEventEmitterMock();
 		// agent consume command events and generate order event
-		OrderCommandAgent orderCommandAgent = new OrderCommandAgent(orderRepository,kcm,orderEventEmitter,errorEventEmitter);
+		KafkaInfrastructureConfig config = mock(KafkaInfrastructureConfig.class);
+		when (config.getOrderCommandTopic()).thenReturn("order-command");
+		OrderCommandAgent orderCommandAgent = new OrderCommandAgent(orderRepository,kcm,orderEventEmitter,errorEventEmitter,config);
 
 		// need mockup emitter
 		OrderCommandEventProducerMock eventEmitter = new OrderCommandEventProducerMock(orderRepository);

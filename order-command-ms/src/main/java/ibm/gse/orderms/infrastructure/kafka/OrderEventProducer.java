@@ -38,12 +38,14 @@ public class OrderEventProducer implements EventEmitterTransactional {
 
     private KafkaProducer<String, String> kafkaProducer;
     private Properties properties;
+    private KafkaInfrastructureConfig config;
 
     public OrderEventProducer() {  
-    	initProducer();
+        initProducer();
     }
-
+    
 	private void initProducer() {
+        config = new KafkaInfrastructureConfig();
 		properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-event-producer");
 		// properties.put(ProducerConfig.ACKS_CONFIG, "1");
         // properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
@@ -90,7 +92,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
             key = null;
             value = null;
         }
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), key, value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(config.getOrderTopic(), key, value);
 
         kafkaProducer.beginTransaction();
         Future<RecordMetadata> send = kafkaProducer.send(record);
@@ -131,7 +133,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
             key = null;
             value = null;
         }
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), key, value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(config.getOrderTopic(), key, value);
 
         kafkaProducer.beginTransaction();
         Future<RecordMetadata> send = kafkaProducer.send(record);
