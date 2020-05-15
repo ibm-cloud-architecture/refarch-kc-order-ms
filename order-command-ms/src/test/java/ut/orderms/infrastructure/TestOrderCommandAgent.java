@@ -252,10 +252,10 @@ public class TestOrderCommandAgent {
 				+ "\"type\":\"CreateOrderCommand\"}");
 		orderCommandsConsumerMock.setKey("Order01");
 		// List<OrderCommandEvent> results = agent.poll();
-		agent.poll();
-		// OrderCommandEvent createOrderEvent = results.get(0);
 		// inject communication error in kafka
 		orderEventProducerMock.failure = true;
+		agent.poll();
+		// OrderCommandEvent createOrderEvent = results.get(0);
 		// agent.handle(createOrderEvent);
 		Assert.assertFalse(orderEventProducerMock.eventEmitted);
 		Assert.assertFalse(errorEventProducerMock.eventEmitted);
@@ -275,10 +275,11 @@ public class TestOrderCommandAgent {
 				+ "\"type\":\"UpdateOrderCommand\"}");
 		orderCommandsConsumerMock.setKey("Order01");
 		// List<OrderCommandEvent> results = agent.poll();
-		agent.poll();
-		// OrderCommandEvent updateOrderEvent = results.get(0);
 		// inject communication error in kafka
 		orderEventProducerMock.failure = true;
+		
+		agent.poll();
+		// OrderCommandEvent updateOrderEvent = results.get(0);
 		// agent.handle(updateOrderEvent);
 		Assert.assertFalse(orderEventProducerMock.eventEmitted);
 		Assert.assertFalse(errorEventProducerMock.eventEmitted);
