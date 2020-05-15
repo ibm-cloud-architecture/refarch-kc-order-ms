@@ -3,8 +3,18 @@
         <feature>microProfile-3.2</feature>
     </featureManager>
 
-    <httpEndpoint host="*" httpPort="${default.http.port}" 
-        httpsPort="${default.https.port}" id="defaultHttpEndpoint"/>
-    
-    <webApplication location="starter-app.war" contextRoot="/"/>
+    <httpEndpoint httpPort="${default.http.port}" httpsPort="${default.https.port}"
+        id="defaultHttpEndpoint" host="*" />
+
+    <mpMetrics authentication="false"/>
+    <!-- This is the keystore that will be used by SSL and by JWT. -->
+    <keyStore id="defaultKeyStore" 
+        location="public.jks" type="JKS" password="atbash" />
+        <sslDefault sslRef="defaultSSLSettings" />
+        <ssl id="defaultSSLSettings" keyStoreRef="defaultKeyStore" trustStoreRef="defaultTrustStore" clientAuthentication="true" sslProtocol="TLSv1" />
+    <trustStore id="defaultTrustStore" location="es-cert.jks" password="password" updateTrigger="polled" pollingRate="2s"/>
+
+
+    <webApplication name="ordercommandms" location="${app.location}" contextRoot="/"/>
+
 </server>
