@@ -36,8 +36,7 @@ public class OrderEventEmitterMock implements EventEmitterTransactional {
 	@Override
 	public void emitWithOffsets(EventBase event, Map<TopicPartition, OffsetAndMetadata> offsetToCommit,
 			String groupID) throws Exception {
-		// TODO Auto-generated method stub
-
+		emit(event);
 	}
 
 	@Override
