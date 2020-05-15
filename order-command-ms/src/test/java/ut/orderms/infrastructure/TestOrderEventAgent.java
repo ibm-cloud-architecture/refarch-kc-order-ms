@@ -1,5 +1,8 @@
 package ut.orderms.infrastructure;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -122,7 +125,7 @@ public class TestOrderEventAgent {
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		repository.addOrUpdateNewShippingOrder(order);
 		String voyageEvent = "{\"timestamp\": " + new Date().getTime() 
-		    		+ ",\"type\": \"ContainerAssigned\", \"version\": \"1\"," 
+		    		+ ",\"type\": \"ContainerAllocated\", \"version\": \"1\"," 
 		    		+ " \"payload\": { \"containerID\": \"C01\",\"orderID\": \"" + order.getOrderID()
 		    		+ "\"}}";
 		orderEventsConsumerMock.setValue(voyageEvent);
@@ -133,7 +136,8 @@ public class TestOrderEventAgent {
 			agent.handle(event);
 		}
 		Optional<ShippingOrder> orderOption = repository.getOrderByOrderID(order.getOrderID());
-		Assert.assertTrue("C01".equals(orderOption.get().getContainerID()));	
+		assertTrue("Order not found in repository", orderOption.isPresent());
+		assertEquals("C01",orderOption.get().getContainerID());	
 	}
 
 }
