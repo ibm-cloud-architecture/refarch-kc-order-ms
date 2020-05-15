@@ -50,6 +50,7 @@ public class OrderEventAgent implements EventListener {
     private static final Logger logger = LoggerFactory.getLogger(OrderEventAgent.class.getName());
 	private final KafkaConsumer<String, String> kafkaConsumer;
 	private EventEmitter orderEventProducer; // Need to produce OrderRejected Events
+	private KafkaInfrastructureConfig config;
     private final ShippingOrderRepository orderRepository; 
     private static final Gson gson = new Gson();
     private Duration pollTimeOut;
@@ -62,8 +63,9 @@ public class OrderEventAgent implements EventListener {
 		// Using a value of read_committed ensures that we don't read any transactional
 		// messages before the transaction from OrderCommandAgent to create, update or reject an order completes.
 		properties.put("isolation.level", "read_committed");
-        kafkaConsumer = new KafkaConsumer<String, String>(properties);
-        this.kafkaConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.getOrderTopic()));
+		config = new KafkaInfrastructureConfig();
+		kafkaConsumer = new KafkaConsumer<String, String>(properties);
+        this.kafkaConsumer.subscribe(Collections.singletonList(config.getOrderTopic()));
         orderRepository = AppRegistry.getInstance().shippingOrderRepository();	
         this.pollTimeOut = KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT;
 		this.closeTimeOut = KafkaInfrastructureConfig.CONSUMER_CLOSE_TIMEOUT;

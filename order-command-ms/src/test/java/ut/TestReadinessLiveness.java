@@ -10,11 +10,13 @@ import ibm.gse.orderms.app.StarterLivenessCheck;
 import ibm.gse.orderms.app.StarterReadinessCheck;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
+import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 
+import static org.mockito.Mockito.*;
 
 public class TestReadinessLiveness {
 
@@ -32,7 +34,9 @@ public class TestReadinessLiveness {
 		orderEventProducerMock = new OrderEventEmitterMock();
 		ShippingOrderRepository repository = new ShippingOrderRepositoryMock();
 		OrderEventEmitterMock errorEventProducerMock = new OrderEventEmitterMock();
-		commandAgent = new OrderCommandAgent(repository,consumerMock,orderEventProducerMock,errorEventProducerMock);
+		KafkaInfrastructureConfig config = mock(KafkaInfrastructureConfig.class);
+		when (config.getOrderCommandTopic()).thenReturn("order-command");
+		commandAgent = new OrderCommandAgent(repository,consumerMock,orderEventProducerMock,errorEventProducerMock,config);
 		OrderEventAgent eventAgent = new OrderEventAgent(consumerMock,repository);
 		liveness = new StarterLivenessCheck(commandAgent,eventAgent);
 		readiness = new StarterReadinessCheck(commandAgent,eventAgent);

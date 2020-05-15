@@ -27,8 +27,10 @@ public class OrderCommandProducer implements EventEmitter  {
 	
 	private KafkaProducer<String, String> kafkaProducer;
 	private Properties properties;
+	private KafkaInfrastructureConfig config;
     
     public OrderCommandProducer() {
+		config = new KafkaInfrastructureConfig();
     	initProducer();
     }
     
@@ -60,7 +62,7 @@ public class OrderCommandProducer implements EventEmitter  {
         String value = new Gson().toJson(orderCommandEvent);
         
         try {
-	        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderCommandTopic(), key, value);
+	        ProducerRecord<String, String> record = new ProducerRecord<>(config.getOrderCommandTopic(), key, value);
 			Future<RecordMetadata> send = kafkaProducer.send(record);
 	        logger.info("Command event sent: " + value);
 	        send.get(KafkaInfrastructureConfig.PRODUCER_TIMEOUT_SECS, TimeUnit.SECONDS);

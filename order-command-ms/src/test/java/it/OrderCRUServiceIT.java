@@ -165,7 +165,7 @@ public class OrderCRUServiceIT extends CommonITTest {
         try(Producer<String, String> producer = new KafkaProducer<>(properties)) {
             String value = new Gson().toJson(event);
             String key = order.getOrderID();
-            ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getOrderTopic(), key, value);
+            ProducerRecord<String, String> record = new ProducerRecord<>(new KafkaInfrastructureConfig().getOrderTopic(), key, value);
 
             Future<RecordMetadata> future = producer.send(record);
             future.get(10000, TimeUnit.MILLISECONDS);

@@ -24,7 +24,7 @@ public class KafkaInfrastructureConfig {
 
 	private static final Logger logger = LoggerFactory.getLogger(KafkaInfrastructureConfig.class.getName());
 
-	private static Config config = ConfigProvider.getConfig();
+	private Config config;
 
 	private static String ORDER_TOPIC;
 
@@ -40,19 +40,23 @@ public class KafkaInfrastructureConfig {
 	// TODO this is temporary once we use schema registry
 	public static final String SCHEMA_VERSION = "1";
 
-	public static String getOrderTopic() {
+	public KafkaInfrastructureConfig() {
+		config = ConfigProvider.getConfig();
+	}
+
+	public String getOrderTopic() {
 		ORDER_TOPIC = config.getValue("order.topic", String.class);
 		logger.info("Get Order Topic: {}", ORDER_TOPIC);
 		return ORDER_TOPIC;
 	}
 
-	public static String getOrderCommandTopic() {
+	public String getOrderCommandTopic() {
 		ORDER_COMMAND_TOPIC = config.getValue("ordercommand.topic", String.class);
 		logger.info("Get Order Command Topic: {}", ORDER_COMMAND_TOPIC);
 		return ORDER_COMMAND_TOPIC;
 	}
 
-	public static String getErrorTopic() {
+	public String getErrorTopic() {
 		ERROR_TOPIC = config.getValue("error.topic",  String.class);
 		logger.info("Get Error Topic: {}", ERROR_TOPIC);
 		return ERROR_TOPIC;

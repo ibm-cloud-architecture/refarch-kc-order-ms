@@ -14,7 +14,7 @@ WORKDIR /local/gitrepo
 COPY src/ /local/gitrepo/src
 COPY pom.xml /local/gitrepo/pom.xml
 
-RUN mvn install -DskipTests=true
+RUN mvn install -DskipITs
 
 ### Stage 2 - Docker Build
 FROM open-liberty:microProfile3-java11

@@ -1,6 +1,7 @@
 package ut.orderms.infrastructure;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,10 +13,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderms.infrastructure.kafka.ErrorEvent;
+import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 import ut.KafkaConsumerMockup;
@@ -42,6 +45,7 @@ public class TestOrderCommandAgent {
 	static KafkaConsumerMockup<String,String> orderCommandsConsumerMock = null;
 	static OrderEventEmitterMock orderEventProducerMock = null;
 	static OrderEventEmitterMock errorEventProducerMock = null;
+	private static KafkaInfrastructureConfig config;
 
 	@BeforeClass
 	public static void createMockups() {
@@ -56,11 +60,14 @@ public class TestOrderCommandAgent {
 			errorEventProducerMock = new OrderEventEmitterMock();
 		}
 		repository = new ShippingOrderRepositoryMock();
+		config = mock(KafkaInfrastructureConfig.class);
+		when (config.getOrderCommandTopic()).thenReturn("order-command");
+		
 	}
 
 	@Before
 	public void createAgent() {
-		agent = new OrderCommandAgent(repository,orderCommandsConsumerMock,orderEventProducerMock,errorEventProducerMock);
+		agent = new OrderCommandAgent(repository,orderCommandsConsumerMock,orderEventProducerMock,errorEventProducerMock,config);
 	}
 
 	@After
@@ -245,10 +252,10 @@ public class TestOrderCommandAgent {
 				+ "\"type\":\"CreateOrderCommand\"}");
 		orderCommandsConsumerMock.setKey("Order01");
 		// List<OrderCommandEvent> results = agent.poll();
-		agent.poll();
-		// OrderCommandEvent createOrderEvent = results.get(0);
 		// inject communication error in kafka
 		orderEventProducerMock.failure = true;
+		agent.poll();
+		// OrderCommandEvent createOrderEvent = results.get(0);
 		// agent.handle(createOrderEvent);
 		Assert.assertFalse(orderEventProducerMock.eventEmitted);
 		Assert.assertFalse(errorEventProducerMock.eventEmitted);
@@ -268,10 +275,11 @@ public class TestOrderCommandAgent {
 				+ "\"type\":\"UpdateOrderCommand\"}");
 		orderCommandsConsumerMock.setKey("Order01");
 		// List<OrderCommandEvent> results = agent.poll();
-		agent.poll();
-		// OrderCommandEvent updateOrderEvent = results.get(0);
 		// inject communication error in kafka
 		orderEventProducerMock.failure = true;
+		
+		agent.poll();
+		// OrderCommandEvent updateOrderEvent = results.get(0);
 		// agent.handle(updateOrderEvent);
 		Assert.assertFalse(orderEventProducerMock.eventEmitted);
 		Assert.assertFalse(errorEventProducerMock.eventEmitted);

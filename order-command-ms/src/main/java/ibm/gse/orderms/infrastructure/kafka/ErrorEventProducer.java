@@ -30,8 +30,10 @@ public class ErrorEventProducer implements EventEmitterTransactional {
 
     private KafkaProducer<String, String> kafkaProducer;
     private Properties properties;
+    private KafkaInfrastructureConfig config;
 
     public ErrorEventProducer() {
+        config = new KafkaInfrastructureConfig();
         initProducer();
     }
 
@@ -72,7 +74,7 @@ public class ErrorEventProducer implements EventEmitterTransactional {
         ErrorEvent errorEvent = (ErrorEvent) event;
         String value = new Gson().toJson(errorEvent);
 
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.getErrorTopic(), value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(config.getErrorTopic(), value);
 
         kafkaProducer.beginTransaction();
         Future<RecordMetadata> send = kafkaProducer.send(record);

@@ -15,6 +15,7 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
 import ibm.gse.orderms.infrastructure.AppRegistry;
 import ibm.gse.orderms.infrastructure.events.EventEmitter;
+import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
 import ut.OrderCommandEventProducerMock;
@@ -53,7 +54,8 @@ public class TestOrderResource  {
 		Response rep = resource.createShippingOrder(orderDTO);
 		Assert.assertNotNull(rep);
 		Assert.assertTrue(rep.getStatus() == 200);	
-		String orderID=((String)rep.getEntity());
+		OrderEventPayload payload = (OrderEventPayload) rep.getEntity();
+		String orderID = payload.getOrderID();
 		Assert.assertNotNull(orderID);
 		// in fact we do not need to validate the repository as it should be done within the service testing
 		Optional<ShippingOrder> order =orderRepository.getOrderByOrderID(orderID);
@@ -66,7 +68,8 @@ public class TestOrderResource  {
 		// prepare data for test
 		ShippingOrderCreateParameters orderDTO = ShippingOrderTestDataFactory.orderCreateFixtureWithoutID();
 		Response rep = resource.createShippingOrder(orderDTO);
-		String orderID=((String)rep.getEntity());
+		OrderEventPayload payload = (OrderEventPayload) rep.getEntity();
+		String orderID = payload.getOrderID();
 		Assert.assertNotNull(orderID);
 		// Get the shipping order
 		ShippingOrder existingOrder = (ShippingOrder)resource.getOrderByOrderId(orderID).getEntity();

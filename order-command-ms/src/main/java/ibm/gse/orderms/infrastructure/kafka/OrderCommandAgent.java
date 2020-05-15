@@ -52,6 +52,7 @@ public class OrderCommandAgent implements EventListenerTransactional {
 	private ShippingOrderRepository orderRepository;
 	private EventEmitterTransactional orderEventProducer;
 	private EventEmitterTransactional errorEventProducer;
+	private KafkaInfrastructureConfig config;
 
 	private Duration pollTimeOut;
 	private Duration closeTimeOut;
@@ -62,9 +63,10 @@ public class OrderCommandAgent implements EventListenerTransactional {
 		Properties properties = KafkaInfrastructureConfig.getConsumerProperties("ordercmd-command-consumer-grp","ordercmd-command-consumer", false, "earliest");
 		// Using a value of read_committed ensures that we don't read any transactional messages before the transaction completes.
 		properties.put("isolation.level", "read_committed");
+		config = new KafkaInfrastructureConfig();
 		this.orderCommandsConsumer = new KafkaConsumer<String, String>(properties);
 		this.orderRepository = AppRegistry.getInstance().shippingOrderRepository();
-		this.orderCommandsConsumer.subscribe(Collections.singletonList(KafkaInfrastructureConfig.getOrderCommandTopic()));
+		this.orderCommandsConsumer.subscribe(Collections.singletonList(config.getOrderCommandTopic()));
 		this.orderEventProducer = AppRegistry.getInstance().orderEventProducer();
 		this.errorEventProducer = AppRegistry.getInstance().errorEventProducer();
 		this.pollTimeOut = KafkaInfrastructureConfig.CONSUMER_POLL_TIMEOUT;
@@ -79,11 +81,12 @@ public class OrderCommandAgent implements EventListenerTransactional {
 	 * @param kafka
 	 * @param oee
 	 */
-	public OrderCommandAgent(ShippingOrderRepository repo, KafkaConsumer<String, String> kafka, EventEmitterTransactional oee, EventEmitterTransactional eep) {
+	public OrderCommandAgent(ShippingOrderRepository repo, KafkaConsumer<String, String> kafka, EventEmitterTransactional oee, EventEmitterTransactional eep, KafkaInfrastructureConfig config) {
 		this.orderCommandsConsumer = kafka;
 		this.orderRepository = repo;
 		this.orderEventProducer = oee;
 		this.errorEventProducer = eep;
+		this.config = config;
 		this.pollTimeOut = Duration.of(10, ChronoUnit.SECONDS);
 		this.closeTimeOut = Duration.of(10, ChronoUnit.SECONDS);
 		this.schemaVersion = "1";
@@ -105,7 +108,7 @@ public class OrderCommandAgent implements EventListenerTransactional {
 			OrderCommandEvent event = OrderCommandEvent.deserialize(rec.value());
 			// -- Calculate the offset to commit as part of the transaction
 			Map<TopicPartition, OffsetAndMetadata> offsetsToCommit = new HashMap<>();
-			TopicPartition partition = new TopicPartition(KafkaInfrastructureConfig.getOrderCommandTopic(),rec.partition());
+			TopicPartition partition = new TopicPartition(config.getOrderCommandTopic(),rec.partition());
 			OffsetAndMetadata oam = new OffsetAndMetadata(rec.offset()+1);
 			offsetsToCommit.put(partition,oam);
 			// -- Initiate processing of the command
