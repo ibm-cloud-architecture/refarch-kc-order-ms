@@ -73,17 +73,17 @@ spec:
     valueFrom:
       configMapKeyRef:
         key: ordersTopic
-        name: "{{ .Values.kafka.topicsConfigMap }}"
+        name: kafka-topics
   - name: ORDERCOMMAND_TOPIC
     valueFrom:
       configMapKeyRef:
         key: orderCommandsTopic
-        name: "{{ .Values.kafka.topicsConfigMap }}"
+        name: kafka-topics
   - name: ERROR_TOPIC
     valueFrom:
       configMapKeyRef:
         key: errorsTopic
-        name: "{{ .Values.kafka.topicsConfigMap }}"
+        name: kafka-topics
   expose: true
   livenessProbe:
     failureThreshold: 12
