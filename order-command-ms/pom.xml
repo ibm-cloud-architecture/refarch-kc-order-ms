@@ -233,9 +233,16 @@
                                 <include>**/it/**</include>
                             </includes>
                             <systemPropertyVariables>
-                                <liberty.test.port>${http.port}</liberty.test.port>
-                                <war.name>${app.name}</war.name>
-                            </systemPropertyVariables>
+                                <liberty.test.port>${testServerHttpPort}</liberty.test.port>
+                                <war.context>${warContext}</war.context>
+                              </systemPropertyVariables>
+                              <environmentVariables>
+                                <KAFKA_BROKERS>${KAFKA_BROKERS}</KAFKA_BROKERS>
+                                <KAFKA_APIKEY>${KAFKA_APIKEY}</KAFKA_APIKEY>
+                                <TRUSTSTORE_ENABLED>${TRUSTSTORE_ENABLED}</TRUSTSTORE_ENABLED>
+                                <TRUSTSTORE_PATH>${TRUSTSTORE_PATH}</TRUSTSTORE_PATH>
+                                <TRUSTSTORE_PWD>${TRUSTSTORE_PWD}</TRUSTSTORE_PWD>
+                              </environmentVariables>
                         </configuration>
                     </execution>
                     <execution>
