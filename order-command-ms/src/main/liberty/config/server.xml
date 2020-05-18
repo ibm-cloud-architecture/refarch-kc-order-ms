@@ -15,6 +15,6 @@
     <trustStore id="defaultTrustStore" location="es-cert.jks" password="password" updateTrigger="polled" pollingRate="2s"/>
 
 
-    <webApplication name="ordercommandms" location="${app.location}" contextRoot="/"/>
+    <webApplication name="ordercommandms" location="ordercommandms.war" contextRoot="/"/>
 
 </server>
