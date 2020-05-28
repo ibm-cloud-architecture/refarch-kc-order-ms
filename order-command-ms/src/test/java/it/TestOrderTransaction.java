@@ -14,8 +14,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
-
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -27,11 +25,12 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.events.EventBase;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 
 /**
  * This test is to validate SAGA pattern among the order, voyage and container services
@@ -69,9 +68,7 @@ public class TestOrderTransaction extends CommonITTest {
 	    int responseCode = response.getStatus();
         assertEquals("Incorrect response code: " + responseCode, 200, responseCode);
         assertTrue(response.hasEntity());
-    	String orderJson = response.readEntity(String.class);
-        OrderEventPayload order = new Gson().fromJson(orderJson, OrderEventPayload.class);
-        String orderID = order.getOrderID();
+    	String orderID = response.readEntity(String.class);
     	assertNotNull(orderID);
     	response.close();
     	
@@ -96,16 +93,14 @@ public class TestOrderTransaction extends CommonITTest {
 		properties.put(ProducerConfig.CLIENT_ID_CONFIG, "testIgClient");
 		properties.put(ProducerConfig.ACKS_CONFIG, "1");
 		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
-		if (System.getenv().get("KAFKA_APIKEY") != null && !System.getenv().get("KAFKA_APIKEY").isEmpty()) {
-			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
-			properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
-			properties.put(SaslConfigs.SASL_JAAS_CONFIG,
-					"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
-							+ System.getenv().get("KAFKA_APIKEY") + "\";");
-			properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
-			properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
-			properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
-		}
+		properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+		properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+		properties.put(SaslConfigs.SASL_JAAS_CONFIG,
+				"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
+						+ System.getenv().get("KAFKA_APIKEY") + "\";");
+		properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
+		properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
+		properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
 		
 	    //KafkaInfrastructureConfig.getProducerProperties("test-event-producer");
 	    KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(properties);

@@ -25,7 +25,6 @@ import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ut.ShippingOrderTestDataFactory;
 
@@ -98,9 +97,7 @@ public class OrderCRUServiceIT extends CommonITTest {
     public void shouldUpdateTheQuantity() throws Exception {
     	ShippingOrderCreateParameters orderDTO = ShippingOrderTestDataFactory.orderCreateFixtureWithoutID();
     	Response response = makePostRequest(url, new Gson().toJson(orderDTO));
-        String orderJson = response.readEntity(String.class);
-        OrderEventPayload order = new Gson().fromJson(orderJson, OrderEventPayload.class);
-        String orderID = order.getOrderID();
+    	String orderID = response.readEntity(String.class);
     	System.out.println("shouldUpdateTheQuantity for " + orderID);
     	// Wait the command event to be produced and consumed and data persisted
     	Thread.sleep(5000);

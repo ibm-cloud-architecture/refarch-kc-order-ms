@@ -1,44 +1,17 @@
-!.keep
-
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-/build/
-
-### VS Code ###
-.vscode/
-
-
-### From Original ###
 /target
 /.m2
 
 es-cert.der
+/.classpath
+/.project
+/.settings
 
 /caches
 /local.properties
 .*.swp
 .DS_Store
 /src/main/liberty/config/server.env
+
 /mc-target
 /.apt_generated/
 /.apt_generated_tests/

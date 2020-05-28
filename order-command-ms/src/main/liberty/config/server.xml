@@ -1,20 +1,21 @@
-<server description="Liberty server">
-    <featureManager>
-        <feature>microProfile-3.2</feature>
-    </featureManager>
+<server description="Sample Liberty server">
 
-    <httpEndpoint httpPort="${default.http.port}" httpsPort="${default.https.port}"
-        id="defaultHttpEndpoint" host="*" />
+  <featureManager>
+      <feature>microprofile-3.0</feature>
+  </featureManager>
 
-    <mpMetrics authentication="false"/>
-    <!-- This is the keystore that will be used by SSL and by JWT. -->
-    <keyStore id="defaultKeyStore" 
-        location="public.jks" type="JKS" password="atbash" />
-        <sslDefault sslRef="defaultSSLSettings" />
-        <ssl id="defaultSSLSettings" keyStoreRef="defaultKeyStore" trustStoreRef="defaultTrustStore" clientAuthentication="true" sslProtocol="TLSv1" />
-    <trustStore id="defaultTrustStore" location="es-cert.jks" password="password" updateTrigger="polled" pollingRate="2s"/>
+  <httpEndpoint httpPort="${default.http.port}" httpsPort="${default.https.port}"
+      id="defaultHttpEndpoint" host="*" />
+
+  <mpMetrics authentication="false"/>
+  <!-- This is the keystore that will be used by SSL and by JWT. -->
+  <keyStore id="defaultKeyStore" 
+    location="public.jks" type="JKS" password="atbash" />
+    <sslDefault sslRef="defaultSSLSettings" />
+    <ssl id="defaultSSLSettings" keyStoreRef="defaultKeyStore" trustStoreRef="defaultTrustStore" clientAuthentication="true" sslProtocol="TLSv1" />
+  <trustStore id="defaultTrustStore" location="es-cert.jks" password="password" updateTrigger="polled" pollingRate="2s"/>
 
 
-    <webApplication name="ordercommandms" location="ordercommandms.war" contextRoot="/"/>
+  <webApplication name="ordercommandms" location="${app.location}" contextRoot="/"/>
 
 </server>

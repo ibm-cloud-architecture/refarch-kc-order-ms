@@ -1,0 +1,61 @@
+pipeline {
+
+    agent {
+        label "docker"
+    }
+
+    parameters {
+        string(name: 'REGISTRY', defaultValue: 'docker.io', description: 'Container Registry URL')
+        string(name: 'REGISTRY_NAMESPACE', defaultValue: 'ibmcase', description: 'registry namespace to push image to')
+        string(name: 'IMAGE_NAME', defaultValue: 'kcontainer-order-command-ms', description: 'name of image')
+        string(name: 'DOCKERFILE', defaultValue: 'Dockerfile.multistage', description: 'name of Dockerfile for build to use')
+        string(name: 'CONTEXT_DIR', defaultValue: 'order-command-ms', description: 'directory to work from inside source code')
+        credentials(name: 'REGISTRY_CREDENTIALS', defaultValue: 'registry-credentials-id', description: 'Credentials for registry', credentialType: 'Username with password')
+    }
+
+    stages {
+        stage('Build Docker Image') {
+            steps {
+              sh """
+              #!/bin/bash
+              cd ${env.CONTEXT_DIR}
+
+              if [ "${env.REGISTRY}" = "docker.io" ]; then
+                echo 'Building Docker Hub Image'
+                docker build -t ${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER} -f ${env.DOCKERFILE} .
+              else
+                echo 'Building Private Registry Image'
+                docker build -t ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER} -f ${env.DOCKERFILE} .
+              fi
+            """
+            }
+        }
+
+        stage('Push Docker Image to Registry') {
+          steps {
+            withCredentials([usernamePassword(credentialsId: env.REGISTRY_CREDENTIALS,
+                                            usernameVariable: 'USERNAME',
+                                            passwordVariable: 'PASSWORD')]) {
+                sh """
+                #!/bin/bash\
+
+                docker login -u ${USERNAME} -p ${PASSWORD} ${env.REGISTRY}
+
+                if [ "${env.REGISTRY}" = "docker.io" ]; then
+                    echo 'Pushing to Docker Hub'
+                    docker push ${env.IMAGE_NAME}:${env.BUILD_NUMBER}
+                    docker tag ${env.IMAGE_NAME}:${env.BUILD_NUMBER} ${env.IMAGE_NAME}:latest
+                    docker push ${env.IMAGE_NAME}:latest
+                else
+                    echo 'Pushing to Private Registry'
+                    docker push ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER}
+                    docker tag ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:${env.BUILD_NUMBER} ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:latest
+                    docker push ${env.REGISTRY}/${env.REGISTRY_NAMESPACE}/${env.IMAGE_NAME}:latest
+                fi
+                """
+            }
+          }
+        }
+
+    }
+}
