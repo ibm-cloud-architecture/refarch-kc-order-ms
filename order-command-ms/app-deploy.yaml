@@ -61,7 +61,7 @@ metadata:
     stack.appsody.dev/version: 0.2.12
   name: order-command-ms-app
 spec:
-  applicationImage: dev.local/order-command-ms-app
+  applicationImage: josiemundi/order-command-ms
   createKnativeService: false
   env: 
   - name: KAFKA_BROKERS
