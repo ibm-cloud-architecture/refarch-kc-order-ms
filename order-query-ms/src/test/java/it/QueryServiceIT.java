@@ -13,18 +13,19 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
+import com.google.gson.Gson;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.junit.Before;
 import org.junit.Test;
 
-import com.google.gson.Gson;
-
 import ibm.gse.orderqueryms.domain.model.Address;
+import ibm.gse.orderqueryms.domain.model.CancelAndRejectPayload;
 import ibm.gse.orderqueryms.domain.model.ContainerAssignment;
 import ibm.gse.orderqueryms.domain.model.Order;
-import ibm.gse.orderqueryms.domain.model.CancelAndRejectPayload;
 import ibm.gse.orderqueryms.domain.model.VoyageAssignment;
 import ibm.gse.orderqueryms.domain.model.order.QueryOrder;
 import ibm.gse.orderqueryms.infrastructure.events.order.AssignContainerEvent;
@@ -39,6 +40,13 @@ public class QueryServiceIT {
     private String endpoint = "/orders/";
     private String url = "http://localhost:" + port + endpoint;
     
+    private ApplicationConfig config;
+
+    @Before
+    public void setupApplicationConfig() {
+        config = new ApplicationConfig(new TestApplicationConfig());
+    }
+
     @Test
     public void testGetById() throws Exception {
         String orderID = UUID.randomUUID().toString();
@@ -48,7 +56,7 @@ public class QueryServiceIT {
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
         OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testGetById", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
+        sendEvent("testGetById", config.getOrderTopic(), orderID, new Gson().toJson(event));
 
         QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
         int maxattempts = 10;
@@ -77,7 +85,7 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testGetByStatus", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
+       sendEvent("testGetByStatus", config.getOrderTopic(), orderID, new Gson().toJson(event));
 
        int maxattempts = 10;
        boolean ok = false;
@@ -110,7 +118,7 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testGetByManuf", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
+       sendEvent("testGetByManuf", config.getOrderTopic(), orderID, new Gson().toJson(event));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        int maxattempts = 10;
@@ -144,11 +152,11 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testHandleVoyageAssignment", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
+       sendEvent("testHandleVoyageAssignment", config.getOrderTopic(), orderID, new Gson().toJson(event));
 
        VoyageAssignment va = new VoyageAssignment(orderID, "12345");
        OrderEvent event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
-       sendEvent("testHandleVoyageAssignment", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
+       sendEvent("testHandleVoyageAssignment", config.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        expectedOrder.assignVoyage(va);
@@ -183,11 +191,11 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
+       sendEvent("testNoAvailability", config.getOrderTopic(), orderID, new Gson().toJson(event));
 
        CancelAndRejectPayload rejectionPayload = new CancelAndRejectPayload(orderID, "productId", "custId", "contId", "voyId", 2, addr, "2019-02-10T13:30Z", addr, "2019-02-10T13:30Z", "rejected", "A container was not found");
        OrderEvent event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejectionPayload);
-       sendEvent("testNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
+       sendEvent("testNoAvailability", config.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        expectedOrder.reject(rejectionPayload);
@@ -222,11 +230,11 @@ public class QueryServiceIT {
                addr, "2019-01-10T13:30Z",
                addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
        OrderEvent event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-       sendEvent("testAllocatedContainer", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event));
+       sendEvent("testAllocatedContainer", config.getOrderTopic(), orderID, new Gson().toJson(event));
 
        ContainerAssignment container = new ContainerAssignment(orderID, "myContainer");
        OrderEvent event2 = new AssignContainerEvent(System.currentTimeMillis(), "1", orderID, container);
-       sendEvent("testAllocatedContainer", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(event2));
+       sendEvent("testAllocatedContainer", config.getOrderTopic(), orderID, new Gson().toJson(event2));
 
        QueryOrder expectedOrder = QueryOrder.newFromOrder(order);
        expectedOrder.assignContainer(container);

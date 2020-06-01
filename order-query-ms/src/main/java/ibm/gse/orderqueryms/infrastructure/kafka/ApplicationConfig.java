@@ -23,7 +23,7 @@ public class ApplicationConfig {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class.getName());
 	
-    private static Config config = ConfigProvider.getConfig();
+    private Config config; 
 
     private static String ORDER_TOPIC;
     
@@ -37,19 +37,28 @@ public class ApplicationConfig {
     public static final long PRODUCER_CLOSE_TIMEOUT_SEC = 10;
     public static final long TERMINATION_TIMEOUT_SEC = 10;
 
-    public static String getOrderTopic() {
+
+    public ApplicationConfig() {
+        config = ConfigProvider.getConfig();
+    }
+
+    public ApplicationConfig(Config config) {
+        this.config = config;
+    }
+
+    public String getOrderTopic() {
     	ORDER_TOPIC = config.getValue("order.topic", String.class);
     	logger.info("Get Order Topic: {}", ORDER_TOPIC);
 		return ORDER_TOPIC;
 	}
     
-    public static String getContainerTopic() {
+    public String getContainerTopic() {
     	CONTAINER_TOPIC = config.getValue("container.topic", String.class);
     	logger.info("Get Container Topic: {}", CONTAINER_TOPIC);
 		return CONTAINER_TOPIC;
 	}
     
-	public static String getErrorTopic() {
+	public String getErrorTopic() {
 		ERROR_TOPIC = config.getValue("error.topic",  String.class);
     	logger.info("Get Error Topic: {}", ERROR_TOPIC);
 		return ERROR_TOPIC;
