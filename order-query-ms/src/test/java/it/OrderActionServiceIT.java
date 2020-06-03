@@ -17,6 +17,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -48,6 +49,13 @@ public class OrderActionServiceIT {
     private String endpoint = "/orders/";
     private String url = "http://localhost:" + port + endpoint;
 
+    private ApplicationConfig config;
+
+    @Before
+    public void setupApplicationConfig() {
+        config = new ApplicationConfig(new TestApplicationConfig());
+    }
+
     @Test
     public void testOrderStatusNoAvailability() throws Exception {
 
@@ -58,12 +66,12 @@ public class OrderActionServiceIT {
     	                addr, "2019-02-10T13:30Z",
     	                addr, "2019-02-10T13:30Z", Order.PENDING_STATUS);
     	OrderEvent ord_event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-    	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(ord_event));
+    	sendEvent("testOrderStatusNoAvailability", config.getOrderTopic(), orderID, new Gson().toJson(ord_event));
 
         CancelAndRejectPayload rejectionPayload = new CancelAndRejectPayload(orderID, "productId", "custId", "contId", "voyId", 2, addr, "2019-02-10T13:30Z", addr, "2019-02-10T13:30Z", "rejected", "A container was not found");
 
     	OrderEvent ord_event2 = new RejectOrderEvent(System.currentTimeMillis(), "1", rejectionPayload);
-    	sendEvent("testOrderStatusNoAvailability", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(ord_event2));
+    	sendEvent("testOrderStatusNoAvailability", config.getOrderTopic(), orderID, new Gson().toJson(ord_event2));
 
     	OrderHistoryInfo expectedOrder = OrderHistoryInfo.newFromOrder(order);
     	expectedOrder.reject(rejectionPayload);
@@ -94,49 +102,49 @@ public class OrderActionServiceIT {
                 addr, "2019-01-10T13:30Z",
                 addr, "2019-01-10T13:30Z", Order.PENDING_STATUS);
         OrderEvent ord_event = new CreateOrderEvent(System.currentTimeMillis(), "1", order);
-        sendEvent("testOrderStatus", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(ord_event));
+        sendEvent("testOrderStatus", config.getOrderTopic(), orderID, new Gson().toJson(ord_event));
 
         OrderHistoryInfo expectedOrder = OrderHistoryInfo.newFromOrder(order);
 
         VoyageAssignment va = new VoyageAssignment(orderID, "myVoyage");
         OrderEvent ord_event2 = new AssignOrderEvent(System.currentTimeMillis(), "1", va);
-        sendEvent("testOrderStatus", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(ord_event2));
+        sendEvent("testOrderStatus", config.getOrderTopic(), orderID, new Gson().toJson(ord_event2));
 
         expectedOrder.assignVoyage(va);
 
         ContainerAssignment container = new ContainerAssignment(orderID, containerID);
         OrderEvent ord_event3 = new AssignContainerEvent(System.currentTimeMillis(), "1", orderID, container);
-        sendEvent("testOrderStatus", ApplicationConfig.getOrderTopic(), orderID, new Gson().toJson(ord_event3));
+        sendEvent("testOrderStatus", config.getOrderTopic(), orderID, new Gson().toJson(ord_event3));
 
         expectedOrder.assignContainer(container);
 
         Container cont = new Container(containerID, "brand", "type", 1, 1, 1, "ContainerAdded");
         ContainerEvent cont_event = new ContainerAddedEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event));
+        sendEvent("testOrderStatus", config.getContainerTopic(), containerID, new Gson().toJson(cont_event));
 
         OrderHistoryInfo expectedContainer = OrderHistoryInfo.newFromContainer(cont);
 
         // cont.setStatus("ContainerAtLocation");
         // ContainerEvent cont_event2 = new ContainerAtLocationEvent(System.currentTimeMillis(), "1", cont);
-        // sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event2));
+        // sendEvent("testOrderStatus", config.getContainerTopic(), containerID, new Gson().toJson(cont_event2));
 
         // expectedContainer.containerAtLocation(cont);
 
         cont.setStatus("ContainerOnMaintenance");
         ContainerEvent cont_event3 = new ContainerOnMaintenanceEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event3));
+        sendEvent("testOrderStatus", config.getContainerTopic(), containerID, new Gson().toJson(cont_event3));
 
         expectedContainer.containerOnMaintenance(cont);
         
         cont.setStatus("ContainerOffMaintenance");
         ContainerEvent cont_event4 = new ContainerOffMaintenanceEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event4));
+        sendEvent("testOrderStatus", config.getContainerTopic(), containerID, new Gson().toJson(cont_event4));
 
         expectedContainer.containerOffMaintenance(cont);
         
         cont.setStatus("ContainerAssignedToOrder");
         ContainerEvent cont_event5 = new ContainerOrderAssignedEvent(System.currentTimeMillis(), "1", cont);
-        sendEvent("testOrderStatus", ApplicationConfig.getContainerTopic(), containerID, new Gson().toJson(cont_event5));
+        sendEvent("testOrderStatus", config.getContainerTopic(), containerID, new Gson().toJson(cont_event5));
 
         expectedContainer.containerOrderAssignment(cont);
 
