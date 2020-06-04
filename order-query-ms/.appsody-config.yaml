@@ -1,3 +1,3 @@
 id: "20200602222219.34557700"
-project-name: order-query-ms-app
+project-name: order-query-ms
 stack: docker.io/appsody/java-openliberty:0.2

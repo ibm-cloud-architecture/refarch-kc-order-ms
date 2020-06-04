@@ -1,0 +1,108 @@
+apiVersion: openliberty.io/v1beta1
+kind: OpenLibertyApplication
+metadata:
+  annotations:
+    architecture: x86_64
+    authoritative-source-url: registry.access.redhat.com
+    build-date: 2020-03-31T14:54:13.907559
+    commit.image.appsody.dev/author: josiemundi <johannasaladas@gmail.com>
+    commit.image.appsody.dev/committer: josiemundi <johannasaladas@gmail.com>
+    commit.image.appsody.dev/contextDir: /order-query-ms
+    commit.image.appsody.dev/date: Thu Jun 4 08:48:04 2020 +0000
+    commit.image.appsody.dev/message: rename appsody microservice
+    commit.stack.appsody.dev/contextDir: /incubator/java-openliberty
+    commit.stack.appsody.dev/date: Fri May 29 15:23:22 2020 +0100
+    commit.stack.appsody.dev/message: 'java-openliberty: Work around docker bug (#816)'
+    description: Eclipse MicroProfile & Jakarta EE on Open Liberty & OpenJ9 using
+      Maven
+    distribution-scope: public
+    image.opencontainers.org/created: "2020-06-04T09:00:16Z"
+    image.opencontainers.org/documentation: https://github.com/josiemundi/refarch-kc-order-ms
+    image.opencontainers.org/revision: 718e1565d6fe091424ba5640a599c831b91cd435-modified
+    image.opencontainers.org/source: https://github.com/josiemundi/refarch-kc-order-ms/tree/order-query-appsody
+    image.opencontainers.org/url: https://github.com/josiemundi/refarch-kc-order-ms
+    k8s.io/description: The Universal Base Image is designed and engineered to be
+      the base layer for all of your containerized applications, middleware and utilities.
+      This base image is freely redistributable, but Red Hat only supports Red Hat
+      technologies through subscriptions for Red Hat products. This image is maintained
+      by Red Hat and updated regularly.
+    k8s.io/display-name: Red Hat Universal Base Image 8
+    maintainer: Red Hat, Inc.
+    name: java-openliberty
+    openshift.io/expose-services: ""
+    openshift.io/tags: base rhel8
+    redhat.com/build-host: cpt-1007.osbs.prod.upshift.rdu2.redhat.com
+    redhat.com/component: ubi8-container
+    redhat.com/license_terms: https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI
+    release: "408"
+    stack.appsody.dev/authors: Mike Andrasak <uberskigeek>, Andy Mauer <ajm01>, Scott
+      Kurz <scottkurz>, Adam Wisniewski <awisniew90>
+    stack.appsody.dev/configured: docker.io/appsody/java-openliberty:0.2
+    stack.appsody.dev/created: "2020-05-29T14:26:34Z"
+    stack.appsody.dev/description: Eclipse MicroProfile & Jakarta EE on Open Liberty
+      & OpenJ9 using Maven
+    stack.appsody.dev/documentation: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty/README.md
+    stack.appsody.dev/licenses: Apache-2.0
+    stack.appsody.dev/revision: a90a1ad89fa4de9efcacd317e1309a510afd0cd6
+    stack.appsody.dev/source: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty/image
+    stack.appsody.dev/tag: docker.io/appsody/java-openliberty:0.2.13
+    stack.appsody.dev/title: Open Liberty
+    stack.appsody.dev/url: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty
+    summary: Open Liberty
+    url: https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8/images/8.1-408
+    vcs-ref: 26f36bfa3e3a04c8c866b250924c1aefc34f01c9
+    vcs-type: git
+    vendor: Open Liberty
+    version: 0.2.13
+  creationTimestamp: null
+  labels:
+    image.opencontainers.org/title: order-query-ms
+    stack.appsody.dev/id: java-openliberty
+    stack.appsody.dev/version: 0.2.13
+  name: order-query-ms
+spec:
+  applicationImage: dev.local/order-query-ms
+  createKnativeService: false
+  env: 
+    - name: KAFKA_BROKERS
+    valueFrom:
+      configMapKeyRef:
+        key: brokers
+        name: kafka-brokers
+    - name: ORDER_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: ordersTopic
+        name: kafka-topics
+    - name: CONTAINER_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: containersTopic
+        name: kafka-topics
+    - name: ERROR_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: errorsTopic
+        name: kafka-topics
+  expose: true
+  livenessProbe:
+    failureThreshold: 12
+    httpGet:
+      path: /health/live
+      port: 9080
+    initialDelaySeconds: 5
+    periodSeconds: 2
+  readinessProbe:
+    failureThreshold: 12
+    httpGet:
+      path: /health/ready
+      port: 9080
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    timeoutSeconds: 1
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+    port: 9080
+    type: NodePort
+  version: 1.0.0
