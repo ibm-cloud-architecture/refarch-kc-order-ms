@@ -1,10 +1,20 @@
-<server description="Liberty server">
-    <featureManager>
-        <feature>microProfile-3.2</feature>
-    </featureManager>
+<server description="Query microservice Liberty server">
 
-    <httpEndpoint host="*" httpPort="${default.http.port}" 
-        httpsPort="${default.https.port}" id="defaultHttpEndpoint"/>
-    
-    <webApplication location="starter-app.war" contextRoot="/"/>
+  <featureManager>
+      <feature>microprofile-2.2</feature>
+      <feature>jndi-1.0</feature>
+  </featureManager>
+
+  <httpEndpoint httpPort="${default.http.port}" httpsPort="${default.https.port}"
+      id="defaultHttpEndpoint" host="*" />
+
+
+
+  <!-- Automatically expand WAR files and EAR files -->
+  <applicationManager autoExpand="true"/>
+
+  <applicationMonitor pollingRate="1000ms"/>
+
+  <webApplication name="orderqueryms" location="orderqueryms.war" contextRoot="/"/>
+
 </server>
