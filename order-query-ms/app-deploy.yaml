@@ -5,20 +5,20 @@ metadata:
     architecture: x86_64
     authoritative-source-url: registry.access.redhat.com
     build-date: 2020-03-31T14:54:13.907559
-    commit.image.appsody.dev/author: josiemundi <johannasaladas@gmail.com>
-    commit.image.appsody.dev/committer: josiemundi <johannasaladas@gmail.com>
+    commit.image.appsody.dev/author: Matthew P Wilson <matthew.wilson@uk.ibm.com>
+    commit.image.appsody.dev/committer: Matthew P Wilson <matthew.wilson@uk.ibm.com>
     commit.image.appsody.dev/contextDir: /order-query-ms
-    commit.image.appsody.dev/date: Thu Jun 4 08:48:04 2020 +0000
-    commit.image.appsody.dev/message: rename appsody microservice
+    commit.image.appsody.dev/date: Thu Jun 4 12:59:09 2020 +0100
+    commit.image.appsody.dev/message: Fix env var indentation
     commit.stack.appsody.dev/contextDir: /incubator/java-openliberty
     commit.stack.appsody.dev/date: Fri May 29 15:23:22 2020 +0100
     commit.stack.appsody.dev/message: 'java-openliberty: Work around docker bug (#816)'
     description: Eclipse MicroProfile & Jakarta EE on Open Liberty & OpenJ9 using
       Maven
     distribution-scope: public
-    image.opencontainers.org/created: "2020-06-04T09:00:16Z"
+    image.opencontainers.org/created: "2020-06-04T13:24:27+01:00"
     image.opencontainers.org/documentation: https://github.com/josiemundi/refarch-kc-order-ms
-    image.opencontainers.org/revision: 718e1565d6fe091424ba5640a599c831b91cd435-modified
+    image.opencontainers.org/revision: 5f28136d75c60d84b4c795aed0f0f371e7e0c523-modified
     image.opencontainers.org/source: https://github.com/josiemundi/refarch-kc-order-ms/tree/order-query-appsody
     image.opencontainers.org/url: https://github.com/josiemundi/refarch-kc-order-ms
     k8s.io/description: The Universal Base Image is designed and engineered to be
@@ -60,30 +60,31 @@ metadata:
     stack.appsody.dev/id: java-openliberty
     stack.appsody.dev/version: 0.2.13
   name: order-query-ms
+  namespace: shipping
 spec:
-  applicationImage: dev.local/order-query-ms
+  applicationImage: matthewpwilson/order-query-ms
   createKnativeService: false
-  env: 
-    - name: KAFKA_BROKERS
-      valueFrom:
-        configMapKeyRef:
-          key: brokers
-          name: kafka-brokers
-    - name: ORDER_TOPIC
-      valueFrom:
-        configMapKeyRef:
-          key: ordersTopic
-          name: kafka-topics
-    - name: CONTAINER_TOPIC
-      valueFrom:
-        configMapKeyRef:
-          key: containersTopic
-          name: kafka-topics
-    - name: ERROR_TOPIC
-      valueFrom:
-        configMapKeyRef:
-          key: errorsTopic
-          name: kafka-topics
+  env:
+  - name: KAFKA_BROKERS
+    valueFrom:
+      configMapKeyRef:
+        key: brokers
+        name: kafka-brokers
+  - name: ORDER_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: ordersTopic
+        name: kafka-topics
+  - name: CONTAINER_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: containersTopic
+        name: kafka-topics
+  - name: ERROR_TOPIC
+    valueFrom:
+      configMapKeyRef:
+        key: errorsTopic
+        name: kafka-topics
   expose: true
   livenessProbe:
     failureThreshold: 12

@@ -1,0 +1,6 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.test.config": {
+        "vmargs": ["-Dliberty.test.port=9080"],
+        "env": {"KAFKA_BROKERS":"localhost:9093"}}
+}
