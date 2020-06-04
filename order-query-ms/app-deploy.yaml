@@ -65,25 +65,25 @@ spec:
   createKnativeService: false
   env: 
     - name: KAFKA_BROKERS
-    valueFrom:
-      configMapKeyRef:
-        key: brokers
-        name: kafka-brokers
+      valueFrom:
+        configMapKeyRef:
+          key: brokers
+          name: kafka-brokers
     - name: ORDER_TOPIC
-    valueFrom:
-      configMapKeyRef:
-        key: ordersTopic
-        name: kafka-topics
+      valueFrom:
+        configMapKeyRef:
+          key: ordersTopic
+          name: kafka-topics
     - name: CONTAINER_TOPIC
-    valueFrom:
-      configMapKeyRef:
-        key: containersTopic
-        name: kafka-topics
+      valueFrom:
+        configMapKeyRef:
+          key: containersTopic
+          name: kafka-topics
     - name: ERROR_TOPIC
-    valueFrom:
-      configMapKeyRef:
-        key: errorsTopic
-        name: kafka-topics
+      valueFrom:
+        configMapKeyRef:
+          key: errorsTopic
+          name: kafka-topics
   expose: true
   livenessProbe:
     failureThreshold: 12
