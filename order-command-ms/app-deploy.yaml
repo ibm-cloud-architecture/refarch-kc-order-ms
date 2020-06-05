@@ -56,10 +56,10 @@ metadata:
     version: 0.2.12
   creationTimestamp: null
   labels:
-    image.opencontainers.org/title: order-command-ms-app
+    image.opencontainers.org/title: order-command-ms
     stack.appsody.dev/id: java-openliberty
     stack.appsody.dev/version: 0.2.12
-  name: order-command-ms-app
+  name: order-command-ms
 spec:
   applicationImage: josiemundi/order-command-ms
   createKnativeService: false
