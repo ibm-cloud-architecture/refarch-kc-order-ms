@@ -69,6 +69,12 @@ spec:
       configMapKeyRef:
         key: brokers
         name: kafka-brokers
+  - name: KAFKA_APIKEY
+    valueFrom:
+      secretKeyRef:
+        key: binding
+        name: eventstreams-apikey
+        optional: true
   - name: ORDER_TOPIC
     valueFrom:
       configMapKeyRef:
