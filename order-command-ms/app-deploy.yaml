@@ -6,10 +6,10 @@ metadata:
     authoritative-source-url: registry.access.redhat.com
     build-date: 2020-03-31T14:54:13.907559
     commit.image.appsody.dev/author: josiemundi <johannasaladas@gmail.com>
-    commit.image.appsody.dev/committer: GitHub <noreply@github.com>
+    commit.image.appsody.dev/committer: josiemundi <johannasaladas@gmail.com>
     commit.image.appsody.dev/contextDir: /order-command-ms
-    commit.image.appsody.dev/date: Mon Jun 8 07:08:36 2020 +0000
-    commit.image.appsody.dev/message: 'Merge pull request #4 from matthewpwilson/order-command-appsody'
+    commit.image.appsody.dev/date: Mon Jun 8 09:08:10 2020 +0000
+    commit.image.appsody.dev/message: change app name in appsody files
     commit.stack.appsody.dev/contextDir: /incubator/java-openliberty
     commit.stack.appsody.dev/date: Thu Jun 4 13:29:00 2020 +0100
     commit.stack.appsody.dev/message: 'java-openliberty: define APPSODY_DEBUG_PORT
@@ -17,9 +17,9 @@ metadata:
     description: Eclipse MicroProfile & Jakarta EE on Open Liberty & OpenJ9 using
       Maven
     distribution-scope: public
-    image.opencontainers.org/created: "2020-06-08T08:45:16Z"
+    image.opencontainers.org/created: "2020-06-08T09:10:29Z"
     image.opencontainers.org/documentation: https://github.com/josiemundi/refarch-kc-order-ms
-    image.opencontainers.org/revision: 424831f886667241261e69911adf783f89400edf-modified
+    image.opencontainers.org/revision: 273a82cedf354ab5b41fbb144275d3588fba7d61-modified
     image.opencontainers.org/source: https://github.com/josiemundi/refarch-kc-order-ms/tree/order-command-appsody
     image.opencontainers.org/url: https://github.com/josiemundi/refarch-kc-order-ms
     k8s.io/description: The Universal Base Image is designed and engineered to be
