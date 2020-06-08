@@ -5,21 +5,22 @@ metadata:
     architecture: x86_64
     authoritative-source-url: registry.access.redhat.com
     build-date: 2020-03-31T14:54:13.907559
-    commit.image.appsody.dev/author: matthewpwilson <matthew.wilson@uk.ibm.com>
-    commit.image.appsody.dev/committer: josiemundi <johannasaladas@gmail.com>
+    commit.image.appsody.dev/author: josiemundi <johannasaladas@gmail.com>
+    commit.image.appsody.dev/committer: GitHub <noreply@github.com>
     commit.image.appsody.dev/contextDir: /order-command-ms
-    commit.image.appsody.dev/date: Mon May 18 07:55:24 2020 +0000
-    commit.image.appsody.dev/message: Fix unit tests (#70)
+    commit.image.appsody.dev/date: Mon Jun 8 07:08:36 2020 +0000
+    commit.image.appsody.dev/message: 'Merge pull request #4 from matthewpwilson/order-command-appsody'
     commit.stack.appsody.dev/contextDir: /incubator/java-openliberty
-    commit.stack.appsody.dev/date: Mon May 11 09:22:47 2020 +0100
-    commit.stack.appsody.dev/message: 'java-openliberty: fix stack validate (#805)'
+    commit.stack.appsody.dev/date: Thu Jun 4 13:29:00 2020 +0100
+    commit.stack.appsody.dev/message: 'java-openliberty: define APPSODY_DEBUG_PORT
+      (#818)'
     description: Eclipse MicroProfile & Jakarta EE on Open Liberty & OpenJ9 using
       Maven
     distribution-scope: public
-    image.opencontainers.org/created: "2020-05-18T08:25:49Z"
+    image.opencontainers.org/created: "2020-06-08T08:45:16Z"
     image.opencontainers.org/documentation: https://github.com/josiemundi/refarch-kc-order-ms
-    image.opencontainers.org/revision: bb08b5a985b197369fedf6b3728c97e605c32f75
-    image.opencontainers.org/source: https://github.com/josiemundi/refarch-kc-order-ms/tree/master
+    image.opencontainers.org/revision: 424831f886667241261e69911adf783f89400edf-modified
+    image.opencontainers.org/source: https://github.com/josiemundi/refarch-kc-order-ms/tree/order-command-appsody
     image.opencontainers.org/url: https://github.com/josiemundi/refarch-kc-order-ms
     k8s.io/description: The Universal Base Image is designed and engineered to be
       the base layer for all of your containerized applications, middleware and utilities.
@@ -38,14 +39,14 @@ metadata:
     stack.appsody.dev/authors: Mike Andrasak <uberskigeek>, Andy Mauer <ajm01>, Scott
       Kurz <scottkurz>, Adam Wisniewski <awisniew90>
     stack.appsody.dev/configured: docker.io/appsody/java-openliberty:0.2
-    stack.appsody.dev/created: "2020-05-11T08:29:17Z"
+    stack.appsody.dev/created: "2020-06-04T12:31:59Z"
     stack.appsody.dev/description: Eclipse MicroProfile & Jakarta EE on Open Liberty
       & OpenJ9 using Maven
     stack.appsody.dev/documentation: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty/README.md
     stack.appsody.dev/licenses: Apache-2.0
-    stack.appsody.dev/revision: c4a57218bba973cfda35dad29ea452ce44e9d20f
+    stack.appsody.dev/revision: 1b105b4891a3edef718d668271da30086214dd84
     stack.appsody.dev/source: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty/image
-    stack.appsody.dev/tag: docker.io/appsody/java-openliberty:0.2.12
+    stack.appsody.dev/tag: docker.io/appsody/java-openliberty:0.2.14
     stack.appsody.dev/title: Open Liberty
     stack.appsody.dev/url: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty
     summary: Open Liberty
@@ -53,17 +54,17 @@ metadata:
     vcs-ref: 26f36bfa3e3a04c8c866b250924c1aefc34f01c9
     vcs-type: git
     vendor: Open Liberty
-    version: 0.2.12
+    version: 0.2.14
   creationTimestamp: null
   labels:
     image.opencontainers.org/title: order-command-ms
     stack.appsody.dev/id: java-openliberty
-    stack.appsody.dev/version: 0.2.12
+    stack.appsody.dev/version: 0.2.14
   name: order-command-ms
 spec:
   applicationImage: josiemundi/order-command-ms
   createKnativeService: false
-  env: 
+  env:
   - name: KAFKA_BROKERS
     valueFrom:
       configMapKeyRef:
