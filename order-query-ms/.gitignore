@@ -1,10 +1,37 @@
+!.keep
+
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+
+### VS Code ###
+.vscode/
+
+
+### From Original ###
 /target
 /.m2
 es-cert.der
-
-/.classpath
-/.project
-/.settings
 
 /caches
 /local.properties
@@ -15,5 +42,4 @@ es-cert.der
 /mc-target
 /.apt_generated/
 /.apt_generated_tests/
-
 /bin/

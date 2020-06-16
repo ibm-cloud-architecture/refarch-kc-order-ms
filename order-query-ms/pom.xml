@@ -1,16 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
 
+  <modelVersion>4.0.0</modelVersion>
   <groupId>k-container</groupId>
   <artifactId>orderqueryms</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <parent>
-    <groupId>net.wasdev.wlp.maven.parent</groupId>
-    <artifactId>liberty-maven-app-parent</artifactId>
-    <version>RELEASE</version>
+    <!--required parent POM-->
+    <groupId>dev.appsody</groupId>
+    <artifactId>java-openliberty</artifactId>
+    <version>[0.2, 0.3)</version>
+    <relativePath />
   </parent>
 
   <properties>
@@ -34,13 +36,27 @@
   </properties>
 
   <dependencies>
+    <!-- Aggregate of MicroProfile APIs -->
     <dependency>
       <groupId>org.eclipse.microprofile</groupId>
       <artifactId>microprofile</artifactId>
-      <version>3.0</version>
-      <scope>provided</scope>
+      <version>3.2</version>
       <type>pom</type>
+      <scope>provided</scope>
     </dependency>
+    <!-- Aggregate of Jakarta EE APIs -->
+    <dependency>
+      <groupId>jakarta.platform</groupId>
+      <artifactId>jakarta.jakartaee-api</artifactId>
+      <version>8.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.6.0</version>
+            <scope>test</scope>
+        </dependency> -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -50,13 +66,19 @@
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-client</artifactId>
-      <version>3.3.2</version>
+      <version>3.2.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-extension-providers</artifactId>
+      <version>3.2.6</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
-      <version>1.1.4</version>
+      <version>1.0.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -137,9 +159,35 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.9</version>
     </dependency>
+    <!-- Support for JDK 9 and above -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-core</artifactId>
+      <version>2.3.0.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.3.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -150,26 +198,9 @@
           <packagingExcludes>pom.xml</packagingExcludes>
         </configuration>
       </plugin>
-      <!-- Plugin to run unit tests -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.18.1</version>
-        <executions>
-          <execution>
-            <phase>test</phase>
-            <id>default-test</id>
-            <configuration>
-              <excludes>
-                <exclude>**/it/**</exclude>
-              </excludes>
-              <reportsDirectory>${project.build.directory}/test-reports/unit</reportsDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Configure javametrics monitoring -->
-      <plugin>
+
+       <!-- Configure javametrics monitoring -->
+       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.0.1</version>
@@ -224,15 +255,49 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Enable liberty-maven plugin -->
+      <plugin>
+        <groupId>io.openliberty.tools</groupId>
+        <artifactId>liberty-maven-plugin</artifactId>
+        <configuration>
+          <stripVersion>true</stripVersion>
+          <serverStartTimeout>120</serverStartTimeout>
+          <bootstrapProperties>
+            <default.http.port>${http.port}</default.http.port>
+            <default.https.port>${https.port}</default.https.port>
+            <app.context.root>${app.name}</app.context.root>
+          </bootstrapProperties>
+        </configuration>
+      </plugin>
+      <!-- Plugin to run unit tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${version.maven-surefire-plugin}</version>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <id>default-test</id>
+            <configuration>
+              <excludes>
+                <exclude>**/it/**</exclude>
+              </excludes>
+              <reportsDirectory>
+                                ${project.build.directory}/test-reports/unit
+                            </reportsDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!-- Plugin to run functional tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.18.1</version>
+        <version>${version.maven-failsafe-plugin}</version>
         <executions>
           <execution>
             <phase>integration-test</phase>
-            <id>integration-test</id>
+            <id>default-cli</id>
             <goals>
               <goal>integration-test</goal>
             </goals>
@@ -241,8 +306,8 @@
                 <include>**/it/**</include>
               </includes>
               <systemPropertyVariables>
-                <liberty.test.port>${testServerHttpPort}</liberty.test.port>
-                <war.context>${warContext}</war.context>
+                <liberty.test.port>${http.port}</liberty.test.port>
+                <war.name>${app.name}</war.name>
               </systemPropertyVariables>
             </configuration>
           </execution>
@@ -254,82 +319,14 @@
           </execution>
         </executions>
         <configuration>
-          <summaryFile>${project.build.directory}/test-reports/it/failsafe-summary.xml</summaryFile>
-          <reportsDirectory>${project.build.directory}/test-reports/it</reportsDirectory>
+          <summaryFile>
+                        ${project.build.directory}/test-reports/it/failsafe-summary.xml
+                    </summaryFile>
+          <reportsDirectory>
+                        ${project.build.directory}/test-reports/it
+                    </reportsDirectory>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>runnable</id>
-      <properties>
-        <package.file>${project.build.directory}/${app.name}.jar</package.file>
-        <packaging.type>runnable</packaging.type>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>liberty</id>
-      <activation>
-        <property>
-          <name>libertyEnv</name>
-          <value>!microclimate</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <!-- Default enablement of liberty-maven plugin -->
-          <plugin>
-            <groupId>net.wasdev.wlp.maven.plugins</groupId>
-            <artifactId>liberty-maven-plugin</artifactId>
-            <version>2.1.1</version>
-            <extensions>true</extensions>
-            <configuration>
-              <assemblyArtifact>
-                <groupId>io.openliberty</groupId>
-                <artifactId>openliberty-runtime</artifactId>
-                <version>${openliberty.version}</version>
-                <type>zip</type>
-              </assemblyArtifact>
-              <serverName>defaultServer</serverName>
-              <stripVersion>true</stripVersion>
-              <configFile>${basedir}/src/main/liberty/config/server.xml</configFile>
-              <appArchive>${project.build.directory}/${app.name}.war</appArchive>
-
-              <packageFile>${project.build.directory}/${app.name}.jar</packageFile>
-              <include>runnable</include>
-
-              <installAppPackages>project</installAppPackages>
-              <configDirectory>${project.basedir}/src/main/liberty/server</configDirectory>
-              <bootstrapProperties>
-                <default.http.port>${testServerHttpPort}</default.http.port>
-                <default.https.port>${testServerHttpsPort}</default.https.port>
-                <app.location>${project.artifactId}-${project.version}.war</app.location>
-
-                <project.name>${app.name}</project.name>
-                <jwt.issuer>https://server.example.com</jwt.issuer>
-              </bootstrapProperties>
-              <installAppPackages>project</installAppPackages>
-            </configuration>
-            <executions>
-              <execution>
-                <id>package-server</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>create-server</goal>
-                  <goal>install-apps</goal>
-                  <goal>package-server</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>target/wlp-package</outputDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>

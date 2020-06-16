@@ -15,6 +15,6 @@
 
   <applicationMonitor pollingRate="1000ms"/>
 
-  <webApplication name="orderqueryms" location="${app.location}" contextRoot="/"/>
+  <webApplication name="orderqueryms" location="orderqueryms.war" contextRoot="/"/>
 
 </server>
