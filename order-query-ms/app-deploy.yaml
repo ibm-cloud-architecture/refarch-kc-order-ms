@@ -11,12 +11,13 @@ metadata:
     commit.image.appsody.dev/date: Thu Jun 4 12:59:09 2020 +0100
     commit.image.appsody.dev/message: Fix env var indentation
     commit.stack.appsody.dev/contextDir: /incubator/java-openliberty
-    commit.stack.appsody.dev/date: Fri May 29 15:23:22 2020 +0100
-    commit.stack.appsody.dev/message: 'java-openliberty: Work around docker bug (#816)'
+    commit.stack.appsody.dev/date: Thu Jun 4 13:29:00 2020 +0100
+    commit.stack.appsody.dev/message: 'java-openliberty: define APPSODY_DEBUG_PORT
+      (#818)'
     description: Eclipse MicroProfile & Jakarta EE on Open Liberty & OpenJ9 using
       Maven
     distribution-scope: public
-    image.opencontainers.org/created: "2020-06-04T13:24:27+01:00"
+    image.opencontainers.org/created: "2020-06-19T16:41:41+01:00"
     image.opencontainers.org/documentation: https://github.com/josiemundi/refarch-kc-order-ms
     image.opencontainers.org/revision: 5f28136d75c60d84b4c795aed0f0f371e7e0c523-modified
     image.opencontainers.org/source: https://github.com/josiemundi/refarch-kc-order-ms/tree/order-query-appsody
@@ -38,14 +39,15 @@ metadata:
     stack.appsody.dev/authors: Mike Andrasak <uberskigeek>, Andy Mauer <ajm01>, Scott
       Kurz <scottkurz>, Adam Wisniewski <awisniew90>
     stack.appsody.dev/configured: docker.io/appsody/java-openliberty:0.2
-    stack.appsody.dev/created: "2020-05-29T14:26:34Z"
+    stack.appsody.dev/created: "2020-06-04T12:31:59Z"
     stack.appsody.dev/description: Eclipse MicroProfile & Jakarta EE on Open Liberty
       & OpenJ9 using Maven
+    stack.appsody.dev/digest: sha256:4dff3ca3d27b910b8dacf84895f5763d96df9671b7bbd5694ae14b4624d47dbd
     stack.appsody.dev/documentation: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty/README.md
     stack.appsody.dev/licenses: Apache-2.0
-    stack.appsody.dev/revision: a90a1ad89fa4de9efcacd317e1309a510afd0cd6
+    stack.appsody.dev/revision: 1b105b4891a3edef718d668271da30086214dd84
     stack.appsody.dev/source: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty/image
-    stack.appsody.dev/tag: docker.io/appsody/java-openliberty:0.2.13
+    stack.appsody.dev/tag: docker.io/appsody/java-openliberty:0.2.14
     stack.appsody.dev/title: Open Liberty
     stack.appsody.dev/url: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty
     summary: Open Liberty
@@ -53,16 +55,17 @@ metadata:
     vcs-ref: 26f36bfa3e3a04c8c866b250924c1aefc34f01c9
     vcs-type: git
     vendor: Open Liberty
-    version: 0.2.13
+    version: 0.2.14
   creationTimestamp: null
   labels:
+    app.kubernetes.io/part-of: refarch-kc
     image.opencontainers.org/title: order-query-ms
     stack.appsody.dev/id: java-openliberty
-    stack.appsody.dev/version: 0.2.13
+    stack.appsody.dev/version: 0.2.14
   name: order-query-ms
   namespace: shipping
 spec:
-  applicationImage: matthewpwilson/order-query-ms
+  applicationImage: ibmcase/kcontainer-order-query-ms:0.1.30
   createKnativeService: false
   env:
   - name: KAFKA_BROKERS
@@ -75,7 +78,7 @@ spec:
       secretKeyRef:
         key: binding
         name: eventstreams-apikey
-        optional: true      
+        optional: true
   - name: ORDER_TOPIC
     valueFrom:
       configMapKeyRef:
