@@ -8,11 +8,12 @@ metadata:
   name: {{ .Values.route.urlPrefix }}
   labels:
     chart: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+    app.kubernetes.io/part-of: refarch-kc
 spec:
   path: {{ $routePath }}
   to:
     kind: Service
-    name: "{{ $chartName }}-service"
+    name: "order-query-ms"
     weight: 100
   port:
     targetPort: http
