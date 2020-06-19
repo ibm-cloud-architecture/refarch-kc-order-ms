@@ -7,9 +7,10 @@ metadata:
     build-date: 2020-03-31T14:54:13.907559
     commit.image.appsody.dev/author: josiemundi <johannasaladas@gmail.com>
     commit.image.appsody.dev/committer: josiemundi <johannasaladas@gmail.com>
-    commit.image.appsody.dev/contextDir: /order-command-ms
-    commit.image.appsody.dev/date: Mon Jun 8 09:08:10 2020 +0000
-    commit.image.appsody.dev/message: change app name in appsody files
+    commit.image.appsody.dev/contextDir: C:\dev\refarch\refarch-kc-order-ms\order-command-ms
+    commit.image.appsody.dev/date: Tue Jun 16 11:59:36 2020 -0500
+    commit.image.appsody.dev/message: Repackage Order query microservice as an Appsody
+      application (#73)
     commit.stack.appsody.dev/contextDir: /incubator/java-openliberty
     commit.stack.appsody.dev/date: Thu Jun 4 13:29:00 2020 +0100
     commit.stack.appsody.dev/message: 'java-openliberty: define APPSODY_DEBUG_PORT
@@ -17,11 +18,12 @@ metadata:
     description: Eclipse MicroProfile & Jakarta EE on Open Liberty & OpenJ9 using
       Maven
     distribution-scope: public
-    image.opencontainers.org/created: "2020-06-08T09:10:29Z"
-    image.opencontainers.org/documentation: https://github.com/josiemundi/refarch-kc-order-ms
-    image.opencontainers.org/revision: 273a82cedf354ab5b41fbb144275d3588fba7d61-modified
-    image.opencontainers.org/source: https://github.com/josiemundi/refarch-kc-order-ms/tree/order-command-appsody
-    image.opencontainers.org/url: https://github.com/josiemundi/refarch-kc-order-ms
+    image.opencontainers.org/created: "2020-06-19T16:25:46+01:00"
+    image.opencontainers.org/documentation: https://github.com/ibm-cloud-architecture/refarch-kc-order-ms
+    image.opencontainers.org/revision: ddb85523c83b97d054080b5d703a463abc88e467
+    image.opencontainers.org/source: |
+      https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/tree/master
+    image.opencontainers.org/url: https://github.com/ibm-cloud-architecture/refarch-kc-order-ms
     k8s.io/description: The Universal Base Image is designed and engineered to be
       the base layer for all of your containerized applications, middleware and utilities.
       This base image is freely redistributable, but Red Hat only supports Red Hat
@@ -42,6 +44,7 @@ metadata:
     stack.appsody.dev/created: "2020-06-04T12:31:59Z"
     stack.appsody.dev/description: Eclipse MicroProfile & Jakarta EE on Open Liberty
       & OpenJ9 using Maven
+    stack.appsody.dev/digest: sha256:4dff3ca3d27b910b8dacf84895f5763d96df9671b7bbd5694ae14b4624d47dbd
     stack.appsody.dev/documentation: https://github.com/appsody/stacks/tree/master/incubator/java-openliberty/README.md
     stack.appsody.dev/licenses: Apache-2.0
     stack.appsody.dev/revision: 1b105b4891a3edef718d668271da30086214dd84
@@ -57,12 +60,13 @@ metadata:
     version: 0.2.14
   creationTimestamp: null
   labels:
+    app.kubernetes.io/part-of: refarch-kc
     image.opencontainers.org/title: order-command-ms
     stack.appsody.dev/id: java-openliberty
     stack.appsody.dev/version: 0.2.14
   name: order-command-ms
 spec:
-  applicationImage: josiemundi/order-command-ms
+  applicationImage: ibmcase/kcontainer-order-command-ms:0.1.30
   createKnativeService: false
   env:
   - name: KAFKA_BROKERS
