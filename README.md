@@ -1,46 +1,34 @@
-# Reefer Container Shipment Order Management
+# IBM Garage Event-Driven Reference Architecture
 
-This project is one reference implementation of the CQRS and event sourcing patterns as part of the [Event Driven Architecture](https://github.com/ibm-cloud-architecture/refarch-eda) reference architecture. From a use case point of view, it implements the order subdomain of[Reefer Container shipment process](https://github.com/ibm-cloud-architecture/refarch-kc). This repository aims to support the order management to ship fresh cargo from the manufacturer to the final destinatio. The business process is defined [here](https://ibm-cloud-architecture.github.io/refarch-kc/introduction/).
+## Reefer Container Shipment Order Management
 
-For better reading experience go to [the book view here.](http://ibm-cloud-architecture.github.io/refarch-kc-order-ms)
+This project is a component of the [Reefer Container Shipment reference implementation](https://ibm-cloud-architecture.github.io/refarch-kc/) of the [IBM Garage Event-Driven Architecture](https://ibm-cloud-architecture.github.io/refarch-eda/) reference architecture. It implements [CQRS](https://ibm-cloud-architecture.github.io/refarch-eda/patterns/cqrs/) and [event sourcing](https://ibm-cloud-architecture.github.io/refarch-eda/patterns/event-sourcing/) patterns to support the order management process of shipping fresh cargo from the manufacturer to its target destination.
+
+For complete documentation on this project and its peer microservices, reference the **[Order Command](https://ibm-cloud-architecture.github.io/refarch-kc/microservices/order-command/)** and **[Order Query](https://ibm-cloud-architecture.github.io/refarch-kc/microservices/order-query/)** microservice pages in the [Reefer Container Shipment reference implementation](https://ibm-cloud-architecture.github.io/refarch-kc/) gitbook.
 
 ---
 
-### Building this booklet locally
+## Build & Run
 
-The content of this repository is written with markdown files, packaged with [MkDocs](https://www.mkdocs.org/) and can be built into a book-readable format by MkDocs build processes.
+This project is built using the [Appsody](https://appsody.dev/) development framework. For a full understanding of Appsody applications, reference the Appsody [documentation](https://appsody.dev/docs) and [getting started](https://appsody.dev/docs/getting-started/) material respectively.
 
-1. Install MkDocs locally following the [official documentation instructions](https://www.mkdocs.org/#installation).
-1. Install Material plugin for mkdocs:  `pip install mkdocs-material` 
-2. `git clone https://github.com/ibm-cloud-architecture/refarch-kc.git` _(or your forked repository if you plan to edit)_
-3. `cd refarch-kc`
-4. `mkdocs serve`
-5. Go to `http://127.0.0.1:8000/` in your browser.
+Specific deployment parameters are exposed in the `app-deploy.yaml` file for both [Order Command](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-command-ms/app-deploy.yaml) and [Order Query](https://github.com/ibm-cloud-architecture/refarch-kc-order-ms/blob/master/order-query-ms/app-deploy.yaml).
 
-### Pushing the book to GitHub Pages
+For complete documentation on the necessary deployment configuration and parameters, reference the **[Order Command](https://ibm-cloud-architecture.github.io/refarch-kc/microservices/order-command/)** and **[Order Query](https://ibm-cloud-architecture.github.io/refarch-kc/microservices/order-query/)** microservice pages in the [Reefer Container Shipment reference implementation](https://ibm-cloud-architecture.github.io/refarch-kc/) gitbook.
 
-1. Ensure that all your local changes to the `master` branch have been committed and pushed to the remote repository.
-   1. `git push origin master`
-2. Ensure that you have the latest commits to the `gh-pages` branch, so you can get others' updates.
-	```bash
-	git checkout gh-pages
-	git pull origin gh-pages
-	
-	git checkout master
-	```
-3. Run `mkdocs gh-deploy` from the root refarch-kc directory.
-
---- 
+---
 
 ## Contribute
 
-As this implementation solution is part of the Event Driven architeture reference architecture, the [contribution policies](./CONTRIBUTING.md) apply the same way here.
+As this reference implementation is part of the Event-Driven Architeture reference architecture, the overall [contribution policies](./CONTRIBUTING.md) apply here.
+
+**Maintainers:**
+* [Jerome Boyer](https://www.linkedin.com/in/jeromeboyer/)
+* [Jesus Almaraz](https://www.linkedin.com/in/jesus-almaraz-hernandez/)
+* [Rick Osowski](https://www.linkedin.com/in/rosowski/)
 
 **Contributors:**
-
-* [Jerome Boyer](https://www.linkedin.com/in/jeromeboyer/)
 * [Edoardo Comar](https://www.linkedin.com/in/edoardo-comar/)
 * [Jordan Tucker](https://www.linkedin.com/in/jordan-tucker-ba328a12b/)
 * [Mickael Maison](https://www.linkedin.com/in/mickaelmaison/)
 * [Francis Parr](https://www.linkedin.com/in/francis-parr-26041924)
-
