@@ -47,19 +47,19 @@ public class ApplicationConfig {
     }
 
     public String getOrderTopic() {
-    	ORDER_TOPIC = config.getValue("order.topic", String.class);
+    	ORDER_TOPIC = config.getValue("kcsolution.orders.topic", String.class);
     	logger.info("Get Order Topic: {}", ORDER_TOPIC);
 		return ORDER_TOPIC;
 	}
     
     public String getContainerTopic() {
-    	CONTAINER_TOPIC = config.getValue("container.topic", String.class);
+    	CONTAINER_TOPIC = config.getValue("kcsolution.containers.topic", String.class);
     	logger.info("Get Container Topic: {}", CONTAINER_TOPIC);
 		return CONTAINER_TOPIC;
 	}
     
 	public String getErrorTopic() {
-		ERROR_TOPIC = config.getValue("error.topic",  String.class);
+		ERROR_TOPIC = config.getValue("kcsolution.errors.topic",  String.class);
     	logger.info("Get Error Topic: {}", ERROR_TOPIC);
 		return ERROR_TOPIC;
 	}
