@@ -5,11 +5,11 @@ metadata:
     architecture: x86_64
     authoritative-source-url: registry.access.redhat.com
     build-date: 2020-03-31T14:54:13.907559
-    commit.image.appsody.dev/author: Matthew P Wilson <matthew.wilson@uk.ibm.com>
-    commit.image.appsody.dev/committer: Matthew P Wilson <matthew.wilson@uk.ibm.com>
+    commit.image.appsody.dev/author: Rick O <rosowski@gmail.com>
+    commit.image.appsody.dev/committer: GitHub <noreply@github.com>
     commit.image.appsody.dev/contextDir: /order-query-ms
-    commit.image.appsody.dev/date: Thu Jun 4 12:59:09 2020 +0100
-    commit.image.appsody.dev/message: Fix env var indentation
+    commit.image.appsody.dev/date: Thu Jun 25 15:51:34 2020 -0500
+    commit.image.appsody.dev/message: Removed old mkdocs.yaml (#76)
     commit.stack.appsody.dev/contextDir: /incubator/java-openliberty
     commit.stack.appsody.dev/date: Thu Jun 4 13:29:00 2020 +0100
     commit.stack.appsody.dev/message: 'java-openliberty: define APPSODY_DEBUG_PORT
@@ -17,11 +17,11 @@ metadata:
     description: Eclipse MicroProfile & Jakarta EE on Open Liberty & OpenJ9 using
       Maven
     distribution-scope: public
-    image.opencontainers.org/created: "2020-06-19T16:41:41+01:00"
-    image.opencontainers.org/documentation: https://github.com/josiemundi/refarch-kc-order-ms
-    image.opencontainers.org/revision: 5f28136d75c60d84b4c795aed0f0f371e7e0c523-modified
-    image.opencontainers.org/source: https://github.com/josiemundi/refarch-kc-order-ms/tree/order-query-appsody
-    image.opencontainers.org/url: https://github.com/josiemundi/refarch-kc-order-ms
+    image.opencontainers.org/created: "2020-07-09T10:07:25+02:00"
+    image.opencontainers.org/documentation: https://github.com/jesusmah/refarch-kc-order-ms
+    image.opencontainers.org/revision: 7672c15f9b7dc33690e0765503d306df20a04985-modified
+    image.opencontainers.org/source: https://github.com/jesusmah/refarch-kc-order-ms/tree/master
+    image.opencontainers.org/url: https://github.com/jesusmah/refarch-kc-order-ms
     k8s.io/description: The Universal Base Image is designed and engineered to be
       the base layer for all of your containerized applications, middleware and utilities.
       This base image is freely redistributable, but Red Hat only supports Red Hat
@@ -58,6 +58,7 @@ metadata:
     version: 0.2.14
   creationTimestamp: null
   labels:
+    app.appsody.dev/name: refarch-kc
     app.kubernetes.io/part-of: refarch-kc
     image.opencontainers.org/title: order-query-ms
     stack.appsody.dev/id: java-openliberty
@@ -65,7 +66,7 @@ metadata:
   name: order-query-ms
   namespace: shipping
 spec:
-  applicationImage: ibmcase/kcontainer-order-query-ms:0.1.30
+  applicationImage: ibmcase/kcontainer-order-query-ms:test
   createKnativeService: false
   env:
   - name: KAFKA_BROKERS
@@ -79,17 +80,17 @@ spec:
         key: binding
         name: eventstreams-apikey
         optional: true
-  - name: ORDER_TOPIC
+  - name: KCSOLUTION_ORDERS_TOPIC
     valueFrom:
       configMapKeyRef:
         key: ordersTopic
         name: kafka-topics
-  - name: CONTAINER_TOPIC
+  - name: KCSOLUTION_CONTAINERS_TOPIC
     valueFrom:
       configMapKeyRef:
         key: containersTopic
         name: kafka-topics
-  - name: ERROR_TOPIC
+  - name: KCSOLUTION_ERRORS_TOPIC
     valueFrom:
       configMapKeyRef:
         key: errorsTopic
@@ -116,3 +117,4 @@ spec:
     port: 9080
     type: NodePort
   version: 1.0.0
+status: {}
