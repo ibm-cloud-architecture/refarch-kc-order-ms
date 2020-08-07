@@ -64,17 +64,25 @@ spec:
                 name: "{{ .Values.kafka.topicsConfigMap }}"
                 key: errorsTopic
           {{- if .Values.eventstreams.enabled }}
-          - name: KAFKA_APIKEY
+          - name: KAFKA_USER
             valueFrom:
               secretKeyRef:
-                name: "{{ .Values.eventstreams.apikeyConfigMap }}"
-                key: binding
+                name: "{{ .Values.eventstreams.esCredSecret }}"
+                key: username
+          - name: KAFKA_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.eventstreams.esCredSecret }}"
+                key: password
           {{- end }}
           {{- if .Values.eventstreams.truststoreRequired }}
           - name: TRUSTSTORE_ENABLED
             value: "{{ .Values.eventstreams.truststoreRequired }}"
           - name: TRUSTSTORE_PWD
-            value: "{{ .Values.eventstreams.truststorePassword }}"
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.eventstreams.truststorePasswordSecret }}"
+                key: password
           - name: TRUSTSTORE_PATH
             value: "{{ .Values.eventstreams.truststorePath }}/{{ .Values.eventstreams.truststoreFile }}"
           {{- end }}
