@@ -134,20 +134,26 @@ public class ApplicationConfig {
         }
         properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, env.get("KAFKA_BROKERS"));
 
-    		if (env.get("KAFKA_APIKEY") != null && !env.get("KAFKA_APIKEY").isEmpty()) {
-          properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
-          properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
-          properties.put(SaslConfigs.SASL_JAAS_CONFIG,
-                    "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"token\" password=\""
-                            + env.get("KAFKA_APIKEY") + "\";");
-          properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
-          properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
-          properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
+    	if (env.get("KAFKA_USER") != null && !env.get("KAFKA_USER").isEmpty() && env.get("KAFKA_PASSWORD") != null && !env.get("KAFKA_PASSWORD").isEmpty()) {
+            properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+            properties.put(SslConfigs.SSL_PROTOCOL_CONFIG, "TLSv1.2");
+            properties.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2");
+            properties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "HTTPS");
+            // If we are connecting to ES on IBM Cloud, the SASL mechanism is plain
+			if ("token".equals(env.get("KAFKA_USER"))) {
+				properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+				properties.put(SaslConfigs.SASL_JAAS_CONFIG,"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + env.get("KAFKA_USER") + "\" password=\"" + env.get("KAFKA_PASSWORD") + "\";");
+			}
+			// If we are connecting to ES on OCP, the SASL mechanism is scram-sha-512
+			else {
+				properties.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
+				properties.put(SaslConfigs.SASL_JAAS_CONFIG,"org.apache.kafka.common.security.scram.ScramLoginModule required username=\"" + env.get("KAFKA_USER") + "\" password=\"" + env.get("KAFKA_PASSWORD") + "\";");
+			}
 
-          if ("true".equals(env.get("TRUSTSTORE_ENABLED"))){
-            properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("TRUSTSTORE_PATH"));
-            properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
-          }
+            if ("true".equals(env.get("TRUSTSTORE_ENABLED"))){
+                properties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, env.get("TRUSTSTORE_PATH"));
+                properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
+            }
         }
 
         return properties;
