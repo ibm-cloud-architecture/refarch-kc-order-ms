@@ -35,6 +35,9 @@ jobs:
         validate_secret DOCKER_REPOSITORY ${DOCKER_REPOSITORY}
         validate_secret DOCKER_IMAGE_COMMAND ${DOCKER_IMAGE_COMMAND}
         validate_secret DOCKER_IMAGE_QUERY ${DOCKER_IMAGE_QUERY}
+        validate_secret GITOPS_EMAIL ${GITOPS_EMAIL}
+        validate_secret GITOPS_TOKEN ${GITOPS_TOKEN}
+        validate_secret GITOPS_ORG ${GITOPS_ORG}
 
         if [ "${FAIL}" = "true" ]; then
           exit 1
@@ -45,6 +48,10 @@ jobs:
         DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
         DOCKER_IMAGE_COMMAND: ${{ secrets.DOCKER_IMAGE_COMMAND }}
         DOCKER_IMAGE_QUERY: ${{ secrets.DOCKER_IMAGE_QUERY }}
+        GITOPS_EMAIL: ${{ secrets.GITOPS_EMAIL }}
+        GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+        GITOPS_ORG: ${{ secrets.GITOPS_ORG }}
+
   build-docker-images:
     needs:
       validate-docker-secrets
@@ -57,20 +64,15 @@ jobs:
       env:
         DEFAULT_BUMP: patch
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Appsody CLI
+      id: install-appsody-cli
+      uses: ibm-cloud-architecture/appsody-install-action@master
     - name: Build the order-command docker image
       id: build-command-image
       run: |
         IMAGE_NAME="${DOCKER_R}/${DOCKER_I}"
         docker login -u ${DOCKER_U} -p ${DOCKER_P}
-        
-        echo "Installing Appsody..."
-        APPSODY_RELEASE=$(curl -s https://api.github.com/repos/appsody/appsody/releases/latest \
-        | grep "browser_download_url.*deb" \
-        | cut -d : -f 2,3 \
-        | tr -d \")
-        echo "Latest Appsody Release found: ${APPSODY_RELEASE}"
-        wget ${APPSODY_RELEASE}
-        sudo apt install -f ./appsody_*_amd64.deb
+
         echo "Build and push the docker image"
         cd ${WORKDIR}
         appsody build -v --tag ${IMAGE_NAME}:${IMAGE_TAG} --push
@@ -84,21 +86,17 @@ jobs:
         WORKDIR: order-command-ms
         DOCKERFILE: Dockerfile.multistage
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
+    - name: Save order-command-ms app-deploy.yaml
+      uses: actions/upload-artifact@v2
+      with:
+        name: ordercommand-app-deploy.yaml
+        path: order-command-ms/app-deploy.yaml
     - name: Build the order-query docker image
       id: build-query-image
       run: |
         IMAGE_NAME="${DOCKER_R}/${DOCKER_I}"
         docker login -u ${DOCKER_U} -p ${DOCKER_P}
-        
-        echo "Installing Appsody..."
-        APPSODY_RELEASE=$(curl -s https://api.github.com/repos/appsody/appsody/releases/latest \
-        | grep "browser_download_url.*deb" \
-        | cut -d : -f 2,3 \
-        | tr -d \")
-        echo "Latest Appsody Release found: ${APPSODY_RELEASE}"
-        wget ${APPSODY_RELEASE}
-        sudo apt install -f ./appsody_*_amd64.deb
-        
+
         echo "Build and push the docker image"
         cd ${WORKDIR}
         appsody build -v --tag ${IMAGE_NAME}:${IMAGE_TAG} --push
@@ -112,12 +110,44 @@ jobs:
         WORKDIR: order-query-ms
         DOCKERFILE: Dockerfile.multistage
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
-    - name: Webhook to GitOps repo
-      id: gitops-repo-webhook
-      uses: osowski/repository-dispatch@v1
-      if: startsWith(github.repository, 'ibm-cloud-architecture/')
+    - name: Save order-query-ms app-deploy.yaml
+      uses: actions/upload-artifact@v2
       with:
-        token: ${{ secrets.WEBHOOK_TOKEN }}
-        repository: ibm-cloud-architecture/refarch-kc-gitops
-        event-type: gitops-refresh
-        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "source": "${{ github.repository }}"}'
+        name: orderquery-app-deploy.yaml
+        path: order-query-ms/app-deploy.yaml
+
+  update-gitops:
+    needs:
+      build-docker-images
+    runs-on: ubuntu-latest
+    steps:
+    - name: Configure git client
+      id: configure-git
+      uses: ibm-cloud-architecture/git-config-action@master
+      with:
+        user-email: ${{ secrets.GITOPS_EMAIL }}
+        gitops-token: ${{ secrets.GITOPS_TOKEN }}
+    - name: Retrieve order-command-ms app-deploy.yaml
+      uses: actions/download-artifact@v2
+      with:
+        name: ordercommand-app-deploy.yaml
+        path: ordercommandms
+    - name: Update order-command-ms app-deploy.yaml in GitOps repo
+      id: update-ordercommand-gitops
+      uses: ibm-cloud-architecture/appsody-gitops-update-action@master
+      with:
+        service-name: ordercommandms
+        github-org: ${{ secrets.GITOPS_ORG }}
+        gitops-repo-name: refarch-kc-gitops
+    - name: Retrieve order-query-ms app-deploy.yaml
+      uses: actions/download-artifact@v2
+      with:
+        name: orderquery-app-deploy.yaml
+        path: orderqueryms
+    - name: Update order-query-ms app-deploy.yaml in GitOps repo
+      id: update-orderquery-gitops
+      uses: ibm-cloud-architecture/appsody-gitops-update-action@master
+      with:
+        service-name: orderqueryms
+        github-org: ${{ secrets.GITOPS_ORG }}
+        gitops-repo-name: refarch-kc-gitops
