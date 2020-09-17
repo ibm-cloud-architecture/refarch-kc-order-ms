@@ -65,7 +65,6 @@ metadata:
     stack.appsody.dev/id: java-openliberty
     stack.appsody.dev/version: 0.2.15
   name: order-query-ms
-  namespace: shipping
 spec:
   applicationImage: ibmcase/kcontainer-order-query-ms:latest
   createKnativeService: false
