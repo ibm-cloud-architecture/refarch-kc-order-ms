@@ -1,22 +1,23 @@
 package ut;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.Properties;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import ibm.gse.orderms.app.StarterLivenessCheck;
-import ibm.gse.orderms.app.StarterReadinessCheck;
+import ibm.gse.orderms.domain.events.command.OrderCommandEvent;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
-
-import static org.mockito.Mockito.*;
+import ibm.gse.orderms.infrastructure.resource.StarterLivenessCheck;
+import ibm.gse.orderms.infrastructure.resource.StarterReadinessCheck;
 
 public class TestReadinessLiveness {
 
@@ -27,7 +28,7 @@ public class TestReadinessLiveness {
 	static StarterReadinessCheck readiness;
 	static OrderCommandAgent commandAgent;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
 		Properties properties = ShippingOrderTestDataFactory.buildConsumerKafkaProperties();
 		consumerMock = new KafkaConsumerMockup<String,String>(properties,"order-commands");	
@@ -46,13 +47,13 @@ public class TestReadinessLiveness {
 	public void testAppIsReady() {
 
 		boolean ready =  readiness.isReady();
-		Assert.assertTrue(ready );
+		Assertions.assertTrue(ready );
 	}
 
 	@Test
 	public void testAppIsALive() {
 		boolean ready =  liveness.isAlive();
-		Assert.assertTrue(ready );
+		Assertions.assertTrue(ready );
 	}
 
 	/**
@@ -61,18 +62,18 @@ public class TestReadinessLiveness {
 	@Test
 	public void injectConnectionError() {
 		orderEventProducerMock.failure=true;
-		Assert.assertTrue(liveness.isAlive());
+		Assertions.assertTrue(liveness.isAlive());
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		OrderCommandEvent commandEvent = new OrderCommandEvent(System.currentTimeMillis(),
 				"v1",
 				order.toShippingOrderPayload(),
-				OrderCommandEvent.TYPE_CREATE_ORDER);
+				OrderCommandEvent.ORDER_CREATED_TYPE);
 		try {
 			commandAgent.handleTransaction(commandEvent,null);
 		} catch(Exception e) {
 			// expected
 		}
-		Assert.assertFalse(liveness.isAlive() );
+		Assertions.assertFalse(liveness.isAlive() );
 		return ;
 	}
 

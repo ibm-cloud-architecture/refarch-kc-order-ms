@@ -1,22 +1,20 @@
 package ut.orderms.infrastructure;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-
+import ibm.gse.orderms.domain.events.order.OrderEvent;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderms.infrastructure.kafka.ErrorEvent;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandAgent;
@@ -47,7 +45,7 @@ public class TestOrderCommandAgent {
 	static OrderEventEmitterMock errorEventProducerMock = null;
 	private static KafkaInfrastructureConfig config;
 
-	@BeforeClass
+	@BeforeAll
 	public static void createMockups() {
 		if (orderCommandsConsumerMock == null) {
 			Properties properties = ShippingOrderTestDataFactory.buildConsumerKafkaProperties();
@@ -65,12 +63,12 @@ public class TestOrderCommandAgent {
 		
 	}
 
-	@Before
+	@BeforeEach
 	public void createAgent() {
 		agent = new OrderCommandAgent(repository,orderCommandsConsumerMock,orderEventProducerMock,errorEventProducerMock,config);
 	}
 
-	@After
+	@AfterEach
 	public void resetMockups() {
 		orderEventProducerMock.emittedEvent = null;
 		orderEventProducerMock.eventEmitted = false;
@@ -102,19 +100,19 @@ public class TestOrderCommandAgent {
 		// assertNotNull(results.get(0).getPayload());
 		// OrderCommandEvent createOrderEvent = results.get(0);
 		// assertNotNull(createOrderEvent);
-		// Assert.assertTrue(OrderCommandEvent.TYPE_CREATE_ORDER.contentEquals(createOrderEvent.getType()));
+		// assertTrue(OrderCommandEvent.TYPE_CREATE_ORDER.contentEquals(createOrderEvent.getType()));
 
 		// ShippingOrder shippingOrder = (ShippingOrder)results.get(0).getPayload();
-		// Assert.assertTrue("FreshCarrots".equals(shippingOrder.getProductID()));
+		// assertTrue("FreshCarrots".equals(shippingOrder.getProductID()));
 		// // should persist the order via the handler
 		// agent.handle(createOrderEvent);
 		// verify order is persisted
 		Optional<ShippingOrder> oso = repository.getOrderByOrderID("Order01");
-		Assert.assertTrue(oso.isPresent());
-		Assert.assertTrue(oso.get().getCustomerID().equals("Farm01"));
+		assertTrue(oso.isPresent());
+		assertTrue(oso.get().getCustomerID().equals("Farm01"));
 		// now verify it generates event
-		Assert.assertTrue(orderEventProducerMock.eventEmitted);
-		Assert.assertTrue(orderEventProducerMock.emittedEvent.getType().equals(OrderEvent.TYPE_ORDER_CREATED));
+		assertTrue(orderEventProducerMock.eventEmitted);
+		assertTrue(orderEventProducerMock.emittedEvent.getType().equals(OrderEvent.ORDER_CREATED_TYPE));
 
 	}
 
@@ -133,8 +131,8 @@ public class TestOrderCommandAgent {
 		// OrderCommandEvent createOrderEvent = results.get(0);
 		// agent.handle(createOrderEvent);
 		Optional<ShippingOrder> oso = repository.getOrderByOrderID("Order01");
-		Assert.assertTrue(oso.isPresent());
-		Assert.assertTrue(oso.get().getQuantity() == 10);
+		assertTrue(oso.isPresent());
+		assertTrue(oso.get().getQuantity() == 10);
 		// create an update event
 		orderCommandsConsumerMock.setValue("{\"payload\":{\"orderID\":\"Order01\",\"productID\":\"FreshCarrots\""
 				+ ",\"customerID\":\"Farm01\",\"quantity\":30,"
@@ -152,11 +150,11 @@ public class TestOrderCommandAgent {
 		// agent.handle(updateOrderEvent);
 		// verify order is persisted
 		oso = repository.getOrderByOrderID("Order01");
-		Assert.assertTrue(oso.isPresent());
-		Assert.assertTrue(oso.get().getQuantity() == 30);
+		assertTrue(oso.isPresent());
+		assertTrue(oso.get().getQuantity() == 30);
 		// verify order updated event
-		Assert.assertTrue(orderEventProducerMock.eventEmitted);
-		Assert.assertTrue(orderEventProducerMock.emittedEvent.getType().equals(OrderEvent.TYPE_ORDER_UPDATED));
+		assertTrue(orderEventProducerMock.eventEmitted);
+		assertTrue(orderEventProducerMock.emittedEvent.getType().equals(OrderEvent.ORDER_UPDATED_TYPE));
 
 	}
 
@@ -166,7 +164,7 @@ public class TestOrderCommandAgent {
 	// public void shouldTimeOutOnPoll() {
 	// 	orderCommandsConsumerMock.enforceTimeOut();
 	// 	List<OrderCommandEvent> results = agent.poll();
-	// 	Assert.assertTrue(results.isEmpty());
+	// 	assertTrue(results.isEmpty());
 	// 	orderCommandsConsumerMock.resetTimeOut();
 
 	// }
@@ -191,10 +189,10 @@ public class TestOrderCommandAgent {
 		agent.poll();
 		// OrderCommandEvent createOrderEvent = results.get(0);
 		// agent.handle(createOrderEvent);
-		// Assert.assertFalse(orderEventProducerMock.eventEmitted);
-		// Assert.assertTrue(errorEventProducerMock.eventEmitted);
+		// assertFalse(orderEventProducerMock.eventEmitted);
+		// assertTrue(errorEventProducerMock.eventEmitted);
 		ErrorEvent ee = (ErrorEvent)errorEventProducerMock.emittedEvent;
-		Assert.assertTrue(ee.getPayload().getOrderID().equals("Order03"));
+		assertTrue(ee.getPayload().getOrderID().equals("Order03"));
 		repository.resetNormalOperation();
 	}
 
@@ -233,16 +231,16 @@ public class TestOrderCommandAgent {
 		agent.poll();
 		// OrderCommandEvent updateOrderEvent = results.get(0);
 		// agent.handle(updateOrderEvent);
-		Assert.assertFalse(orderEventProducerMock.eventEmitted);
-		Assert.assertTrue(errorEventProducerMock.eventEmitted);
+		assertFalse(orderEventProducerMock.eventEmitted);
+		assertTrue(errorEventProducerMock.eventEmitted);
 		ErrorEvent ee = (ErrorEvent)errorEventProducerMock.emittedEvent;
-		Assert.assertTrue(ee.getPayload().getOrderID().equals("Order11"));
+		assertTrue(ee.getPayload().getOrderID().equals("Order11"));
 		repository.resetNormalOperation();
 	}
 
 	@Test
 	public void shouldStopRunningWhenItCouldNotEmitEventOnOrderCreation() {
-		Assert.assertTrue(agent.isRunning());
+		assertTrue(agent.isRunning());
 		orderCommandsConsumerMock.setValue("{\"payload\":{\"orderID\":\"Order11\",\"productID\":\"FreshCarrots\""
 				+ ",\"customerID\":\"Farm01\",\"quantity\":10,"
 				+ "\"pickupAddress\":{\"street\":\"Street\",\"city\":\"City\",\"country\":\"County\",\"state\":\"State\",\"zipcode\":\"Zipcode\"},"
@@ -257,15 +255,15 @@ public class TestOrderCommandAgent {
 		agent.poll();
 		// OrderCommandEvent createOrderEvent = results.get(0);
 		// agent.handle(createOrderEvent);
-		Assert.assertFalse(orderEventProducerMock.eventEmitted);
-		Assert.assertFalse(errorEventProducerMock.eventEmitted);
-		Assert.assertFalse(agent.isRunning());
+		assertFalse(orderEventProducerMock.eventEmitted);
+		assertFalse(errorEventProducerMock.eventEmitted);
+		assertFalse(agent.isRunning());
 	}
 
 
 	@Test
 	public void shouldStopRunningWhenItCouldNotEmitEventOnOrderUpdate() {
-		Assert.assertTrue(agent.isRunning());
+		assertTrue(agent.isRunning());
 		orderCommandsConsumerMock.setValue("{\"payload\":{\"orderID\":\"Order11\",\"productID\":\"FreshCarrots\""
 				+ ",\"customerID\":\"Farm01\",\"quantity\":10,"
 				+ "\"pickupAddress\":{\"street\":\"Street\",\"city\":\"City\",\"country\":\"County\",\"state\":\"State\",\"zipcode\":\"Zipcode\"},"
@@ -281,8 +279,8 @@ public class TestOrderCommandAgent {
 		agent.poll();
 		// OrderCommandEvent updateOrderEvent = results.get(0);
 		// agent.handle(updateOrderEvent);
-		Assert.assertFalse(orderEventProducerMock.eventEmitted);
-		Assert.assertFalse(errorEventProducerMock.eventEmitted);
-		Assert.assertFalse(agent.isRunning());
+		assertFalse(orderEventProducerMock.eventEmitted);
+		assertFalse(errorEventProducerMock.eventEmitted);
+		assertFalse(agent.isRunning());
 	}
 }

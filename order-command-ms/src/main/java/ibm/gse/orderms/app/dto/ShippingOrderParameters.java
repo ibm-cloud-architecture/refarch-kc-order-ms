@@ -2,15 +2,15 @@ package ibm.gse.orderms.app.dto;
 
 import ibm.gse.orderms.domain.model.order.Address;
 
-public abstract class ShippingOrderParameters {
+public class ShippingOrderParameters {
 
-    private String customerID;
-    private String productID;
-    private int quantity;
-    private String expectedDeliveryDate;
-    private String pickupDate;
-    private Address pickupAddress;
-    private Address destinationAddress;
+    public String customerID;
+    public String productID;
+    public int quantity;
+    public String expectedDeliveryDate;
+    public String pickupDate;
+    public Address pickupAddress;
+    public Address destinationAddress;
 
     
     public String getProductID() {

@@ -26,11 +26,11 @@ public class KafkaInfrastructureConfig {
 
 	private Config config;
 
-	private static String ORDER_TOPIC;
+	public static String ORDER_TOPIC;
 
-	private static String ORDER_COMMAND_TOPIC;
+	public static String ORDER_COMMAND_TOPIC;
 
-	private static String ERROR_TOPIC;
+	public static String ERROR_TOPIC;
 
 	public static final long PRODUCER_TIMEOUT_SECS = 10;
 	public static final long PRODUCER_CLOSE_TIMEOUT_SEC = 10;
@@ -120,7 +120,7 @@ public class KafkaInfrastructureConfig {
 				properties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, env.get("TRUSTSTORE_PWD"));
 			}
 		}
-
+		properties.forEach((k, v) -> logger.info(k + " : " + v));
 		return properties;
 	}
 

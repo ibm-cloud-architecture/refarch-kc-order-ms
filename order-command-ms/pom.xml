@@ -1,7 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>k-container</groupId>
@@ -9,11 +7,12 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <parent><!--required parent POM-->
+    <parent>
+        <!--required parent POM-->
         <groupId>dev.appsody</groupId>
         <artifactId>java-openliberty</artifactId>
         <version>[0.2, 0.3)</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <properties>
@@ -22,7 +21,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <version.maven-war-plugin>3.2.2</version.maven-war-plugin>
-        <kafka.version>2.2.0</kafka.version>
+        <kafka.version>2.6.0</kafka.version>
         <app.name>${project.artifactId}</app.name>
 
         <openliberty.maven.version>2.2</openliberty.maven.version>
@@ -34,6 +33,9 @@
 
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <openliberty.version>RELEASE</openliberty.version>
+        <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+        <version.frontend-maven-plugin>1.10.0</version.frontend-maven-plugin>
+        <version.resources-plugin>3.2.0</version.resources-plugin>
     </properties>
 
 
@@ -43,7 +45,7 @@
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
-            <version>3.2</version>
+            <version>3.3</version>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
@@ -56,18 +58,14 @@
         </dependency>
 
         <!-- For tests -->
-        <!-- <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.6.0</version>
-            <scope>test</scope>
-        </dependency> -->
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13-beta-3</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-client</artifactId>
@@ -98,7 +96,12 @@
             <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
+            <version>1.14.3</version>
+            <scope>test</scope>
+        </dependency>
         <!-- app specifics -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -110,7 +113,14 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.5</version>
-        </dependency>        
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.3</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
@@ -142,7 +152,7 @@
             <version>3.9</version>
         </dependency>
 
-   
+
         <!-- Support for JDK 9 and above -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -166,6 +176,12 @@
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
             <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.microshed</groupId>
+            <artifactId>microshed-testing-testcontainers</artifactId>
+            <version>0.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -227,6 +243,7 @@
                         <id>default-cli</id>
                         <goals>
                             <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
                         <configuration>
                             <includes>
@@ -235,14 +252,14 @@
                             <systemPropertyVariables>
                                 <liberty.test.port>${testServerHttpPort}</liberty.test.port>
                                 <war.context>${warContext}</war.context>
-                              </systemPropertyVariables>
-                              <environmentVariables>
+                            </systemPropertyVariables>
+                            <environmentVariables>
                                 <KAFKA_BROKERS>${KAFKA_BROKERS}</KAFKA_BROKERS>
                                 <KAFKA_APIKEY>${KAFKA_APIKEY}</KAFKA_APIKEY>
                                 <TRUSTSTORE_ENABLED>${TRUSTSTORE_ENABLED}</TRUSTSTORE_ENABLED>
                                 <TRUSTSTORE_PATH>${TRUSTSTORE_PATH}</TRUSTSTORE_PATH>
                                 <TRUSTSTORE_PWD>${TRUSTSTORE_PWD}</TRUSTSTORE_PWD>
-                              </environmentVariables>
+                            </environmentVariables>
                         </configuration>
                     </execution>
                     <execution>
@@ -260,6 +277,36 @@
                         ${project.build.directory}/test-reports/it
                     </reportsDirectory>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${version.frontend-maven-plugin}</version>
+                <configuration>
+                    <workingDirectory>ui</workingDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${version.resources-plugin}</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/META-INF/resources/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>ui/dist</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

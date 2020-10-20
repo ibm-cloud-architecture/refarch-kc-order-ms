@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.app.dto.ShippingOrderReference;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
+import ibm.gse.orderms.domain.events.order.OrderEventPayload;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.domain.service.ShippingOrderService;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 
 /**
  * Expose the commands and APIs used by external clients

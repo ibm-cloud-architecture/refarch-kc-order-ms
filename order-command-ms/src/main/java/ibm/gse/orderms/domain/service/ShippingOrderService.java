@@ -8,15 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ibm.gse.orderms.app.dto.ShippingOrderReference;
+import ibm.gse.orderms.domain.events.EventEmitter;
+import ibm.gse.orderms.domain.events.command.OrderCommandEvent;
+import ibm.gse.orderms.domain.events.order.OrderEventPayload;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.AppRegistry;
-import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 import ibm.gse.orderms.infrastructure.kafka.KafkaInfrastructureConfig;
+import ibm.gse.orderms.infrastructure.repository.OrderCancelException;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
-import ibm.gse.orderms.infrastructure.repository.OrderCancelException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 public class ShippingOrderService {
@@ -37,7 +37,7 @@ public class ShippingOrderService {
 	
 	
 	public void createOrder(OrderEventPayload orderEventPayload) throws OrderCreationException {
-		OrderCommandEvent createOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, orderEventPayload, OrderCommandEvent.TYPE_CREATE_ORDER);	
+		OrderCommandEvent createOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, orderEventPayload, OrderCommandEvent.ORDER_CREATED_TYPE);	
 		try {
             emitter.emit(createOrderCommandEvent);
 		} catch (Exception e) {
@@ -66,7 +66,7 @@ public class ShippingOrderService {
 	public void updateShippingOrder(OrderEventPayload orderEventPayload) throws OrderUpdateException {
 		logger.info("updateShippingOrder "+ orderEventPayload.getOrderID());
          
-		OrderCommandEvent updateOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, orderEventPayload, OrderCommandEvent.TYPE_UPDATE_ORDER);	
+		OrderCommandEvent updateOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, orderEventPayload, OrderCommandEvent.UPDATED_ORDER_TYPE);	
       	try {
             emitter.emit(updateOrderCommandEvent);
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class ShippingOrderService {
 	public void cancelShippingOrder(OrderEventPayload orderEventPayload) throws OrderCancelException {
 		logger.info("cancelShippingOrder " + orderEventPayload.getOrderID());
 		
-		OrderCommandEvent cancelOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, orderEventPayload, OrderCommandEvent.TYPE_CANCEL_ORDER);
+		OrderCommandEvent cancelOrderCommandEvent = new OrderCommandEvent(System.currentTimeMillis(), KafkaInfrastructureConfig.SCHEMA_VERSION, orderEventPayload, OrderCommandEvent.CANCELLED_ORDER_TYPE);
 		try {
 			emitter.emit(cancelOrderCommandEvent);
 		} catch (Exception e) {

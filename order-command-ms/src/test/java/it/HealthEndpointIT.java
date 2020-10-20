@@ -1,39 +1,34 @@
 package it;
 
-import static org.junit.Assert.assertTrue;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.microshed.testing.SharedContainerConfig;
+import org.microshed.testing.jaxrs.RESTClient;
+import org.microshed.testing.jupiter.MicroShedTest;
+import org.microshed.testing.testcontainers.ApplicationContainer;
+import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.junit.jupiter.Container;
 
+import ibm.gse.orderms.app.ShippingOrderResource;
+
+@MicroShedTest
+@SharedContainerConfig(ContainerConfig.class)
 public class HealthEndpointIT {
-
-    private String port = System.getProperty("liberty.test.port");
-    private String endpoint = "/health/ready";
-    private String url = "http://localhost:" + port + endpoint;
-
+  
+    @RESTClient
+    public static ShippingOrderResource orderResource;
+    
+    
     @Test
     public void testEndpoint() throws Exception {
-        System.out.println("Testing endpoint " + url);
-        int maxCount = 30;
-        int responseCode = makeRequest();
-        for (int i = 0; (responseCode != 200) && (i < maxCount); i++) {
-            System.out.println("Response code : " + responseCode + ", retrying ... (" + i + " of " + maxCount + ")");
-            Thread.sleep(5000);
-            responseCode = makeRequest();
-        }
-        assertTrue("Incorrect response code: " + responseCode, responseCode == 200);
+        Response rep = orderResource.getOrderByOrderId("01");
+        Assertions.assertEquals(404,rep.getStatus());
     }
 
-    private int makeRequest() {
-        Client client = ClientBuilder.newClient();
-        Invocation.Builder invoBuild = client.target(url).request();
-        Response response = invoBuild.get();
-        int responseCode = response.getStatus();
-        response.close();
-        return responseCode;
-    }
 }

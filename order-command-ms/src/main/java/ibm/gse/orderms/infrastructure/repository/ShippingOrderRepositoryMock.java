@@ -15,7 +15,7 @@ import ibm.gse.orderms.domain.model.order.ShippingOrder;
 
 /**
  * In memory repository... just to make it simple and for testing 
- * We will have a SQL based repo in the future
+ * We may change that for a persistence storage in the future
  *  
  * @author jerome boyer
  *

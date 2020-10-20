@@ -5,8 +5,8 @@ import java.util.Map;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 
-import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
-import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.EventEmitterTransactional;
 
 /**
  * Use this mockup class to emit order events
@@ -41,8 +41,8 @@ public class OrderEventEmitterMock implements EventEmitterTransactional {
 
 	@Override
 	public void safeClose() {
-		// this.eventEmitted = false;
-		// this.emittedEvent = null;
+		this.eventEmitted = false;
+		this.emittedEvent = null;
 	}
 
 	public EventBase getEventEmitted() {

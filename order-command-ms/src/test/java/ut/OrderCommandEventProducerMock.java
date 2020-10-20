@@ -1,9 +1,9 @@
 package ut;
 
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.EventEmitter;
+import ibm.gse.orderms.domain.events.command.OrderCommandEvent;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.EventBase;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 
@@ -29,12 +29,12 @@ public class OrderCommandEventProducerMock implements EventEmitter{
 		this.emittedEvent = (OrderCommandEvent)event;
 		ShippingOrder shippingOrder = new ShippingOrder(emittedEvent.getPayload());
         switch (emittedEvent.getType()) {
-		case OrderCommandEvent.TYPE_CREATE_ORDER:
+		case OrderCommandEvent.ORDER_CREATED_TYPE:
 			// Move to pending state to allow update
 			shippingOrder.setStatus(ShippingOrder.PENDING_STATUS);
         	repo.addOrUpdateNewShippingOrder(shippingOrder);			
             break;
-        case OrderCommandEvent.TYPE_UPDATE_ORDER:
+        case OrderCommandEvent.UPDATED_ORDER_TYPE:
         	repo.updateShippingOrder(shippingOrder);			
 	           
         	break;

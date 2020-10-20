@@ -9,9 +9,9 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
 import ibm.gse.orderms.app.dto.ShippingOrderUpdateParameters;
+import ibm.gse.orderms.domain.events.order.OrderEventPayload;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 
 /**
  * A factory to generate test fixtures
@@ -67,7 +67,7 @@ public class ShippingOrderTestDataFactory {
 		return updateParameters;
 	}
 
-	public static OrderEventPayload orderPayloadFixture() {
+	public static OrderEventPayload given_a_new_order() {
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity();
 		OrderEventPayload payload = new OrderEventPayload(order.getOrderID(), 
 				order.getProductID(),

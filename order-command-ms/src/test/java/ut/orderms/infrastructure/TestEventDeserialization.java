@@ -1,22 +1,23 @@
 package ut.orderms.infrastructure;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
 import java.util.Properties;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.google.gson.Gson;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.container.ContainerAllocatedEvent;
+import ibm.gse.orderms.domain.events.container.ContainerAllocatedPayload;
+import ibm.gse.orderms.domain.events.order.OrderCancelledEvent;
+import ibm.gse.orderms.domain.events.order.OrderEvent;
+import ibm.gse.orderms.domain.events.voyage.VoyageAssignedEvent;
+import ibm.gse.orderms.domain.events.voyage.VoyageAssignmentPayload;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.EventBase;
-import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.container.ContainerAllocatedEvent;
-import ibm.gse.orderms.infrastructure.events.container.ContainerAllocatedPayload;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepositoryMock;
@@ -31,7 +32,7 @@ public class TestEventDeserialization {
 	static KafkaConsumerMockup<String,String> orderEventsConsumerMock = null;
 	static Gson gson = new Gson();
 	
-	@BeforeClass
+	@BeforeAll
 	public static void createAgent() {
 		Properties properties = ShippingOrderTestDataFactory.buildConsumerKafkaProperties();
 		orderEventsConsumerMock = new KafkaConsumerMockup<String,String>(properties,"orders");	
@@ -44,13 +45,13 @@ public class TestEventDeserialization {
 		// prepare test data
 		ShippingOrder order = ShippingOrderTestDataFactory.orderFixtureWithIdentity(); 
 		OrderEvent o = new OrderEvent(new Date().getTime(),
-				EventBase.TYPE_ORDER_CREATED,
+				EventBase.ORDER_CREATED_TYPE,
 				"1",order.toShippingOrderPayload());
 		String orderCreateAsString = gson.toJson(o);
 		EventBase oea = agent.deserialize(orderCreateAsString);
-		Assert.assertTrue(oea instanceof OrderEvent);
+		assertTrue(oea instanceof OrderEvent);
 		OrderEvent oeOut = (OrderEvent) oea;
-		Assert.assertTrue(oeOut.getPayload().getCustomerID().equals(order.getCustomerID()));
+		assertTrue(oeOut.getPayload().getCustomerID().equals(order.getCustomerID()));
 	}
 	
 	@Test
@@ -64,9 +65,9 @@ public class TestEventDeserialization {
 		String containerAssignedEventAsString = gson.toJson(containerAssignedEvent);
 
 		EventBase oea = agent.deserialize(containerAssignedEventAsString);
-		Assert.assertTrue(oea instanceof ContainerAllocatedEvent);
+		assertTrue(oea instanceof ContainerAllocatedEvent);
 		ContainerAllocatedEvent oeOut = (ContainerAllocatedEvent) oea;
-		Assert.assertTrue(oeOut.getPayload().getContainerID().equals("C01"));
+		assertTrue(oeOut.getPayload().getContainerID().equals("C01"));
 	}
 	
 	@Test
@@ -82,9 +83,9 @@ public class TestEventDeserialization {
 		
 		
 		EventBase oea = agent.deserialize(voyageAssignedEventAsString);
-		Assert.assertTrue(oea instanceof VoyageAssignedEvent);
+		assertTrue(oea instanceof VoyageAssignedEvent);
 		VoyageAssignedEvent oeOut = (VoyageAssignedEvent) oea;
-		Assert.assertTrue(oeOut.getPayload().getVoyageID().equals("V01"));
+		assertTrue(oeOut.getPayload().getVoyageID().equals("V01"));
 	}
 
 	@Test
@@ -95,8 +96,8 @@ public class TestEventDeserialization {
 				"1", order.toOrderCancelAndRejectPayload("testing deserialize"));
 		String eventAsStr = gson.toJson(event);
 		EventBase oea = agent.deserialize(eventAsStr);
-		Assert.assertTrue(oea instanceof OrderCancelledEvent);
+		assertTrue(oea instanceof OrderCancelledEvent);
 		OrderCancelledEvent oeOut = (OrderCancelledEvent) oea;
-		Assert.assertTrue(oeOut.getPayload().getOrderID().equals(orderID));
+		assertTrue(oeOut.getPayload().getOrderID().equals(orderID));
 	}
 }

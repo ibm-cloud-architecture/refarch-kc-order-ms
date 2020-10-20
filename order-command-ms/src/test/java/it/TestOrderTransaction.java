@@ -1,9 +1,9 @@
 package it;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Date;
 import java.util.Properties;
@@ -24,14 +24,14 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ibm.gse.orderms.app.dto.ShippingOrderCreateParameters;
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.order.OrderEventPayload;
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.EventBase;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 
 /**
  * This test is to validate SAGA pattern among the order, voyage and container services
@@ -43,7 +43,7 @@ import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
  * @author jerome boyer
  *
  */
-public class TestOrderTransaction extends CommonITTest {
+public class TestOrderTransaction extends CommonIntegrationTest {
 
   /**
    * 
@@ -67,7 +67,7 @@ public class TestOrderTransaction extends CommonITTest {
         cor.setPickupAddress(addressP);
 	    Response response = makePostRequest(url, new Gson().toJson(cor));
 	    int responseCode = response.getStatus();
-        assertEquals("Incorrect response code: " + responseCode, 200, responseCode);
+        assertEquals( 200, responseCode);
         assertTrue(response.hasEntity());
     	String orderJson = response.readEntity(String.class);
         OrderEventPayload order = new Gson().fromJson(orderJson, OrderEventPayload.class);
@@ -81,7 +81,7 @@ public class TestOrderTransaction extends CommonITTest {
     	response = makeGetRequest(url + "/" + orderID);
         String responseString = response.readEntity(String.class);
         ShippingOrder persistedOrder  = new Gson().fromJson(responseString, ShippingOrder.class);
-        Assert.assertTrue(ShippingOrder.PENDING_STATUS.contentEquals(persistedOrder.getStatus()));
+        Assertions.assertTrue(ShippingOrder.PENDING_STATUS.contentEquals(persistedOrder.getStatus()));
 
         response.close();
         

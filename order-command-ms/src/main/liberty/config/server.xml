@@ -2,10 +2,10 @@
     <featureManager>
         <feature>microProfile-3.2</feature>
     </featureManager>
-
+<!-- 
     <httpEndpoint httpPort="${default.http.port}" httpsPort="${default.https.port}"
         id="defaultHttpEndpoint" host="*" />
-
+-->
     <mpMetrics authentication="false"/>
     <!-- This is the keystore that will be used by SSL and by JWT. -->
     <keyStore id="defaultKeyStore" 

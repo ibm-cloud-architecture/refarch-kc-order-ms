@@ -9,32 +9,32 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import com.google.gson.Gson;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.EventEmitter;
+import ibm.gse.orderms.domain.events.EventListener;
+import ibm.gse.orderms.domain.events.container.ContainerAllocatedEvent;
+import ibm.gse.orderms.domain.events.container.ContainerAllocatedPayload;
+import ibm.gse.orderms.domain.events.container.ContainerNotFoundEvent;
+import ibm.gse.orderms.domain.events.container.ContainerNotFoundPayload;
+import ibm.gse.orderms.domain.events.order.OrderCancelledEvent;
+import ibm.gse.orderms.domain.events.order.OrderEvent;
+import ibm.gse.orderms.domain.events.order.OrderRejectEvent;
+import ibm.gse.orderms.domain.events.order.OrderSpoiltEvent;
+import ibm.gse.orderms.domain.events.order.OrderSpoiltPayload;
+import ibm.gse.orderms.domain.events.voyage.VoyageAssignedEvent;
+import ibm.gse.orderms.domain.events.voyage.VoyageAssignmentPayload;
+import ibm.gse.orderms.domain.events.voyage.VoyageNotFoundEvent;
+import ibm.gse.orderms.domain.events.voyage.VoyageNotFoundPayload;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.AppRegistry;
-import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.EventListener;
-import ibm.gse.orderms.infrastructure.events.EventBase;
-import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderRejectEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderSpoiltEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderSpoiltPayload;
-import ibm.gse.orderms.infrastructure.events.container.ContainerAllocatedEvent;
-import ibm.gse.orderms.infrastructure.events.container.ContainerNotFoundEvent;
-import ibm.gse.orderms.infrastructure.events.container.ContainerNotFoundPayload;
-import ibm.gse.orderms.infrastructure.events.container.ContainerAllocatedPayload;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignedEvent;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageNotFoundEvent;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageNotFoundPayload;
-import ibm.gse.orderms.infrastructure.events.voyage.VoyageAssignmentPayload;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
 
 
@@ -100,10 +100,10 @@ public class OrderEventAgent implements EventListener {
     public EventBase deserialize(String eventAsString) {
     	EventBase orderEvent = gson.fromJson(eventAsString, EventBase.class);
         switch (orderEvent.getType()) {
-            case EventBase.TYPE_ORDER_CREATED:
-			case EventBase.TYPE_ORDER_UPDATED:
+            case EventBase.ORDER_CREATED_TYPE:
+			case EventBase.ORDER_UPDATED_TYPE:
 				return gson.fromJson(eventAsString, OrderEvent.class);
-			case EventBase.TYPE_ORDER_REJECTED:
+			case EventBase.ORDER_REJECTED_TYPE:
 				return gson.fromJson(eventAsString, OrderRejectEvent.class);
             case EventBase.TYPE_VOYAGE_ASSIGNED:
 				return gson.fromJson(eventAsString, VoyageAssignedEvent.class);
@@ -111,7 +111,7 @@ public class OrderEventAgent implements EventListener {
 				return gson.fromJson(eventAsString, ContainerNotFoundEvent.class);
 			case EventBase.TYPE_VOYAGE_NOT_FOUND:
                 return gson.fromJson(eventAsString, VoyageNotFoundEvent.class);
-            case EventBase.TYPE_ORDER_CANCELLED:
+            case EventBase.ORDER_CANCELLED_TYPE:
                 return gson.fromJson(eventAsString, OrderCancelledEvent.class);
             case EventBase.TYPE_CONTAINER_ALLOCATED:
                 return gson.fromJson(eventAsString, ContainerAllocatedEvent.class);
@@ -210,10 +210,10 @@ public class OrderEventAgent implements EventListener {
 		                }
 	            	}
 	            	break;
-	            case EventBase.TYPE_ORDER_CREATED:
-				case EventBase.TYPE_ORDER_UPDATED:
-				case EventBase.TYPE_ORDER_CANCELLED:
-				case EventBase.TYPE_ORDER_REJECTED:
+	            case EventBase.ORDER_CREATED_TYPE:
+				case EventBase.ORDER_UPDATED_TYPE:
+				case EventBase.ORDER_CANCELLED_TYPE:
+				case EventBase.ORDER_REJECTED_TYPE:
 	            	break;
 	            default:
 	                logger.warn("Not yet implemented event type: " + orderEvent.getType());

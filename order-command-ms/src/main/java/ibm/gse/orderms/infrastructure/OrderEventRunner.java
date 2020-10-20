@@ -6,7 +6,7 @@ import org.apache.kafka.common.KafkaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.domain.events.EventBase;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 
 public class OrderEventRunner implements Runnable {

@@ -7,6 +7,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.google.gson.Gson;
+
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -18,10 +20,8 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
-import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
-import ibm.gse.orderms.infrastructure.events.EventBase;
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.EventEmitterTransactional;
 
 
 public class ErrorEventProducer implements EventEmitterTransactional {

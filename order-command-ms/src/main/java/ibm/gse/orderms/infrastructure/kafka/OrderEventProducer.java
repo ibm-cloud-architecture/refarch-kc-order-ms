@@ -7,6 +7,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.google.gson.Gson;
+
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -18,15 +20,13 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
-import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
-import ibm.gse.orderms.infrastructure.events.EventBase;
-import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderRejectEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
-import ibm.gse.orderms.infrastructure.events.order.OrderCancelAndRejectPayload;
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.EventEmitterTransactional;
+import ibm.gse.orderms.domain.events.order.OrderCancelAndRejectPayload;
+import ibm.gse.orderms.domain.events.order.OrderCancelledEvent;
+import ibm.gse.orderms.domain.events.order.OrderEvent;
+import ibm.gse.orderms.domain.events.order.OrderEventPayload;
+import ibm.gse.orderms.domain.events.order.OrderRejectEvent;
 
 /**
  * Emits order events as fact about the shipping order. 
@@ -38,15 +38,13 @@ public class OrderEventProducer implements EventEmitterTransactional {
 
     private KafkaProducer<String, String> kafkaProducer;
     private Properties properties;
-    private KafkaInfrastructureConfig config;
-
+  
     public OrderEventProducer() {  
         initProducer();
     }
     
 	private void initProducer() {
-        config = new KafkaInfrastructureConfig();
-		properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-event-producer");
+  		properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-event-producer");
 		// properties.put(ProducerConfig.ACKS_CONFIG, "1");
         // properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
@@ -72,18 +70,18 @@ public class OrderEventProducer implements EventEmitterTransactional {
         String key;
         String value;
         switch (event.getType()) {
-        case OrderEvent.TYPE_ORDER_CREATED:
-        case OrderEvent.TYPE_ORDER_UPDATED:
+        case OrderEvent.ORDER_CREATED_TYPE:
+        case OrderEvent.ORDER_UPDATED_TYPE:
             OrderEvent orderEvent = (OrderEvent)event;
             key = ((OrderEventPayload)orderEvent.getPayload()).getOrderID();
             value = new Gson().toJson(orderEvent);
             break;
-        case OrderEvent.TYPE_ORDER_REJECTED:
+        case OrderEvent.ORDER_REJECTED_TYPE:
             OrderRejectEvent orderRejected = (OrderRejectEvent) event;
             key = ((OrderCancelAndRejectPayload)orderRejected.getPayload()).getOrderID();
             value = new Gson().toJson(orderRejected);
             break;
-        case OrderEvent.TYPE_ORDER_CANCELLED:
+        case OrderEvent.ORDER_CANCELLED_TYPE:
             OrderCancelledEvent orderCancelled = (OrderCancelledEvent) event;
             key = ((OrderCancelAndRejectPayload)orderCancelled.getPayload()).getOrderID();
             value = new Gson().toJson(orderCancelled);
@@ -92,7 +90,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
             key = null;
             value = null;
         }
-        ProducerRecord<String, String> record = new ProducerRecord<>(config.getOrderTopic(), key, value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, key, value);
 
         kafkaProducer.beginTransaction();
         Future<RecordMetadata> send = kafkaProducer.send(record);
@@ -113,18 +111,18 @@ public class OrderEventProducer implements EventEmitterTransactional {
         String key;
         String value;
         switch (event.getType()) {
-        case OrderEvent.TYPE_ORDER_CREATED:
-        case OrderEvent.TYPE_ORDER_UPDATED:
+        case OrderEvent.ORDER_CREATED_TYPE:
+        case OrderEvent.ORDER_UPDATED_TYPE:
             OrderEvent orderEvent = (OrderEvent)event;
             key = ((OrderEventPayload)orderEvent.getPayload()).getOrderID();
             value = new Gson().toJson(orderEvent);
             break;
-        case OrderEvent.TYPE_ORDER_REJECTED:
+        case OrderEvent.ORDER_REJECTED_TYPE:
             OrderRejectEvent orderRejected = (OrderRejectEvent) event;
             key = ((OrderCancelAndRejectPayload)orderRejected.getPayload()).getOrderID();
             value = new Gson().toJson(orderRejected);
             break;
-        case OrderEvent.TYPE_ORDER_CANCELLED:
+        case OrderEvent.ORDER_CANCELLED_TYPE:
             OrderCancelledEvent orderCancelled = (OrderCancelledEvent) event;
             key = ((OrderCancelAndRejectPayload)orderCancelled.getPayload()).getOrderID();
             value = new Gson().toJson(orderCancelled);
@@ -133,7 +131,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
             key = null;
             value = null;
         }
-        ProducerRecord<String, String> record = new ProducerRecord<>(config.getOrderTopic(), key, value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ORDER_TOPIC, key, value);
 
         kafkaProducer.beginTransaction();
         Future<RecordMetadata> send = kafkaProducer.send(record);

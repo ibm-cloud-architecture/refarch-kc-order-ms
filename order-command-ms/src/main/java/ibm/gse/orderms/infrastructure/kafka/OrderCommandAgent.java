@@ -19,14 +19,14 @@ import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.EventEmitterTransactional;
+import ibm.gse.orderms.domain.events.EventListenerTransactional;
+import ibm.gse.orderms.domain.events.command.OrderCommandEvent;
+import ibm.gse.orderms.domain.events.order.OrderCancelledEvent;
+import ibm.gse.orderms.domain.events.order.OrderEvent;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
 import ibm.gse.orderms.infrastructure.AppRegistry;
-import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
-import ibm.gse.orderms.infrastructure.events.EventListenerTransactional;
-import ibm.gse.orderms.infrastructure.events.EventBase;
-import ibm.gse.orderms.infrastructure.events.order.OrderCancelledEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.OrderUpdateException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -131,13 +131,13 @@ public class OrderCommandAgent implements EventListenerTransactional {
 		logger.info("handle command event : " + commandEvent.getType());
 
 		switch (commandEvent.getType()) {
-		case OrderCommandEvent.TYPE_CREATE_ORDER:
+		case OrderCommandEvent.ORDER_CREATED_TYPE:
 			processOrderCreation(commandEvent,offsetToCommit);
 			break;
-		case OrderCommandEvent.TYPE_UPDATE_ORDER:
+		case OrderCommandEvent.UPDATED_ORDER_TYPE:
 			processOrderUpdate(commandEvent,offsetToCommit);
 			break;
-		case OrderCommandEvent.TYPE_CANCEL_ORDER:
+		case OrderCommandEvent.CANCELLED_ORDER_TYPE:
 			processOrderCancellation(commandEvent,offsetToCommit);
 			break;
 		}
@@ -183,7 +183,7 @@ public class OrderCommandAgent implements EventListenerTransactional {
 			return;
 		}
 		// Create the event to be sent to the orders topic
-        OrderEvent orderCreatedEvent = new OrderEvent(new Date().getTime(),OrderEvent.TYPE_ORDER_CREATED,schemaVersion,shippingOrder.toShippingOrderPayload());
+        OrderEvent orderCreatedEvent = new OrderEvent(new Date().getTime(),OrderEvent.ORDER_CREATED_TYPE,schemaVersion,shippingOrder.toShippingOrderPayload());
         try {
 			// Emit the event and consumer offsets as a transaction
 			orderEventProducer.emitWithOffsets(orderCreatedEvent,offsetToCommit,"ordercmd-command-consumer-grp");
@@ -213,7 +213,7 @@ public class OrderCommandAgent implements EventListenerTransactional {
 				// if all the actions to perform do not succeed.
 				 orderRepository.updateShippingOrder(shippingOrder);
 				 // Create the event to be sent to the orders topic
-        		 OrderEvent orderUpdateEvent = new OrderEvent(new Date().getTime(),OrderEvent.TYPE_ORDER_UPDATED,schemaVersion,shippingOrder.toShippingOrderPayload());
+        		 OrderEvent orderUpdateEvent = new OrderEvent(new Date().getTime(),OrderEvent.ORDER_UPDATED_TYPE,schemaVersion,shippingOrder.toShippingOrderPayload());
         		 try {
 					 // Emit the event and consumer offsets as a transaction
 	        		 orderEventProducer.emitWithOffsets(orderUpdateEvent,offsetToCommit,"ordercmd-command-consumer-grp");

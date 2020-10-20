@@ -3,8 +3,8 @@ package ibm.gse.orderms.infrastructure;
 import javax.enterprise.context.ApplicationScoped;
 
 import ibm.gse.orderms.app.ShippingOrderResource;
-import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.EventEmitterTransactional;
+import ibm.gse.orderms.domain.events.EventEmitter;
+import ibm.gse.orderms.domain.events.EventEmitterTransactional;
 import ibm.gse.orderms.infrastructure.kafka.ErrorEventProducer;
 import ibm.gse.orderms.infrastructure.kafka.OrderCommandProducer;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventProducer;

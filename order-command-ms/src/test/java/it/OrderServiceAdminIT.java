@@ -1,6 +1,6 @@
 package it;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * This is to test command retry:
@@ -11,7 +11,7 @@ import org.junit.Test;
  * @author jerome boyer
  *
  */
-public class OrderServiceAdminIT extends CommonITTest {
+public class OrderServiceAdminIT extends CommonIntegrationTest {
 
     private String port = System.getProperty("liberty.test.port");
     private String endpoint = "/orders";

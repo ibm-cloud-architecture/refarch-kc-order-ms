@@ -5,6 +5,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.google.gson.Gson;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -15,32 +17,22 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
-import ibm.gse.orderms.infrastructure.command.events.OrderCommandEvent;
-import ibm.gse.orderms.infrastructure.events.EventEmitter;
-import ibm.gse.orderms.infrastructure.events.EventBase;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.EventEmitter;
+import ibm.gse.orderms.domain.events.command.OrderCommandEvent;
+import ibm.gse.orderms.domain.events.order.OrderEventPayload;
 
 public class OrderCommandProducer implements EventEmitter  {
 	private static final Logger logger = LoggerFactory.getLogger(OrderCommandProducer.class);
 	
 	private KafkaProducer<String, String> kafkaProducer;
 	private Properties properties;
-	private KafkaInfrastructureConfig config;
-    
+	
     public OrderCommandProducer() {
-		config = new KafkaInfrastructureConfig();
-    	initProducer();
+		initProducer();
     }
     
-    private void initProducer() {
-    	properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-command-producer");
-		properties.put(ProducerConfig.ACKS_CONFIG, "all");
-		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-	    kafkaProducer = new KafkaProducer<String, String>(properties);
-	    logger.debug(properties.toString());
-    }
+  
     
 	/**
 	 * produce exactly one command and ensure all brokers have acknowledged
@@ -83,4 +75,11 @@ public class OrderCommandProducer implements EventEmitter  {
 		
 	}
 
+	private void initProducer() {
+    	properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-command-producer");
+		properties.put(ProducerConfig.ACKS_CONFIG, "all");
+		properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+	    kafkaProducer = new KafkaProducer<String, String>(properties);
+	    logger.debug(properties.toString());
+    }
 }

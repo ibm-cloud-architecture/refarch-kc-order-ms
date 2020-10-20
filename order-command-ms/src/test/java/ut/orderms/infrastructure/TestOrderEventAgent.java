@@ -1,23 +1,23 @@
 package ut.orderms.infrastructure;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.gson.Gson;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import ibm.gse.orderms.domain.events.EventBase;
+import ibm.gse.orderms.domain.events.order.OrderEvent;
+import ibm.gse.orderms.domain.events.order.OrderEventPayload;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
-import ibm.gse.orderms.infrastructure.events.EventBase;
-import ibm.gse.orderms.infrastructure.events.order.OrderEvent;
-import ibm.gse.orderms.infrastructure.events.order.OrderEventPayload;
 import ibm.gse.orderms.infrastructure.kafka.OrderEventAgent;
 import ibm.gse.orderms.infrastructure.repository.OrderCreationException;
 import ibm.gse.orderms.infrastructure.repository.ShippingOrderRepository;
@@ -41,7 +41,7 @@ public class TestOrderEventAgent {
 	static KafkaConsumerMockup<String,String> orderEventsConsumerMock = null;
 	static Gson parser = new Gson();
 	
-	@Before
+	@BeforeEach
 	public void createAgent() {
 		// use the mockup in this class. Do not create consumer multiple times
 		if (orderEventsConsumerMock == null) {
@@ -62,14 +62,14 @@ public class TestOrderEventAgent {
 	 * This function simulates sending the OrderCreated event.
 	 */
 	public void shouldDoNothingOnOrderCreatedEvent() {
-		OrderEventPayload order = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEventPayload order = ShippingOrderTestDataFactory.given_a_new_order();
 		OrderEvent orderCreatedEvent = new OrderEvent(); 
-		orderCreatedEvent.setType(EventBase.TYPE_ORDER_CREATED);
+		orderCreatedEvent.setType(EventBase.ORDER_CREATED_TYPE);
 		orderEventsConsumerMock.setValue(parser.toJson(orderCreatedEvent));
 		orderEventsConsumerMock.setKey(order.getOrderID());
 		List<EventBase> events = agent.poll();
 		EventBase orderCreatedEventReceived = events.get(0);
-		Assert.assertNotNull(orderCreatedEventReceived);
+		assertNotNull(orderCreatedEventReceived);
 		for (EventBase event : events) {
 			agent.handle(event);
 		}
@@ -77,14 +77,14 @@ public class TestOrderEventAgent {
 	
 	@Test
 	public void shouldDoNothingOnOrderUpdatedEvent() {
-		OrderEventPayload order = ShippingOrderTestDataFactory.orderPayloadFixture();
+		OrderEventPayload order = ShippingOrderTestDataFactory.given_a_new_order();
 		OrderEvent orderCreatedEvent = new OrderEvent(); 
-		orderCreatedEvent.setType(EventBase.TYPE_ORDER_UPDATED);
+		orderCreatedEvent.setType(EventBase.ORDER_UPDATED_TYPE);
 		orderEventsConsumerMock.setValue(parser.toJson(orderCreatedEvent));
 		orderEventsConsumerMock.setKey(order.getOrderID());
 		List<EventBase> events = agent.poll();
 		EventBase orderUpdatedEventReceived = events.get(0);
-		Assert.assertNotNull(orderUpdatedEventReceived);
+		assertNotNull(orderUpdatedEventReceived);
 		for (EventBase event : events) {
 			agent.handle(event);
 		}
@@ -113,7 +113,7 @@ public class TestOrderEventAgent {
 		}
 		// verify the repository is update with the voyage id
 		Optional<ShippingOrder> orderOption = repository.getOrderByOrderID(order.getOrderID());
-		Assert.assertTrue("V101".equals(orderOption.get().getVoyageID()));	
+		assertTrue("V101".equals(orderOption.get().getVoyageID()));	
 	}
 	
 	@Test
@@ -136,7 +136,7 @@ public class TestOrderEventAgent {
 			agent.handle(event);
 		}
 		Optional<ShippingOrder> orderOption = repository.getOrderByOrderID(order.getOrderID());
-		assertTrue("Order not found in repository", orderOption.isPresent());
+		assertTrue(orderOption.isPresent());
 		assertEquals("C01",orderOption.get().getContainerID());	
 	}
 

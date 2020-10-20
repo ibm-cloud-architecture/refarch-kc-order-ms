@@ -7,7 +7,7 @@ The order command microservice supports the following features:
 
 This Java microservice applications runs on [WebSphere Liberty](https://developer.ibm.com/wasdev/).
 
-See the [book format](http://ibm-cloud-architecture.github.io/refarch-kc-order-ms) for explanations.
+See the documentation in [this chapter](hthttps://ibm-cloud-architecture.github.io/refarch-kc/microservices/order-command/) for more explanations.
 
 
 ### Configuration

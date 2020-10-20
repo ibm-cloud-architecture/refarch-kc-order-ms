@@ -1,14 +1,14 @@
 package ut.orderms.infrastructure;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 import java.util.UUID;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ibm.gse.orderms.domain.model.order.Address;
 import ibm.gse.orderms.domain.model.order.ShippingOrder;
@@ -55,7 +55,7 @@ public class TestShippingOrderRepository {
 			repository.addOrUpdateNewShippingOrder(order1);
 		} catch (OrderCreationException e) {
 			e.printStackTrace();
-			Assert.fail();
+			Assertions.fail();
 		}
         assertEquals(1, repository.getAll().size());
         assertEquals(order1, repository.getOrderByOrderID(order1.getOrderID()).get());
