@@ -45,9 +45,7 @@ public class OrderEventProducer implements EventEmitterTransactional {
     
 	private void initProducer() {
   		properties = KafkaInfrastructureConfig.getProducerProperties("ordercmd-event-producer");
-		// properties.put(ProducerConfig.ACKS_CONFIG, "1");
-        // properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
-        properties.put(ProducerConfig.ACKS_CONFIG, "all");
+	    properties.put(ProducerConfig.ACKS_CONFIG, "all");
         properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
         properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "order-1");
 	    kafkaProducer = new KafkaProducer<String, String>(properties);

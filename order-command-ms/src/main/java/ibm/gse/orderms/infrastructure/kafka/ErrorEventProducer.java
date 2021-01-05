@@ -30,34 +30,26 @@ public class ErrorEventProducer implements EventEmitterTransactional {
 
     private KafkaProducer<String, String> kafkaProducer;
     private Properties properties;
-    private KafkaInfrastructureConfig config;
-
+   
     public ErrorEventProducer() {
-        config = new KafkaInfrastructureConfig();
         initProducer();
     }
 
     private void initProducer() {
 		properties = KafkaInfrastructureConfig.getProducerProperties("error-event-producer");
-        properties.put(ProducerConfig.ACKS_CONFIG, "all");
+        properties.put(ProducerConfig.ACKS_CONFIG, "All");
         properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-        properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "error-1");
+       // properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "error-1");
 	    kafkaProducer = new KafkaProducer<String, String>(properties);
-        logger.debug(properties.toString());
         // registers the producer with the broker as one that can use transactions, 
         // identifying it by its transactional.id and a sequence number
         kafkaProducer.initTransactions();
 	}
 
-    // public ErrorEventProducer() {
-    //     Properties properties = KafkaInfrastructureConfig.getProducerProperties("error-event-producer");
-    //     kafkaProducer = new KafkaProducer<String, String>(properties);
-    // }
-
     @Override
     public void emit(EventBase event) throws InterruptedException, ExecutionException, TimeoutException {
-        logger.error("[ERROR] - The emit method in the ErrorEventProducer class has been called for the event: " + event.toString());
-        logger.error("[ERROR] - This producer is TRANSACTIONAL. Please, check the code and use the transactional method");
+        logger.info("The emit method in the ErrorEventProducer class has been called for the event: " + event.toString());
+        logger.info("This producer is TRANSACTIONAL. Please, check the code and use the transactional method");
     }
 
     @Override
@@ -74,7 +66,7 @@ public class ErrorEventProducer implements EventEmitterTransactional {
         ErrorEvent errorEvent = (ErrorEvent) event;
         String value = new Gson().toJson(errorEvent);
 
-        ProducerRecord<String, String> record = new ProducerRecord<>(config.getErrorTopic(), value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaInfrastructureConfig.ERROR_TOPIC, value);
 
         kafkaProducer.beginTransaction();
         Future<RecordMetadata> send = kafkaProducer.send(record);
