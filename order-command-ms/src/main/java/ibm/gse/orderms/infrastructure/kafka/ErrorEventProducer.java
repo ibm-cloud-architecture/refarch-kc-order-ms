@@ -39,7 +39,11 @@ public class ErrorEventProducer implements EventEmitterTransactional {
 		    properties = KafkaInfrastructureConfig.getProducerProperties("error-event-producer");
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
         properties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        properties.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "error-1");
 	      kafkaProducer = new KafkaProducer<String, String>(properties);
+        // registers the producer with the broker as one that can use transactions,
+        // identifying it by its transactional.id and a sequence number
+        kafkaProducer.initTransactions();
 	  }
 
     @Override
