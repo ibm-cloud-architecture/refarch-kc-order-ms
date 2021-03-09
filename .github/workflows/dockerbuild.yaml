@@ -35,6 +35,7 @@ jobs:
         validate_secret DOCKER_REPOSITORY ${DOCKER_REPOSITORY}
         validate_secret DOCKER_IMAGE_COMMAND ${DOCKER_IMAGE_COMMAND}
         validate_secret DOCKER_IMAGE_QUERY ${DOCKER_IMAGE_QUERY}
+        validate_secret DOCKER_REGISTRY ${DOCKER_REGISTRY}
         validate_secret GITOPS_EMAIL ${GITOPS_EMAIL}
         validate_secret GITOPS_TOKEN ${GITOPS_TOKEN}
         validate_secret GITOPS_ORG ${GITOPS_ORG}
@@ -46,6 +47,7 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+        DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
         DOCKER_IMAGE_COMMAND: ${{ secrets.DOCKER_IMAGE_COMMAND }}
         DOCKER_IMAGE_QUERY: ${{ secrets.DOCKER_IMAGE_QUERY }}
         GITOPS_EMAIL: ${{ secrets.GITOPS_EMAIL }}
@@ -60,7 +62,7 @@ jobs:
     - uses: actions/checkout@master
     - name: Bump version and push tag
       id: bump-version-action
-      uses: osowski/github-tag-action@master
+      uses: ibm-cloud-architecture/github-tag-action@master
       env:
         DEFAULT_BUMP: patch
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,8 +72,8 @@ jobs:
     - name: Build the order-command docker image
       id: build-command-image
       run: |
-        IMAGE_NAME="${DOCKER_R}/${DOCKER_I}"
-        docker login -u ${DOCKER_U} -p ${DOCKER_P}
+        IMAGE_NAME="${DOCKER_REGISTRY}/${DOCKER_R}/${DOCKER_I}"
+        docker login -u ${DOCKER_U} -p ${DOCKER_P} ${DOCKER_REGISTRY}
 
         echo "Build and push the docker image"
         cd ${WORKDIR}
@@ -83,8 +85,8 @@ jobs:
         DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_R: ${{ secrets.DOCKER_REPOSITORY }}
         DOCKER_I: ${{ secrets.DOCKER_IMAGE_COMMAND }}
+        DOCKER_REG: ${{ secrets.DOCKER_REGISTRY }}
         WORKDIR: order-command-ms
-        DOCKERFILE: Dockerfile.multistage
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
     - name: Save order-command-ms app-deploy.yaml
       uses: actions/upload-artifact@v2
@@ -94,8 +96,8 @@ jobs:
     - name: Build the order-query docker image
       id: build-query-image
       run: |
-        IMAGE_NAME="${DOCKER_R}/${DOCKER_I}"
-        docker login -u ${DOCKER_U} -p ${DOCKER_P}
+        IMAGE_NAME="${DOCKER_REGISTRY}/${DOCKER_R}/${DOCKER_I}"
+        docker login -u ${DOCKER_U} -p ${DOCKER_P} ${DOCKER_REGISTRY}
 
         echo "Build and push the docker image"
         cd ${WORKDIR}
@@ -106,9 +108,9 @@ jobs:
         DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_R: ${{ secrets.DOCKER_REPOSITORY }}
-        DOCKER_I: ${{ secrets.DOCKER_IMAGE_QUERY }}
+        DOCKER_I: ${{ secrets.DOCKER_IMAGE_COMMAND }}
+        DOCKER_REG: ${{ secrets.DOCKER_REGISTRY }}
         WORKDIR: order-query-ms
-        DOCKERFILE: Dockerfile.multistage
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
     - name: Save order-query-ms app-deploy.yaml
       uses: actions/upload-artifact@v2
