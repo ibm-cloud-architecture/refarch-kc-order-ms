@@ -108,7 +108,7 @@ jobs:
         DOCKER_U: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_P: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_R: ${{ secrets.DOCKER_REPOSITORY }}
-        DOCKER_I: ${{ secrets.DOCKER_IMAGE_COMMAND }}
+        DOCKER_I: ${{ secrets.DOCKER_IMAGE_QUERY }}
         DOCKER_REG: ${{ secrets.DOCKER_REGISTRY }}
         WORKDIR: order-query-ms
         IMAGE_TAG: ${{ steps.bump-version-action.outputs.new_tag }}
