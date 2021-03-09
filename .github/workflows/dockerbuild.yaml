@@ -73,7 +73,7 @@ jobs:
       id: build-command-image
       run: |
         IMAGE_NAME="${DOCKER_REGISTRY}/${DOCKER_R}/${DOCKER_I}"
-        docker login -u ${DOCKER_U} -p ${DOCKER_P} ${DOCKER_REGISTRY}
+        docker login -u ${DOCKER_U} -p ${DOCKER_P} ${DOCKER_REG}
 
         echo "Build and push the docker image"
         cd ${WORKDIR}
@@ -97,7 +97,7 @@ jobs:
       id: build-query-image
       run: |
         IMAGE_NAME="${DOCKER_REGISTRY}/${DOCKER_R}/${DOCKER_I}"
-        docker login -u ${DOCKER_U} -p ${DOCKER_P} ${DOCKER_REGISTRY}
+        docker login -u ${DOCKER_U} -p ${DOCKER_P} ${DOCKER_REG}
 
         echo "Build and push the docker image"
         cd ${WORKDIR}
