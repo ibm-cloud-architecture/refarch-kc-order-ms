@@ -72,7 +72,7 @@ jobs:
     - name: Build the order-command docker image
       id: build-command-image
       run: |
-        IMAGE_NAME="${DOCKER_REGISTRY}/${DOCKER_R}/${DOCKER_I}"
+        IMAGE_NAME="${DOCKER_REG}/${DOCKER_R}/${DOCKER_I}"
         docker login -u ${DOCKER_U} -p ${DOCKER_P} ${DOCKER_REG}
 
         echo "Build and push the docker image"
@@ -96,7 +96,7 @@ jobs:
     - name: Build the order-query docker image
       id: build-query-image
       run: |
-        IMAGE_NAME="${DOCKER_REGISTRY}/${DOCKER_R}/${DOCKER_I}"
+        IMAGE_NAME="${DOCKER_REG}/${DOCKER_R}/${DOCKER_I}"
         docker login -u ${DOCKER_U} -p ${DOCKER_P} ${DOCKER_REG}
 
         echo "Build and push the docker image"
